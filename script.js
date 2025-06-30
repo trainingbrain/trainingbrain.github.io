@@ -332,52 +332,176 @@ function updateHangmanFigure() {
         });
     }// script.js dosyasının en altına, en sondaki }); satırından önce ekleyin
 
+// script.js'teki eski Wisconsin kodunu bununla değiştirin
+
 // ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ ----
 
+// 1. OYUNUN TEMEL VERİLERİNİ VE DEĞİŞKENLERİNİ TANIMLAYALIM
+const WCST_SHAPES = {
+    'üçgen': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
+    'yıldız': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>',
+    'daire': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>',
+    'artı': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>'
+};
+const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
+const WCST_NUMBERS = [1, 2, 3, 4];
+const WCST_RULES = ['renk', 'şekil', 'sayi'];
+
+let targetCards = [];       // Üstteki 4 hedef kart
+let responseDeck = [];      // Alttaki 64 kartlık cevap destesi
+let currentResponseCard;    // Şu an oyuncuya gösterilen cevap kartı
+let currentRule;            // Şu an geçerli olan gizli kural ('renk', 'şekil', 'sayi')
+let score = 0;
+let cardsLeft = 0;
+
+// 2. OYUNU BAŞLATAN ANA FONKSİYON
 function startWcst() {
+    // HTML iskeletini çiz
+    setupWcstBoard();
+    
+    // Oyun verilerini hazırla
+    prepareWcstGame();
+    
+    // Hazırlanan kartları ekrana çiz
+    drawCards();
+}
+
+// Oyunun HTML iskeletini oluşturan fonksiyon
+function setupWcstBoard() {
     gameContent.innerHTML = `
         <h2>Wisconsin Kart Eşleştirme Egzersizi</h2>
         <div class="wcst-container">
             <div class="wcst-info">
                 <div id="wcst-score">Doğru: 0</div>
-                <div id="wcst-deck-count">Kalan Kart: 64</div>
+                <div id="wcst-rule">Aktif Kural: ?</div> <!-- Geliştirme için eklendi, sonra gizlenebilir -->
             </div>
-
-            <div id="wcst-feedback">Kuralı bulmaya çalışın.</div>
-
-            <!-- Hedef kartlar buraya gelecek -->
-            <div id="target-cards-container" class="card-area">
-                <div class="card color-red">
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
-                </div>
-                <div class="card color-green">
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>
-                </div>
-                <div class="card color-yellow">
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
-                </div>
-                <div class="card color-blue">
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
-                </div>
-            </div>
-
+            <div id="wcst-feedback">Doğru eşleştirmeyi bulun.</div>
+            <div id="target-cards-container" class="card-area"></div>
             <p><strong>Cevap Kartınız:</strong></p>
-            <!-- Cevap kartı buraya gelecek -->
-            <div id="response-card-area" class="card-area" style="background-color: transparent;">
-                <div class="card color-blue">
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
-                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
-                </div>
-            </div>
+            <div id="response-card-area" class="card-area" style="background-color: transparent;"></div>
+            <div id="wcst-deck-count">Kalan Kart: 0</div>
         </div>
     `;
+}
+
+// Oyuna başlamadan önce kartları ve kuralları hazırlayan fonksiyon
+function prepareWcstGame() {
+    // Değişkenleri sıfırla
+    score = 0;
     
-    // TODO: Oyunun mantığını buraya ekleyeceğiz.
+    // Hedef kartları oluştur (her zaman sabit)
+    targetCards = [
+        { sayi: 1, sekil: 'üçgen', renk: 'red' },
+        { sayi: 2, sekil: 'yıldız', renk: 'green' },
+        { sayi: 3, sekil: 'daire', renk: 'yellow' },
+        { sayi: 4, sekil: 'artı', renk: 'blue' }
+    ];
+
+    // Cevap destesindeki 64 kartı rastgele oluştur
+    responseDeck = [];
+    for (const renk of WCST_COLORS) {
+        for (const sekil of Object.keys(WCST_SHAPES)) {
+            for (const sayi of WCST_NUMBERS) {
+                // Hiçbir kart hedef kartlarla aynı olmasın (isteğe bağlı, zorluğu artırır)
+                if (!targetCards.some(tc => tc.sayi === sayi && tc.sekil === sekil && tc.renk === renk)) {
+                    responseDeck.push({ sayi, sekil, renk });
+                }
+            }
+        }
+    }
+    // Desteyi karıştır
+    shuffleArray(responseDeck); // Bu fonksiyon Stroop testinden kalma, tekrar kullanıyoruz.
+
+    // İlk kuralı belirle
+    currentRule = WCST_RULES[0]; // 'renk' ile başla
+    document.getElementById('wcst-rule').innerText = `Aktif Kural: ${currentRule}`; // Test için göster
+
+    // İlk cevap kartını desteden çek
+    drawNextResponseCard();
+}
+
+// Kartları (hedef ve cevap) HTML olarak ekrana çizen fonksiyon
+function drawCards() {
+    const targetContainer = document.getElementById('target-cards-container');
+    targetContainer.innerHTML = ''; // Önce temizle
+    targetCards.forEach((cardData, index) => {
+        const cardElement = createCardElement(cardData);
+        cardElement.dataset.targetIndex = index; // Hangi hedef karta tıklandığını bilmek için
+        cardElement.addEventListener('click', () => handleTargetClick(index));
+        targetContainer.appendChild(cardElement);
+    });
+
+    drawResponseCard();
+}
+
+// Tek bir kartın HTML elementini oluşturan yardımcı fonksiyon
+function createCardElement(cardData) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = `card color-${cardData.renk}`;
+    
+    let shapesHTML = '';
+    for (let i = 0; i < cardData.sayi; i++) {
+        shapesHTML += WCST_SHAPES[cardData.sekil];
+    }
+    cardDiv.innerHTML = shapesHTML;
+    return cardDiv;
+}
+
+// Cevap kartını ekrana çizen fonksiyon
+function drawResponseCard() {
+    const responseContainer = document.getElementById('response-card-area');
+    responseContainer.innerHTML = '';
+    if (currentResponseCard) {
+        responseContainer.appendChild(createCardElement(currentResponseCard));
+    }
+}
+
+// Destenin bir sonraki kartını çeken ve durumu güncelleyen fonksiyon
+function drawNextResponseCard() {
+    if (responseDeck.length > 0) {
+        currentResponseCard = responseDeck.pop(); // Destenin sonundan bir kart çek
+        cardsLeft = responseDeck.length;
+        document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${cardsLeft}`;
+    } else {
+        // TODO: Oyun bitti durumu
+        currentResponseCard = null;
+    }
+}
+
+// 3. OYUNCUNUN SEÇİMİNİ DEĞERLENDİREN FONKSİYON
+function handleTargetClick(chosenTargetIndex) {
+    if (!currentResponseCard) return; // Deste boşsa bir şey yapma
+
+    const chosenTarget = targetCards[chosenTargetIndex];
+    let isCorrect = false;
+
+    // Geçerli kurala göre kontrol et
+    switch (currentRule) {
+        case 'renk':
+            isCorrect = currentResponseCard.renk === chosenTarget.renk;
+            break;
+        case 'şekil':
+            isCorrect = currentResponseCard.sekil === chosenTarget.sekil;
+            break;
+        case 'sayi':
+            isCorrect = currentResponseCard.sayi === chosenTarget.sayi;
+            break;
+    }
+
+    // Geri bildirim ver
+    const feedbackEl = document.getElementById('wcst-feedback');
+    if (isCorrect) {
+        feedbackEl.innerText = "Doğru!";
+        feedbackEl.className = 'correct';
+        score++;
+        document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
+    } else {
+        feedbackEl.innerText = "Yanlış!";
+        feedbackEl.className = 'wrong';
+    }
+
+    // Bir sonraki karta geç
+    drawNextResponseCard();
+    drawResponseCard(); // Yeni kartı ekrana çiz
 }
 });
