@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 startSequenceMemory();
             } else if (game === 'stroop-testi') {
                 startStroopTest();
+            } else if (game === 'wcst') { // YENİ EKLENEN SATIR
+                startWcst();
             }
         });
     });
@@ -328,5 +330,54 @@ function updateHangmanFigure() {
             else if (game === 'sequence') startSequenceMemory();
             else if (game === 'stroop') startStroopTest();
         });
-    }
+    }// script.js dosyasının en altına, en sondaki }); satırından önce ekleyin
+
+// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ ----
+
+function startWcst() {
+    gameContent.innerHTML = `
+        <h2>Wisconsin Kart Eşleştirme Egzersizi</h2>
+        <div class="wcst-container">
+            <div class="wcst-info">
+                <div id="wcst-score">Doğru: 0</div>
+                <div id="wcst-deck-count">Kalan Kart: 64</div>
+            </div>
+
+            <div id="wcst-feedback">Kuralı bulmaya çalışın.</div>
+
+            <!-- Hedef kartlar buraya gelecek -->
+            <div id="target-cards-container" class="card-area">
+                <div class="card color-red">
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
+                </div>
+                <div class="card color-green">
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>
+                </div>
+                <div class="card color-yellow">
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
+                </div>
+                <div class="card color-blue">
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>
+                </div>
+            </div>
+
+            <p><strong>Cevap Kartınız:</strong></p>
+            <!-- Cevap kartı buraya gelecek -->
+            <div id="response-card-area" class="card-area" style="background-color: transparent;">
+                <div class="card color-blue">
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
+                    <svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // TODO: Oyunun mantığını buraya ekleyeceğiz.
+}
 });
