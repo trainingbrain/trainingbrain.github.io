@@ -334,7 +334,7 @@ function updateHangmanFigure() {
 
 // script.js'teki eski Wisconsin kodunu bununla değiştirin
 
-// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ ----
+// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (TAM SÜRÜM) ----
 
 // 1. OYUNUN TEMEL VERİLERİNİ VE DEĞİŞKENLERİNİ TANIMLAYALIM
 const WCST_SHAPES = {
@@ -346,50 +346,57 @@ const WCST_SHAPES = {
 const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
 const WCST_NUMBERS = [1, 2, 3, 4];
 const WCST_RULES = ['renk', 'şekil', 'sayi'];
+const CORRECT_IN_A_ROW_TO_SWITCH = 6; // Kural değiştirmek için gereken ardışık doğru sayısı
 
-let targetCards = [];       // Üstteki 4 hedef kart
-let responseDeck = [];      // Alttaki 64 kartlık cevap destesi
-let currentResponseCard;    // Şu an oyuncuya gösterilen cevap kartı
-let currentRule;            // Şu an geçerli olan gizli kural ('renk', 'şekil', 'sayi')
+// Oyun durumu değişkenleri
+let targetCards = [];
+let responseDeck = [];
+let currentResponseCard;
+let currentRule;
+let currentRuleIndex = 0;
 let score = 0;
 let cardsLeft = 0;
+let consecutiveCorrect = 0;
+let perseverativeErrors = 0;
+let totalErrors = 0;
+let categoriesCompleted = 0;
+let ruleChanged = false; // Kuralın yeni değişip değişmediğini kontrol eder
 
-// 2. OYUNU BAŞLATAN ANA FONKSİYON
+// 2. OYUNU BAŞLATAN VE YÖNETEN FONKSİYONLAR
 function startWcst() {
-    // HTML iskeletini çiz
     setupWcstBoard();
-    
-    // Oyun verilerini hazırla
     prepareWcstGame();
-    
-    // Hazırlanan kartları ekrana çiz
     drawCards();
 }
 
-// Oyunun HTML iskeletini oluşturan fonksiyon
 function setupWcstBoard() {
     gameContent.innerHTML = `
         <h2>Wisconsin Kart Eşleştirme Egzersizi</h2>
         <div class="wcst-container">
             <div class="wcst-info">
                 <div id="wcst-score">Doğru: 0</div>
-                <div id="wcst-rule">Aktif Kural: ?</div> <!-- Geliştirme için eklendi, sonra gizlenebilir -->
+                <div id="wcst-deck-count">Kalan Kart: 0</div>
             </div>
             <div id="wcst-feedback">Doğru eşleştirmeyi bulun.</div>
             <div id="target-cards-container" class="card-area"></div>
             <p><strong>Cevap Kartınız:</strong></p>
             <div id="response-card-area" class="card-area" style="background-color: transparent;"></div>
-            <div id="wcst-deck-count">Kalan Kart: 0</div>
         </div>
     `;
 }
 
-// Oyuna başlamadan önce kartları ve kuralları hazırlayan fonksiyon
 function prepareWcstGame() {
-    // Değişkenleri sıfırla
+    // Tüm skor ve durum değişkenlerini sıfırla
     score = 0;
-    
-    // Hedef kartları oluştur (her zaman sabit)
+    consecutiveCorrect = 0;
+    perseverativeErrors = 0;
+    totalErrors = 0;
+    categoriesCompleted = 0;
+    currentRuleIndex = 0;
+    ruleChanged = false;
+    currentRule = WCST_RULES[currentRuleIndex];
+
+    // Sabit hedef kartları tanımla
     targetCards = [
         { sayi: 1, sekil: 'üçgen', renk: 'red' },
         { sayi: 2, sekil: 'yıldız', renk: 'green' },
@@ -397,48 +404,38 @@ function prepareWcstGame() {
         { sayi: 4, sekil: 'artı', renk: 'blue' }
     ];
 
-    // Cevap destesindeki 64 kartı rastgele oluştur
+    // 64 kartlık cevap destesini oluştur ve karıştır
     responseDeck = [];
-    for (const renk of WCST_COLORS) {
-        for (const sekil of Object.keys(WCST_SHAPES)) {
-            for (const sayi of WCST_NUMBERS) {
-                // Hiçbir kart hedef kartlarla aynı olmasın (isteğe bağlı, zorluğu artırır)
-                if (!targetCards.some(tc => tc.sayi === sayi && tc.sekil === sekil && tc.renk === renk)) {
-                    responseDeck.push({ sayi, sekil, renk });
-                }
-            }
-        }
-    }
-    // Desteyi karıştır
-    shuffleArray(responseDeck); // Bu fonksiyon Stroop testinden kalma, tekrar kullanıyoruz.
+    WCST_COLORS.forEach(renk => {
+        Object.keys(WCST_SHAPES).forEach(sekil => {
+            WCST_NUMBERS.forEach(sayi => {
+                responseDeck.push({ sayi, sekil, renk });
+            });
+        });
+    });
+    shuffleArray(responseDeck); // Bu fonksiyon Stroop testinden var olan bir yardımcı fonksiyon
+    responseDeck = responseDeck.slice(0, 64); // Desteyi tam 64 kartla sınırla
+    cardsLeft = responseDeck.length;
 
-    // İlk kuralı belirle
-    currentRule = WCST_RULES[0]; // 'renk' ile başla
-    document.getElementById('wcst-rule').innerText = `Aktif Kural: ${currentRule}`; // Test için göster
-
-    // İlk cevap kartını desteden çek
-    drawNextResponseCard();
+    drawNextResponseCard(); // İlk cevap kartını çek
 }
 
-// Kartları (hedef ve cevap) HTML olarak ekrana çizen fonksiyon
+// 3. GÖRSELLEŞTİRME FONKSİYONLARI
 function drawCards() {
     const targetContainer = document.getElementById('target-cards-container');
-    targetContainer.innerHTML = ''; // Önce temizle
+    targetContainer.innerHTML = '';
     targetCards.forEach((cardData, index) => {
         const cardElement = createCardElement(cardData);
-        cardElement.dataset.targetIndex = index; // Hangi hedef karta tıklandığını bilmek için
+        cardElement.dataset.targetIndex = index;
         cardElement.addEventListener('click', () => handleTargetClick(index));
         targetContainer.appendChild(cardElement);
     });
-
     drawResponseCard();
 }
 
-// Tek bir kartın HTML elementini oluşturan yardımcı fonksiyon
 function createCardElement(cardData) {
     const cardDiv = document.createElement('div');
     cardDiv.className = `card color-${cardData.renk}`;
-    
     let shapesHTML = '';
     for (let i = 0; i < cardData.sayi; i++) {
         shapesHTML += WCST_SHAPES[cardData.sekil];
@@ -447,61 +444,99 @@ function createCardElement(cardData) {
     return cardDiv;
 }
 
-// Cevap kartını ekrana çizen fonksiyon
 function drawResponseCard() {
     const responseContainer = document.getElementById('response-card-area');
     responseContainer.innerHTML = '';
     if (currentResponseCard) {
         responseContainer.appendChild(createCardElement(currentResponseCard));
-    }
-}
-
-// Destenin bir sonraki kartını çeken ve durumu güncelleyen fonksiyon
-function drawNextResponseCard() {
-    if (responseDeck.length > 0) {
-        currentResponseCard = responseDeck.pop(); // Destenin sonundan bir kart çek
-        cardsLeft = responseDeck.length;
-        document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${cardsLeft}`;
     } else {
-        // TODO: Oyun bitti durumu
-        currentResponseCard = null;
+        // Deste bittiğinde oyunu bitir
+        gameOverWcst();
     }
 }
 
-// 3. OYUNCUNUN SEÇİMİNİ DEĞERLENDİREN FONKSİYON
+function drawNextResponseCard() {
+    currentResponseCard = responseDeck.pop();
+    cardsLeft = responseDeck.length;
+    document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${cardsLeft}`;
+}
+
+// 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI
 function handleTargetClick(chosenTargetIndex) {
-    if (!currentResponseCard) return; // Deste boşsa bir şey yapma
+    if (!currentResponseCard) return;
 
     const chosenTarget = targetCards[chosenTargetIndex];
-    let isCorrect = false;
-
-    // Geçerli kurala göre kontrol et
-    switch (currentRule) {
-        case 'renk':
-            isCorrect = currentResponseCard.renk === chosenTarget.renk;
-            break;
-        case 'şekil':
-            isCorrect = currentResponseCard.sekil === chosenTarget.sekil;
-            break;
-        case 'sayi':
-            isCorrect = currentResponseCard.sayi === chosenTarget.sayi;
-            break;
-    }
-
-    // Geri bildirim ver
+    
+    // Geçerli kurala göre doğru mu?
+    const isCorrectByCurrentRule = checkMatch(currentResponseCard, chosenTarget, currentRule);
+    
     const feedbackEl = document.getElementById('wcst-feedback');
-    if (isCorrect) {
+    if (isCorrectByCurrentRule) {
         feedbackEl.innerText = "Doğru!";
         feedbackEl.className = 'correct';
         score++;
-        document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
+        consecutiveCorrect++;
+        ruleChanged = false; // Oyuncu doğru bildiği için, bir önceki hamlede kural değişmiş olsa bile artık yeni kuralı biliyor demektir.
     } else {
         feedbackEl.innerText = "Yanlış!";
         feedbackEl.className = 'wrong';
+        totalErrors++;
+        consecutiveCorrect = 0;
+        
+        // Kural yeni değiştiyse ve oyuncu hala önceki kurala göre oynamaya çalışıyorsa bu bir "ısrarcı hatadır".
+        if (ruleChanged) {
+            const previousRuleIndex = (currentRuleIndex === 0) ? WCST_RULES.length - 1 : currentRuleIndex - 1;
+            const previousRule = WCST_RULES[previousRuleIndex];
+            if (checkMatch(currentResponseCard, chosenTarget, previousRule)) {
+                perseverativeErrors++;
+            }
+        }
+    }
+
+    document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
+
+    // KURAL DEĞİŞTİRME MANTIĞI
+    if (consecutiveCorrect >= CORRECT_IN_A_ROW_TO_SWITCH) {
+        consecutiveCorrect = 0;
+        categoriesCompleted++;
+        currentRuleIndex = (currentRuleIndex + 1) % WCST_RULES.length;
+        currentRule = WCST_RULES[currentRuleIndex];
+        ruleChanged = true; // Kuralın yeni değiştiğini bir sonraki hamlede hata kontrolü için işaretle
     }
 
     // Bir sonraki karta geç
     drawNextResponseCard();
-    drawResponseCard(); // Yeni kartı ekrana çiz
+    drawResponseCard();
+}
+
+// İki kartın belirli bir kurala göre eşleşip eşleşmediğini kontrol eden yardımcı fonksiyon
+function checkMatch(card1, card2, rule) {
+    return card1[rule] === card2[rule];
+}
+
+// 5. OYUN BİTİŞİ FONKSİYONU
+function gameOverWcst() {
+    // Oyun bittiğinde ana oyun alanını temizleyebiliriz.
+    gameContent.innerHTML = '';
+    
+    const modal = document.createElement('div');
+    modal.classList.add('game-over-modal');
+    modal.innerHTML = `
+        <div class="modal-content" style="text-align: left; max-width: 400px;">
+            <h3>Egzersiz Tamamlandı!</h3>
+            <p><strong>Toplam Doğru:</strong> ${score}</p>
+            <p><strong>Toplam Hata:</strong> ${totalErrors}</p>
+            <p><strong>Tamamlanan Kategori Sayısı:</strong> ${categoriesCompleted}</p>
+            <p><strong>Israrcı Hata (Perseverative Error):</strong> ${perseverativeErrors}</p>
+            <hr>
+            <small><strong>Israrcı Hata:</strong> Kural değişmesine rağmen, eski kurala göre cevap vermekte ısrar etme sayısıdır. Düşük olması, bilişsel esnekliğin (cognitive flexibility) iyi olduğunu gösterir.</small>
+            <button id="play-again-button">Tekrar Oyna</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('play-again-button').addEventListener('click', () => {
+        modal.remove();
+        startWcst();
+    });
 }
 });
