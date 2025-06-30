@@ -538,3 +538,78 @@ footer {
     background-color: #e74c3c;
     color: white;
 }
+/* style.css dosyasının en altına ekleyin */
+
+/* --- Wisconsin Kart Eşleştirme Egzersizi Stilleri --- */
+
+.wcst-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.wcst-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#wcst-feedback {
+    min-height: 30px;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+#wcst-feedback.correct {
+    color: #2ecc71;
+}
+
+#wcst-feedback.wrong {
+    color: #e74c3c;
+}
+
+.card-area {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+}
+
+.card {
+    width: 100px;
+    height: 140px;
+    border: 2px solid #7f8c8d;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#target-cards-container .card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#target-cards-container .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.card-shape {
+    fill: currentColor; /* Şeklin rengini, ebeveyninin metin renginden almasını sağlar */
+}
+
+/* Renkler için yardımcı sınıflar */
+.color-red { color: #e74c3c; }
+.color-green { color: #2ecc71; }
+.color-blue { color: #3498db; }
+.color-yellow { color: #f1c40f; }
