@@ -35,77 +35,125 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(stroopTimer);
     });
 
-    // ---- ADAM ASMACA OYUNU ----
-    let hangmanSecretWord = '';
-    let hangmanCorrectLetters = [];
-    let hangmanWrongGuessCount = 0;
-    const hangmanMaxWrongGuesses = 6;
-    const hangmanWordList = ["NÖRON", "SİNAPS", "LOB", "BEYİN", "HAFIZA", "KORTEKS", "AMİGDALA", "AKSON", "DENDRİT", "BİLİNÇ"];
+    // script.js'teki eski Adam Asmaca kodunu bununla değiştirin
 
-    function startHangman() {
-        hangmanCorrectLetters = [];
-        hangmanWrongGuessCount = 0;
-        hangmanSecretWord = hangmanWordList[Math.floor(Math.random() * hangmanWordList.length)];
+// ---- ADAM ASMACA OYUNU (SEVİYELİ VERSİYON) ----
 
-        gameContent.innerHTML = `
-            <h2>Adam Asmaca</h2>
-            <p class="guesses-text">Kalan Hak: <span>${hangmanMaxWrongGuesses - hangmanWrongGuessCount}</span></p>
-            <div class="hangman-figure">
-                <svg viewBox="0 0 200 250" class="figure-container">
-                    <line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" />
-                    <circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" />
-                </svg>
-            </div>
-            <div class="word-display"></div>
-            <div class="keyboard"></div>
-        `;
-        
+// 1. Kelime listelerini seviyelere göre hazırlıyoruz
+const hangmanWordLists = {
+    basit: ["KEDİ", "ELMA", "ARABA", "EV", "TOP", "GÜNEŞ", "AY", "SU", "KAPI", "MASA"],
+    orta: ["BİLGİSAYAR", "TELEFON", "GÖZLÜK", "KALEM", "KİTAP", "SANDALYE", "PENCERE", "FOTOĞRAF", "HASTANE"],
+    zor: ["NÖROTRANSMİTER", "FOTOSENTEZ", "MİTOKONDRİ", "PARADOKS", "ALGORİTMA", "FELSEFE", "ENTELLEKTÜEL", "PSİKOLOJİ"]
+};
+
+let hangmanSecretWord = '';
+let hangmanCorrectLetters = [];
+let hangmanWrongGuessCount = 0;
+const hangmanMaxWrongGuesses = 6;
+
+// Bu fonksiyon, oyunun ilk başlangıç noktamız olacak.
+function startHangman() {
+    // Önce seviye seçim ekranını göster
+    showHangmanLevelSelection();
+}
+
+// Seviye seçim arayüzünü oluşturan fonksiyon
+function showHangmanLevelSelection() {
+    gameContent.innerHTML = `
+        <h2>Adam Asmaca</h2>
+        <h3>Lütfen bir zorluk seviyesi seçin:</h3>
+        <div class="level-selection-container">
+            <button class="level-choice" data-level="basit">Basit</button>
+            <button class="level-choice" data-level="orta">Orta</button>
+            <button class="level-choice" data-level="zor">Zor</button>
+        </div>
+    `;
+
+    // Seviye butonlarına tıklama olaylarını ekle
+    document.querySelectorAll('.level-choice').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const selectedLevel = event.target.dataset.level;
+            initializeHangmanGame(selectedLevel); // Seçilen seviye ile oyunu başlat
+        });
+    });
+}
+
+// Oyunu seçilen seviyeye göre başlatan ana fonksiyon
+function initializeHangmanGame(level) {
+    // Değişkenleri sıfırla
+    hangmanCorrectLetters = [];
+    hangmanWrongGuessCount = 0;
+    
+    // Seçilen seviyeye göre kelime listesinden rastgele bir kelime seç
+    const wordList = hangmanWordLists[level];
+    hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)];
+
+    // Oyunun ana arayüzünü HTML'e çiz
+    gameContent.innerHTML = `
+        <p class="guesses-text">Kalan Hak: <span>${hangmanMaxWrongGuesses - hangmanWrongGuessCount}</span></p>
+        <div class="hangman-figure">
+            <svg viewBox="0 0 200 250" class="figure-container">
+                <line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" />
+                <circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" />
+            </svg>
+        </div>
+        <div class="word-display"></div>
+        <div class="keyboard"></div>
+    `;
+    
+    // Oyunu başlat
+    updateHangmanFigure();
+    displayHangmanWord();
+    createHangmanKeyboard();
+}
+
+// Geri kalan fonksiyonlar büyük ölçüde aynı kalıyor
+function displayHangmanWord() {
+    const wordDisplay = document.querySelector('.word-display');
+    if (!wordDisplay) return; // Eğer eleman yoksa hata vermesini engelle
+    wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join('');
+    if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) {
+        showGameOverModal('hangman', true);
+    }
+}
+
+function createHangmanKeyboard() {
+    const keyboard = document.querySelector('.keyboard');
+    if (!keyboard) return;
+    "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".split('').forEach(letter => {
+        const keyButton = document.createElement('button');
+        keyButton.innerText = letter;
+        keyButton.classList.add('key');
+        keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton));
+        keyboard.appendChild(keyButton);
+    });
+}
+
+function handleHangmanGuess(letter, button) {
+    button.disabled = true;
+    if (hangmanSecretWord.includes(letter)) {
+        hangmanCorrectLetters.push(letter);
+        button.classList.add('correct');
+    } else {
+        hangmanWrongGuessCount++;
+        button.classList.add('wrong');
         updateHangmanFigure();
-        displayHangmanWord();
-        createHangmanKeyboard();
     }
+    displayHangmanWord();
+    if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) {
+        showGameOverModal('hangman', false);
+    }
+}
 
-    function displayHangmanWord() {
-        const wordDisplay = document.querySelector('.word-display');
-        wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join('');
-        if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) {
-            showGameOverModal('hangman', true);
-        }
+function updateHangmanFigure() {
+    const guessesText = document.querySelector('.guesses-text span');
+    if (guessesText) {
+        guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount;
     }
-
-    function createHangmanKeyboard() {
-        const keyboard = document.querySelector('.keyboard');
-        "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".split('').forEach(letter => {
-            const keyButton = document.createElement('button');
-            keyButton.innerText = letter;
-            keyButton.classList.add('key');
-            keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton));
-            keyboard.appendChild(keyButton);
-        });
-    }
-
-    function handleHangmanGuess(letter, button) {
-        button.disabled = true;
-        if (hangmanSecretWord.includes(letter)) {
-            hangmanCorrectLetters.push(letter);
-            button.classList.add('correct');
-        } else {
-            hangmanWrongGuessCount++;
-            button.classList.add('wrong');
-            updateHangmanFigure();
-        }
-        displayHangmanWord();
-        if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) {
-            showGameOverModal('hangman', false);
-        }
-    }
-
-    function updateHangmanFigure() {
-        document.querySelector('.guesses-text span').innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount;
-        document.querySelectorAll('.figure-part').forEach((part, index) => {
-            part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none';
-        });
-    }
+    document.querySelectorAll('.figure-part').forEach((part, index) => {
+        part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none';
+    });
+}
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     let sequence = [];
