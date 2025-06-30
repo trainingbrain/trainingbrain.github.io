@@ -445,3 +445,23 @@ footer {
 .back-to-home-link:hover {
     background-color: #c0392b;
 }
+/* Ana Navigasyon Menüsü Stilleri */
+.main-nav {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #34495e;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.main-nav a:hover {
+    border-color: #3498db;
+}
