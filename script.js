@@ -334,41 +334,83 @@ function updateHangmanFigure() {
 
 // script.js'teki eski Wisconsin kodunu bununla değiştirin
 
-// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (TAM SÜRÜM) ----
+// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (PROFESYONEL SÜRÜM) ----
 
-// 1. OYUNUN TEMEL VERİLERİNİ VE DEĞİŞKENLERİNİ TANIMLAYALIM
-const WCST_SHAPES = {
-    'üçgen': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
-    'yıldız': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>',
-    'daire': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>',
-    'artı': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>'
-};
+// 1. SABİTLER VE DEĞİŞKENLER
+const WCST_SHAPES = { 'üçgen': '...', 'yıldız': '...', 'daire': '...', 'artı': '...' }; // Şekil SVG'leri önceki koddan aynı
 const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
 const WCST_NUMBERS = [1, 2, 3, 4];
-const WCST_RULES = ['renk', 'şekil', 'sayi'];
-const CORRECT_IN_A_ROW_TO_SWITCH = 6; // Kural değiştirmek için gereken ardışık doğru sayısı
+const WCST_RULES = ['renk', 'şekil', 'sayi', 'renk', 'şekil', 'sayi'];
+const CORRECT_IN_A_ROW_TO_COMPLETE_CATEGORY = 10;
+const TOTAL_CARDS = 128;
+
+// SVG'leri dolduralım (kodun kısalması için)
+WCST_SHAPES['üçgen'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>';
+WCST_SHAPES['yıldız'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>';
+WCST_SHAPES['daire'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>';
+WCST_SHAPES['artı'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>';
 
 // Oyun durumu değişkenleri
-let targetCards = [];
-let responseDeck = [];
-let currentResponseCard;
-let currentRule;
-let currentRuleIndex = 0;
-let score = 0;
-let cardsLeft = 0;
-let consecutiveCorrect = 0;
-let perseverativeErrors = 0;
-let totalErrors = 0;
-let categoriesCompleted = 0;
-let ruleChanged = false; // Kuralın yeni değişip değişmediğini kontrol eder
+let targetCards, responseDeck, currentResponseCard, currentRule, educationLevel;
+let currentRuleIndex, score, cardsUsed, consecutiveCorrect, perseverativeResponses, perseverativeErrors, totalErrors, categoriesCompleted;
 
-// 2. OYUNU BAŞLATAN VE YÖNETEN FONKSİYONLAR
+// 2. OYUN BAŞLANGIÇ SÜRECİ
 function startWcst() {
+    showEducationScreen();
+}
+
+function showEducationScreen() {
+    gameContent.innerHTML = `
+        <div class="wcst-start-screen">
+            <div class="wcst-education-level">
+                <h3>Lütfen Eğitim Seviyenizi Seçiniz:</h3>
+                <div class="education-options">
+                    <button class="education-btn" data-level="ilkokul">İlkokul</button>
+                    <button class="education-btn" data-level="ortaokul">Ortaokul</button>
+                    <button class="education-btn" data-level="lise">Lise</button>
+                    <button class="education-btn" data-level="üniversite">Üniversite</button>
+                </div>
+            </div>
+            <button id="wcst-start-btn" disabled>Devam Et</button>
+        </div>
+    `;
+    document.querySelectorAll('.education-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            // Önceki seçimi kaldır
+            document.querySelectorAll('.education-btn').forEach(b => b.classList.remove('selected'));
+            // Yeni butonu seçili yap
+            e.target.classList.add('selected');
+            educationLevel = e.target.dataset.level;
+            document.getElementById('wcst-start-btn').disabled = false;
+        });
+    });
+    document.getElementById('wcst-start-btn').addEventListener('click', showInstructionScreen);
+}
+
+function showInstructionScreen() {
+    gameContent.innerHTML = `
+        <div class="wcst-start-screen">
+            <div class="wcst-instructions">
+                <h3>Talimatlar</h3>
+                <p>Bu biraz değişik bir egzersiz çünkü testi nasıl yapacağınız konusunda size verilen her bir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor.</p>
+                <p>Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.</p>
+            </div>
+            <button id="wcst-start-btn">Egzersize Başla</button>
+        </div>
+    `;
+    document.getElementById('wcst-start-btn').addEventListener('click', initializeWcstGame);
+}
+
+function initializeWcstGame() {
+    // Arayüzü çiz
     setupWcstBoard();
+    // Değişkenleri ve kartları hazırla
     prepareWcstGame();
+    // Kartları ekranda göster
     drawCards();
 }
 
+// 3. OYUN MEKANİKLERİ VE GÖRSELLEŞTİRME
 function setupWcstBoard() {
     gameContent.innerHTML = `
         <h2>Wisconsin Kart Eşleştirme Egzersizi</h2>
@@ -386,49 +428,34 @@ function setupWcstBoard() {
 }
 
 function prepareWcstGame() {
-    // Tüm skor ve durum değişkenlerini sıfırla
-    score = 0;
-    consecutiveCorrect = 0;
-    perseverativeErrors = 0;
-    totalErrors = 0;
-    categoriesCompleted = 0;
-    currentRuleIndex = 0;
-    ruleChanged = false;
+    // Değişkenleri sıfırla
+    currentRuleIndex = 0; score = 0; cardsUsed = 0; consecutiveCorrect = 0;
+    perseverativeResponses = 0; perseverativeErrors = 0; totalErrors = 0; categoriesCompleted = 0;
     currentRule = WCST_RULES[currentRuleIndex];
 
-    // Sabit hedef kartları tanımla
     targetCards = [
-        { sayi: 1, sekil: 'üçgen', renk: 'red' },
-        { sayi: 2, sekil: 'yıldız', renk: 'green' },
-        { sayi: 3, sekil: 'daire', renk: 'yellow' },
-        { sayi: 4, sekil: 'artı', renk: 'blue' }
+        { sayi: 1, sekil: 'üçgen', renk: 'red' }, { sayi: 2, sekil: 'yıldız', renk: 'green' },
+        { sayi: 3, sekil: 'daire', renk: 'yellow' }, { sayi: 4, sekil: 'artı', renk: 'blue' }
     ];
 
-    // 64 kartlık cevap destesini oluştur ve karıştır
-    responseDeck = [];
-    WCST_COLORS.forEach(renk => {
-        Object.keys(WCST_SHAPES).forEach(sekil => {
-            WCST_NUMBERS.forEach(sayi => {
-                responseDeck.push({ sayi, sekil, renk });
-            });
-        });
-    });
-    shuffleArray(responseDeck); // Bu fonksiyon Stroop testinden var olan bir yardımcı fonksiyon
-    responseDeck = responseDeck.slice(0, 64); // Desteyi tam 64 kartla sınırla
-    cardsLeft = responseDeck.length;
+    // 128 kartlık desteyi oluştur
+    const singleDeck = [];
+    WCST_COLORS.forEach(renk => Object.keys(WCST_SHAPES).forEach(sekil => WCST_NUMBERS.forEach(sayi => {
+        singleDeck.push({ sayi, sekil, renk });
+    })));
+    responseDeck = [...singleDeck, ...singleDeck]; // 64'lük destenin 2 kopyası
+    shuffleArray(responseDeck);
 
-    drawNextResponseCard(); // İlk cevap kartını çek
+    drawNextResponseCard();
 }
 
-// 3. GÖRSELLEŞTİRME FONKSİYONLARI
 function drawCards() {
     const targetContainer = document.getElementById('target-cards-container');
     targetContainer.innerHTML = '';
-    targetCards.forEach((cardData, index) => {
-        const cardElement = createCardElement(cardData);
-        cardElement.dataset.targetIndex = index;
-        cardElement.addEventListener('click', () => handleTargetClick(index));
-        targetContainer.appendChild(cardElement);
+    targetCards.forEach((card, index) => {
+        const cardEl = createCardElement(card);
+        cardEl.addEventListener('click', () => handleTargetClick(index));
+        targetContainer.appendChild(cardEl);
     });
     drawResponseCard();
 }
@@ -437,9 +464,7 @@ function createCardElement(cardData) {
     const cardDiv = document.createElement('div');
     cardDiv.className = `card color-${cardData.renk}`;
     let shapesHTML = '';
-    for (let i = 0; i < cardData.sayi; i++) {
-        shapesHTML += WCST_SHAPES[cardData.sekil];
-    }
+    for (let i = 0; i < cardData.sayi; i++) { shapesHTML += WCST_SHAPES[cardData.sekil]; }
     cardDiv.innerHTML = shapesHTML;
     return cardDiv;
 }
@@ -449,87 +474,94 @@ function drawResponseCard() {
     responseContainer.innerHTML = '';
     if (currentResponseCard) {
         responseContainer.appendChild(createCardElement(currentResponseCard));
-    } else {
-        // Deste bittiğinde oyunu bitir
-        gameOverWcst();
     }
 }
 
 function drawNextResponseCard() {
-    currentResponseCard = responseDeck.pop();
-    cardsLeft = responseDeck.length;
-    document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${cardsLeft}`;
+    if (responseDeck.length > 0) {
+        currentResponseCard = responseDeck.pop();
+        document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${responseDeck.length}`;
+    } else {
+        currentResponseCard = null;
+    }
 }
 
 // 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI
 function handleTargetClick(chosenTargetIndex) {
     if (!currentResponseCard) return;
 
+    cardsUsed++;
     const chosenTarget = targetCards[chosenTargetIndex];
-    
-    // Geçerli kurala göre doğru mu?
-    const isCorrectByCurrentRule = checkMatch(currentResponseCard, chosenTarget, currentRule);
-    
+    const isCorrect = checkMatch(currentResponseCard, chosenTarget, currentRule);
     const feedbackEl = document.getElementById('wcst-feedback');
-    if (isCorrectByCurrentRule) {
-        feedbackEl.innerText = "Doğru!";
+
+    if (isCorrect) {
+        feedbackEl.innerText = "Doğru";
         feedbackEl.className = 'correct';
         score++;
         consecutiveCorrect++;
-        ruleChanged = false; // Oyuncu doğru bildiği için, bir önceki hamlede kural değişmiş olsa bile artık yeni kuralı biliyor demektir.
-    } else {
-        feedbackEl.innerText = "Yanlış!";
+    } else { // Yanlış cevap durumu
+        feedbackEl.innerText = "Yanlış";
         feedbackEl.className = 'wrong';
         totalErrors++;
         consecutiveCorrect = 0;
-        
-        // Kural yeni değiştiyse ve oyuncu hala önceki kurala göre oynamaya çalışıyorsa bu bir "ısrarcı hatadır".
-        if (ruleChanged) {
-            const previousRuleIndex = (currentRuleIndex === 0) ? WCST_RULES.length - 1 : currentRuleIndex - 1;
-            const previousRule = WCST_RULES[previousRuleIndex];
+
+        // Perseveratif hata analizi
+        if (currentRuleIndex > 0) {
+            const previousRule = WCST_RULES[currentRuleIndex - 1];
+            // Oyuncunun tepkisi eski kurala uyuyor mu?
             if (checkMatch(currentResponseCard, chosenTarget, previousRule)) {
-                perseverativeErrors++;
+                perseverativeResponses++;
+                perseverativeErrors++; // Eski kurala uyan ve yeni kurala göre yanlış olan her tepki, bir perseveratif hatadır.
             }
         }
     }
-
+    
     document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
 
-    // KURAL DEĞİŞTİRME MANTIĞI
-    if (consecutiveCorrect >= CORRECT_IN_A_ROW_TO_SWITCH) {
-        consecutiveCorrect = 0;
+    // Kategori tamamlama ve kural değiştirme mantığı
+    if (consecutiveCorrect === CORRECT_IN_A_ROW_TO_COMPLETE_CATEGORY) {
         categoriesCompleted++;
-        currentRuleIndex = (currentRuleIndex + 1) % WCST_RULES.length;
-        currentRule = WCST_RULES[currentRuleIndex];
-        ruleChanged = true; // Kuralın yeni değiştiğini bir sonraki hamlede hata kontrolü için işaretle
+        consecutiveCorrect = 0;
+        if (categoriesCompleted < 6) {
+            currentRuleIndex++;
+            currentRule = WCST_RULES[currentRuleIndex];
+        }
     }
 
-    // Bir sonraki karta geç
-    drawNextResponseCard();
-    drawResponseCard();
+    // Bir sonraki karta geç veya oyunu bitir
+    if (responseDeck.length > 0 && categoriesCompleted < 6) {
+        drawNextResponseCard();
+        drawResponseCard();
+    } else {
+        gameOverWcst();
+    }
 }
 
-// İki kartın belirli bir kurala göre eşleşip eşleşmediğini kontrol eden yardımcı fonksiyon
 function checkMatch(card1, card2, rule) {
     return card1[rule] === card2[rule];
 }
 
-// 5. OYUN BİTİŞİ FONKSİYONU
+// 5. OYUN BİTİŞİ
 function gameOverWcst() {
-    // Oyun bittiğinde ana oyun alanını temizleyebiliriz.
     gameContent.innerHTML = '';
-    
+    const nonPerseverativeErrors = totalErrors - perseverativeErrors;
+
     const modal = document.createElement('div');
     modal.classList.add('game-over-modal');
     modal.innerHTML = `
-        <div class="modal-content" style="text-align: left; max-width: 400px;">
-            <h3>Egzersiz Tamamlandı!</h3>
-            <p><strong>Toplam Doğru:</strong> ${score}</p>
-            <p><strong>Toplam Hata:</strong> ${totalErrors}</p>
-            <p><strong>Tamamlanan Kategori Sayısı:</strong> ${categoriesCompleted}</p>
-            <p><strong>Israrcı Hata (Perseverative Error):</strong> ${perseverativeErrors}</p>
-            <hr>
-            <small><strong>Israrcı Hata:</strong> Kural değişmesine rağmen, eski kurala göre cevap vermekte ısrar etme sayısıdır. Düşük olması, bilişsel esnekliğin (cognitive flexibility) iyi olduğunu gösterir.</small>
+        <div class="modal-content" style="text-align: left; max-width: 450px;">
+            <h3>Egzersiz Sonuçları</h3>
+            <div class="wcst-results">
+                <p>Toplam Tepki Sayısı: <strong>${cardsUsed}</strong></p>
+                <p>Toplam Doğru Sayısı: <strong>${score}</strong></p>
+                <p>Toplam Hata Sayısı: <strong>${totalErrors}</strong></p>
+                <p>Tamamlanan Kategori Sayısı: <strong>${categoriesCompleted}</strong></p>
+                <hr>
+                <p>Perseveratif Tepki Sayısı: <strong>${perseverativeResponses}</strong></p>
+                <p>Perseveratif Hata Sayısı: <strong>${perseverativeErrors}</strong></p>
+                <p>Perseveratif Olmayan Hata Sayısı: <strong>${nonPerseverativeErrors}</strong></p>
+            </div>
             <button id="play-again-button">Tekrar Oyna</button>
         </div>
     `;
