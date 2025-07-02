@@ -334,25 +334,25 @@ function updateHangmanFigure() {
 
 // script.js'teki eski Wisconsin kodunu bununla değiştirin
 
-// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (PROFESYONEL SÜRÜM) ----
+// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (DÜZELTİLMİŞ PROFESYONEL SÜRÜM) ----
 
 // 1. SABİTLER VE DEĞİŞKENLER
-const WCST_SHAPES = { 'üçgen': '...', 'yıldız': '...', 'daire': '...', 'artı': '...' }; // Şekil SVG'leri önceki koddan aynı
+const WCST_SHAPES = {
+    'üçgen': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
+    'yıldız': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>',
+    'daire': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>',
+    'artı': '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>'
+};
 const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
 const WCST_NUMBERS = [1, 2, 3, 4];
 const WCST_RULES = ['renk', 'şekil', 'sayi', 'renk', 'şekil', 'sayi'];
 const CORRECT_IN_A_ROW_TO_COMPLETE_CATEGORY = 10;
 const TOTAL_CARDS = 128;
 
-// SVG'leri dolduralım (kodun kısalması için)
-WCST_SHAPES['üçgen'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>';
-WCST_SHAPES['yıldız'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="50,10 61,40 98,40 68,62 79,98 50,75 21,98 32,62 2,40 39,40"/></svg>';
-WCST_SHAPES['daire'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>';
-WCST_SHAPES['artı'] = '<svg class="card-shape" width="50" height="50" viewBox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>';
-
 // Oyun durumu değişkenleri
 let targetCards, responseDeck, currentResponseCard, currentRule, educationLevel;
 let currentRuleIndex, score, cardsUsed, consecutiveCorrect, perseverativeResponses, perseverativeErrors, totalErrors, categoriesCompleted;
+let ruleJustChanged = false; // Kuralın tam olarak bir önceki hamlede değişip değişmediğini kontrol eder
 
 // 2. OYUN BAŞLANGIÇ SÜRECİ
 function startWcst() {
@@ -376,9 +376,7 @@ function showEducationScreen() {
     `;
     document.querySelectorAll('.education-btn').forEach(btn => {
         btn.addEventListener('click', e => {
-            // Önceki seçimi kaldır
             document.querySelectorAll('.education-btn').forEach(b => b.classList.remove('selected'));
-            // Yeni butonu seçili yap
             e.target.classList.add('selected');
             educationLevel = e.target.dataset.level;
             document.getElementById('wcst-start-btn').disabled = false;
@@ -402,11 +400,8 @@ function showInstructionScreen() {
 }
 
 function initializeWcstGame() {
-    // Arayüzü çiz
     setupWcstBoard();
-    // Değişkenleri ve kartları hazırla
     prepareWcstGame();
-    // Kartları ekranda göster
     drawCards();
 }
 
@@ -428,9 +423,9 @@ function setupWcstBoard() {
 }
 
 function prepareWcstGame() {
-    // Değişkenleri sıfırla
     currentRuleIndex = 0; score = 0; cardsUsed = 0; consecutiveCorrect = 0;
     perseverativeResponses = 0; perseverativeErrors = 0; totalErrors = 0; categoriesCompleted = 0;
+    ruleJustChanged = false;
     currentRule = WCST_RULES[currentRuleIndex];
 
     targetCards = [
@@ -438,12 +433,11 @@ function prepareWcstGame() {
         { sayi: 3, sekil: 'daire', renk: 'yellow' }, { sayi: 4, sekil: 'artı', renk: 'blue' }
     ];
 
-    // 128 kartlık desteyi oluştur
     const singleDeck = [];
     WCST_COLORS.forEach(renk => Object.keys(WCST_SHAPES).forEach(sekil => WCST_NUMBERS.forEach(sayi => {
         singleDeck.push({ sayi, sekil, renk });
     })));
-    responseDeck = [...singleDeck, ...singleDeck]; // 64'lük destenin 2 kopyası
+    responseDeck = [...singleDeck, ...singleDeck];
     shuffleArray(responseDeck);
 
     drawNextResponseCard();
@@ -486,7 +480,7 @@ function drawNextResponseCard() {
     }
 }
 
-// 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI
+// 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI (DÜZELTİLMİŞ)
 function handleTargetClick(chosenTargetIndex) {
     if (!currentResponseCard) return;
 
@@ -495,38 +489,47 @@ function handleTargetClick(chosenTargetIndex) {
     const isCorrect = checkMatch(currentResponseCard, chosenTarget, currentRule);
     const feedbackEl = document.getElementById('wcst-feedback');
 
+    // Perseveratif Tepki Analizi
+    let isPerseverativeResponse = false;
+    if (currentRuleIndex > 0) {
+        const previousRule = WCST_RULES[currentRuleIndex - 1];
+        if (checkMatch(currentResponseCard, chosenTarget, previousRule)) {
+            isPerseverativeResponse = true;
+        }
+    }
+
     if (isCorrect) {
         feedbackEl.innerText = "Doğru";
         feedbackEl.className = 'correct';
         score++;
         consecutiveCorrect++;
+        ruleJustChanged = false; // Doğru cevap, kuralın artık sabitlendiğini gösterir.
     } else { // Yanlış cevap durumu
         feedbackEl.innerText = "Yanlış";
         feedbackEl.className = 'wrong';
         totalErrors++;
-        consecutiveCorrect = 0;
+        consecutiveCorrect = 0; // Yanlış yapınca ardışık doğru sayacı sıfırlanır.
 
-        // Perseveratif hata analizi
-        if (currentRuleIndex > 0) {
-            const previousRule = WCST_RULES[currentRuleIndex - 1];
-            // Oyuncunun tepkisi eski kurala uyuyor mu?
-            if (checkMatch(currentResponseCard, chosenTarget, previousRule)) {
-                perseverativeResponses++;
-                perseverativeErrors++; // Eski kurala uyan ve yeni kurala göre yanlış olan her tepki, bir perseveratif hatadır.
-            }
+        if (isPerseverativeResponse) {
+            perseverativeResponses++;
+            // Bir tepki hem perseveratif hem de yanlış ise, bu bir perseveratif hatadır.
+            perseverativeErrors++;
         }
     }
     
     document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
 
     // Kategori tamamlama ve kural değiştirme mantığı
+    // SADECE ve SADECE 10 ardışık doğruya ulaşıldığında çalışır.
     if (consecutiveCorrect === CORRECT_IN_A_ROW_TO_COMPLETE_CATEGORY) {
         categoriesCompleted++;
-        consecutiveCorrect = 0;
+        // Eğer hala tamamlanacak kategori varsa bir sonraki kurala geç.
         if (categoriesCompleted < 6) {
             currentRuleIndex++;
             currentRule = WCST_RULES[currentRuleIndex];
+            ruleJustChanged = true; // Kuralın tam bu hamlede değiştiğini işaretle
         }
+        consecutiveCorrect = 0; // Bir sonraki kategori için sayacı sıfırla
     }
 
     // Bir sonraki karta geç veya oyunu bitir
