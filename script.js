@@ -491,8 +491,20 @@ function isGameFinished() {
     return responseDeck.length === 0 || categoriesCompleted >= 6;
 }
 
+// Sadece bu fonksiyonu aşağıdaki gibi güncelleyin
+
 function checkMatch(card1, card2, rule) {
+    // --- HATA AYIKLAMA KODU ---
+    console.log(`--- KONTROL EDİLİYOR ---`);
+    console.log(`KURAL: ${rule}`);
+    console.log(`Cevap Kartı [${rule}]:`, card1[rule]);
+    console.log(`Hedef Kart [${rule}]:`, card2[rule]);
+    console.log(`Sonuç (Eşit mi?): ${card1[rule] === card2[rule]}`);
+    console.log(`-----------------------`);
+    // --- HATA AYIKLAMA KODU BİTİŞ ---
+
     return card1[rule] === card2[rule];
+}
 }
 
 // 5. OYUN BİTİŞİ
