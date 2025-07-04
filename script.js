@@ -104,26 +104,179 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStroopTimer() { stroopTimeLeft--; document.querySelector('#stroop-timer span').innerText = stroopTimeLeft; if (stroopTimeLeft <= 0) { clearInterval(stroopTimer); showGameOverModal('stroop', false, { score: stroopScore }); } }
 
     // ==================================================================
-    // ---- N-BACK TESTİ ----
-    // ==================================================================
-    function startNBack() {
-        gameContent.innerHTML = `
-            <h2>N-Back Testi</h2>
-            <div class="nback-container">
-                <div id="nback-stats">
-                    <div>Doğru: <span id="nback-correct">0</span></div>
-                    <div>Hata: <span id="nback-errors">0</span></div>
-                </div>
-                <div id="nback-stimulus-box">
-                    <!-- Harfler buraya gelecek -->
-                </div>
-                <p>Eşleşme gördüğünüzde butona basın.</p>
-                <div id="nback-controls">
-                    <button id="nback-match-button">Eşleşme</button>
-                </div>
-                <div id="nback-feedback"></div>
+    // script.js'teki eski N-Back kodunu bununla değiştirin
+
+// ==================================================================
+// ---- N-BACK TESTİ ----
+// ==================================================================
+
+let nbackLevel = 0;              // 1, 2, or 3
+let nbackSequence = [];          // Gösterilen harflerin dizisi
+let nbackInterval;               // Zamanlayıcı
+let nbackCurrentStep = 0;        // Dizinin hangi adımında olduğumuz
+let nbackScore = 0;              // Doğru sayısı
+let nbackErrors = 0;             // Hata sayısı
+let canPressButton = true;       // Butona tekrar basılmasını önlemek için
+
+const NBACK_ALPHABET = 'ABCDEFGHJKLMNPQRSTVWXYZ'; // O ve I gibi karışabilecek harfler çıkarıldı
+const NBACK_TRIAL_COUNT = 25; // Her oyunda gösterilecek toplam harf sayısı
+const NBACK_INTERVAL_MS = 3000; // Her harfin ekranda kalma süresi (3 saniye)
+
+function startNBack() {
+    // Önce seviye seçim ekranını göster
+    showNBackLevelSelection();
+}
+
+function showNBackLevelSelection() {
+    gameContent.innerHTML = `
+        <h2>N-Back Testi</h2>
+        <h3>Lütfen bir zorluk seviyesi seçin:</h3>
+        <p>Ekranda beliren harfin, seçtiğiniz seviye kadar (N) önceki harfle aynı olup olmadığını takip edin.</p>
+        <div class="level-selection-container">
+            <button class="level-choice" data-level="1">1-Back (Kolay)</button>
+            <button class="level-choice" data-level="2">2-Back (Orta)</button>
+            <button class="level-choice" data-level="3">3-Back (Zor)</button>
+        </div>
+    `;
+
+    document.querySelectorAll('.level-choice').forEach(button => {
+        button.addEventListener('click', (event) => {
+            nbackLevel = parseInt(event.target.dataset.level);
+            initializeNBackGame();
+        });
+    });
+}
+
+function initializeNBackGame() {
+    // Oyun arayüzünü çiz
+    gameContent.innerHTML = `
+        <h2>${nbackLevel}-Back Testi</h2>
+        <div class="nback-container">
+            <div id="nback-stats">
+                <div>Doğru: <span id="nback-correct">0</span></div>
+                <div>Hata: <span id="nback-errors">0</span></div>
             </div>
-        `;
+            <div id="nback-stimulus-box">...</div>
+            <p>Eşleşme gördüğünüzde butona basın.</p>
+            <div id="nback-controls">
+                <button id="nback-match-button">Eşleşme</button>
+            </div>
+            <div id="nback-feedback"></div>
+        </div>
+    `;
+
+    // Değişkenleri sıfırla
+    nbackSequence = [];
+    nbackCurrentStep = 0;
+    nbackScore = 0;
+    nbackErrors = 0;
+
+    // Harf dizisini oluştur
+    generateNBackSequence();
+
+    // Buton olayını ekle
+    document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
+
+    // Oyun döngüsünü başlat
+    nbackInterval = setInterval(runNBackStep, NBACK_INTERVAL_MS);
+}
+
+function generateNBackSequence() {
+    // Yaklaşık %30 eşleşme olacak şekilde bir dizi oluştur
+    for (let i = 0; i < NBACK_TRIAL_COUNT; i++) {
+        // %30 ihtimalle bir eşleşme oluştur
+        if (i >= nbackLevel && Math.random() < 0.3) {
+            nbackSequence.push(nbackSequence[i - nbackLevel]);
+        } else {
+            const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length));
+            nbackSequence.push(randomChar);
+        }
+    }
+}
+
+// Oyunun her adımını (her harf gösterimini) yöneten fonksiyon
+function runNBackStep() {
+    // Bir önceki adımda butona basılmadıysa, durumu değerlendir
+    checkMissedMatch();
+    canPressButton = true; // Yeni harf için butona basılabilir
+
+    // Eğer test bittiyse, döngüyü durdur
+    if (nbackCurrentStep >= NBACK_TRIAL_COUNT) {
+        endNBackGame();
+        return;
     }
 
+    // Yeni harfi ekrana yaz
+    const stimulusBox = document.getElementById('nback-stimulus-box');
+    stimulusBox.innerText = nbackSequence[nbackCurrentStep];
+    
+    // Geri bildirimi temizle
+    document.getElementById('nback-feedback').innerText = '';
+
+    nbackCurrentStep++;
+}
+
+// Oyuncu "Eşleşme" butonuna bastığında çalışacak fonksiyon
+function handleNBackMatchPress() {
+    if (!canPressButton) return; // Aynı harf için tekrar basmayı engelle
+    
+    const isMatch = (nbackCurrentStep > nbackLevel) && (nbackSequence[nbackCurrentStep - 1] === nbackSequence[nbackCurrentStep - 1 - nbackLevel]);
+    
+    if (isMatch) {
+        // Doğru zamanda bastı (Hit)
+        nbackScore++;
+        document.getElementById('nback-feedback').innerText = "Doğru!";
+        document.getElementById('nback-feedback').className = 'correct';
+    } else {
+        // Yanlış zamanda bastı (False Alarm)
+        nbackErrors++;
+        document.getElementById('nback-feedback').innerText = "Yanlış Alarm!";
+        document.getElementById('nback-feedback').className = 'wrong';
+    }
+    updateNBackStats();
+    canPressButton = false; // Bu harf için karar verildi, tekrar basılamaz
+}
+
+// Oyuncu eşleşme varken butona basmadıysa (Miss) bunu kontrol et
+function checkMissedMatch() {
+    // Bu kontrol bir önceki adım için yapılır
+    const previousStep = nbackCurrentStep - 1;
+    if (previousStep >= nbackLevel) {
+        const wasMatch = nbackSequence[previousStep] === nbackSequence[previousStep - nbackLevel];
+        // Eğer bir eşleşme vardı AMA butona basılmadıysa (canPressButton hala true ise) bu bir hatadır.
+        if (wasMatch && canPressButton) {
+            nbackErrors++;
+            document.getElementById('nback-feedback').innerText = "Kaçırdın!";
+            document.getElementById('nback-feedback').className = 'wrong';
+            updateNBackStats();
+        }
+    }
+}
+
+function updateNBackStats() {
+    document.getElementById('nback-correct').innerText = nbackScore;
+    document.getElementById('nback-errors').innerText = nbackErrors;
+}
+
+function endNBackGame() {
+    clearInterval(nbackInterval); // Zamanlayıcıyı durdur
+    gameContent.innerHTML = ''; // Oyun alanını temizle
+
+    const modal = document.createElement('div');
+    modal.classList.add('game-over-modal');
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3>Egzersiz Bitti!</h3>
+            <p>Seviye: <strong>${nbackLevel}-Back</strong></p>
+            <p>Doğru Tespit: <strong>${nbackScore}</strong></p>
+            <p>Hata (Yanlış Alarm / Kaçırma): <strong>${nbackErrors}</strong></p>
+            <button id="play-again-button">Tekrar Oyna</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('play-again-button').addEventListener('click', () => {
+        modal.remove();
+        startNBack(); // Oyunu seviye seçiminden tekrar başlat
+    });
+}
 });
