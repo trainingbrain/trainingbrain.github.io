@@ -295,4 +295,35 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(modal);
         document.getElementById('play-again-button').addEventListener('click', () => { modal.remove(); startWcst(); });
     }
+// script.js dosyasının en altına, en sondaki }); satırından önce ekleyin
+
+// ==================================================================
+// ---- N-BACK TESTİ ----
+// ==================================================================
+
+function startNBack() {
+    // Şimdilik sadece oyun alanının iskeletini çiziyoruz.
+    // Daha sonra buraya seviye seçimi ekleyeceğiz.
+    
+    gameContent.innerHTML = `
+        <h2>N-Back Testi</h2>
+        <div class="nback-container">
+            <div id="nback-stats">
+                <div>Doğru: <span id="nback-correct">0</span></div>
+                <div>Hata: <span id="nback-errors">0</span></div>
+            </div>
+            <div id="nback-stimulus-box">
+                <!-- Harfler buraya gelecek -->
+            </div>
+            <p>Eşleşme gördüğünüzde butona basın.</p>
+            <div id="nback-controls">
+                <button id="nback-match-button">Eşleşme</button>
+            </div>
+            <div id="nback-feedback"></div>
+        </div>
+    `;
+
+    // TODO: Seviye seçimi (1-Back, 2-Back)
+    // TODO: Oyun döngüsünü başlatma
+}    
 });
