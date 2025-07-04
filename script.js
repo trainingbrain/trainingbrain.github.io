@@ -424,7 +424,15 @@ function drawNextResponseCard() { /* ... önceki koddan aynı ... */
 // 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI (MANTIK TAMAMEN YENİLENDİ)
 function handleTargetClick(chosenTargetIndex) {
     if (!currentResponseCard) return;
-
+   // ----- HATA AYIKLAMA KODU BAŞLANGICI -----
+    console.clear(); // Her tıklamada konsolu temizle
+    console.log(`--- YENİ HAMLE ---`);
+    console.log(`MEVCUT KURAL: ${currentRule}`);
+    console.log(`Cevap Kartı: ${currentResponseCard.sayi} ${currentResponseCard.renk} ${currentResponseCard.sekil}`);
+    const chosenTarget = targetCards[chosenTargetIndex];
+    console.log(`Seçilen Hedef Kart: ${chosenTarget.sayi} ${chosenTarget.renk} ${chosenTarget.sekil}`);
+    console.log("--------------------");
+    // ----- HATA AYIKLAMA KODU BİTİŞİ -----
     cardsUsed++;
     const chosenTarget = targetCards[chosenTargetIndex];
     const isCorrect = checkMatch(currentResponseCard, chosenTarget, currentRule);
