@@ -332,9 +332,7 @@ function updateHangmanFigure() {
         });
     }// script.js dosyasının en altına, en sondaki }); satırından önce ekleyin
 
-// script.js'teki eski Wisconsin kodunu bununla değiştirin
-
-// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (YENİDEN YAZILMIŞ, GÜVENİLİR MANTIK) ----
+// ---- WISCONSIN KART EŞLEŞTİRME EGZERSİZİ (YENİDEN YAPILANDIRILMIŞ ÇEKİRDEK MANTIK) ----
 
 // 1. SABİTLER VE DEĞİŞKENLER
 const WCST_SHAPES = {
@@ -351,16 +349,13 @@ const TOTAL_DECK_SIZE = 128;
 
 // Oyun durumu değişkenleri
 let targetCards, responseDeck, currentResponseCard, educationLevel;
-let currentRule, currentRuleIndex, score, cardsUsed, consecutiveCorrect, perseverativeResponses, perseverativeErrors, totalErrors, categoriesCompleted;
+let currentRule, currentRuleIndex, score, cardsUsed, consecutiveCorrect;
+let perseverativeResponses, perseverativeErrors, totalErrors, categoriesCompleted;
 
 // 2. OYUN BAŞLANGIÇ SÜRECİ (Değişiklik yok)
 function startWcst() { showEducationScreen(); }
-function showEducationScreen() {
-    gameContent.innerHTML = `
-        <div class="wcst-start-screen">
-            <div class="wcst-education-level"><h3>Lütfen Eğitim Seviyenizi Seçiniz:</h3><div class="education-options"><button class="education-btn" data-level="ilkokul">İlkokul</button><button class="education-btn" data-level="ortaokul">Ortaokul</button><button class="education-btn" data-level="lise">Lise</button><button class="education-btn" data-level="üniversite">Üniversite</button></div></div>
-            <button id="wcst-start-btn" disabled>Devam Et</button>
-        </div>`;
+function showEducationScreen() { /* ... önceki koddan aynı ... */
+    gameContent.innerHTML = `<div class="wcst-start-screen"><div class="wcst-education-level"><h3>Lütfen Eğitim Seviyenizi Seçiniz:</h3><div class="education-options"><button class="education-btn" data-level="ilkokul">İlkokul</button><button class="education-btn" data-level="ortaokul">Ortaokul</button><button class="education-btn" data-level="lise">Lise</button><button class="education-btn" data-level="üniversite">Üniversite</button></div></div><button id="wcst-start-btn" disabled>Devam Et</button></div>`;
     document.querySelectorAll('.education-btn').forEach(btn => {
         btn.addEventListener('click', e => {
             document.querySelectorAll('.education-btn').forEach(b => b.classList.remove('selected'));
@@ -371,12 +366,8 @@ function showEducationScreen() {
     });
     document.getElementById('wcst-start-btn').addEventListener('click', showInstructionScreen);
 }
-function showInstructionScreen() {
-    gameContent.innerHTML = `
-        <div class="wcst-start-screen">
-            <div class="wcst-instructions"><h3>Talimatlar</h3><p>Bu biraz değişik bir egzersiz çünkü testi nasıl yapacağınız konusunda size verilen her bir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor.</p><p>Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.</p></div>
-            <button id="wcst-start-btn">Egzersize Başla</button>
-        </div>`;
+function showInstructionScreen() { /* ... önceki koddan aynı ... */
+    gameContent.innerHTML = `<div class="wcst-start-screen"><div class="wcst-instructions"><h3>Talimatlar</h3><p>Bu biraz değişik bir egzersiz çünkü testi nasıl yapacağınız konusunda size verilen her bir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor.</p><p>Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.</p></div><button id="wcst-start-btn">Egzersize Başla</button></div>`;
     document.getElementById('wcst-start-btn').addEventListener('click', initializeWcstGame);
 }
 function initializeWcstGame() {
@@ -386,7 +377,7 @@ function initializeWcstGame() {
 }
 
 // 3. OYUN MEKANİKLERİ VE GÖRSELLEŞTİRME (Değişiklik yok)
-function setupWcstBoard() {
+function setupWcstBoard() { /* ... önceki koddan aynı ... */ 
     gameContent.innerHTML = `<h2>Wisconsin Kart Eşleştirme Egzersizi</h2><div class="wcst-container"><div class="wcst-info"><div id="wcst-score">Doğru: 0</div><div id="wcst-deck-count">Kalan Kart: 0</div></div><div id="wcst-feedback">Doğru eşleştirmeyi bulun.</div><div id="target-cards-container" class="card-area"></div><p><strong>Cevap Kartınız:</strong></p><div id="response-card-area" class="card-area" style="background-color: transparent;"></div></div>`;
 }
 function prepareWcstGame() {
@@ -400,7 +391,7 @@ function prepareWcstGame() {
     shuffleArray(responseDeck);
     drawNextResponseCard();
 }
-function drawCards() {
+function drawCards() { /* ... önceki koddan aynı ... */ 
     const targetContainer = document.getElementById('target-cards-container');
     targetContainer.innerHTML = '';
     targetCards.forEach((card, index) => {
@@ -410,7 +401,7 @@ function drawCards() {
     });
     drawResponseCard();
 }
-function createCardElement(cardData) {
+function createCardElement(cardData) { /* ... önceki koddan aynı ... */ 
     const cardDiv = document.createElement('div');
     cardDiv.className = `card color-${cardData.renk}`;
     let shapesHTML = '';
@@ -418,72 +409,80 @@ function createCardElement(cardData) {
     cardDiv.innerHTML = shapesHTML;
     return cardDiv;
 }
-function drawResponseCard() {
+function drawResponseCard() { /* ... önceki koddan aynı ... */ 
     const responseContainer = document.getElementById('response-card-area');
     responseContainer.innerHTML = '';
     if (currentResponseCard) { responseContainer.appendChild(createCardElement(currentResponseCard)); }
 }
-function drawNextResponseCard() {
+function drawNextResponseCard() { /* ... önceki koddan aynı ... */ 
     if (responseDeck.length > 0) {
         currentResponseCard = responseDeck.pop();
         document.getElementById('wcst-deck-count').innerText = `Kalan Kart: ${responseDeck.length}`;
     } else { currentResponseCard = null; }
 }
 
-// 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI (TAMAMEN YENİDEN YAZILDI)
+// 4. OYUNUN BEYNİ: TIKLAMA VE KURAL MANTIĞI (MANTIK TAMAMEN YENİLENDİ)
 function handleTargetClick(chosenTargetIndex) {
     if (!currentResponseCard) return;
 
     cardsUsed++;
     const chosenTarget = targetCards[chosenTargetIndex];
-    const feedbackEl = document.getElementById('wcst-feedback');
     const isCorrect = checkMatch(currentResponseCard, chosenTarget, currentRule);
 
+    // Kural değişikliği olduysa, bir önceki kuralı hafızada tut
     let previousRule = (currentRuleIndex > 0) ? WCST_RULES_ORDER[currentRuleIndex - 1] : null;
-    
-    // ----- Mantık Akışı Başlıyor -----
 
     if (isCorrect) {
-        // ---- DOĞRU CEVAP VERİLDİ ----
-        feedbackEl.innerText = "Doğru";
-        feedbackEl.className = 'correct';
-        score++;
-        consecutiveCorrect++;
-
-        // Kategori tamamlama kontrolü
-        if (consecutiveCorrect === CORRECTS_TO_SWITCH) {
-            categoriesCompleted++;
-            consecutiveCorrect = 0; // Sayaç sıfırlanır
-            
-            // Bir sonraki kurala geçilir (eğer test bitmediyse)
-            if (categoriesCompleted < 6) {
-                currentRuleIndex++;
-                currentRule = WCST_RULES_ORDER[currentRuleIndex];
-            }
-        }
+        processCorrectAnswer();
     } else {
-        // ---- YANLIŞ CEVAP VERİLDİ ----
-        feedbackEl.innerText = "Yanlış";
-        feedbackEl.className = 'wrong';
-        totalErrors++;
-        consecutiveCorrect = 0; // Sayaç anında sıfırlanır
-
-        // Perseverasyon analizi: Yanlış cevap, bir önceki kurala göre doğru muydu?
-        if (previousRule && checkMatch(currentResponseCard, chosenTarget, previousRule)) {
-            perseverativeResponses++;
-            perseverativeErrors++;
-        }
+        processWrongAnswer(chosenTarget, previousRule);
     }
 
     // Arayüzü güncelle
     document.getElementById('wcst-score').innerText = `Doğru: ${score}`;
-
-    // Testin bitip bitmediğini kontrol et
-    if (responseDeck.length === 0 || categoriesCompleted === 6) {
+    
+    // Testin bitiş koşullarını kontrol et
+    if (responseDeck.length === 0 || categoriesCompleted >= 6) {
         gameOverWcst();
     } else {
         drawNextResponseCard();
         drawResponseCard();
+    }
+}
+
+function processCorrectAnswer() {
+    const feedbackEl = document.getElementById('wcst-feedback');
+    feedbackEl.innerText = "Doğru";
+    feedbackEl.className = 'correct';
+    score++;
+    consecutiveCorrect++;
+
+    // Kategori tamamlama kontrolü
+    if (consecutiveCorrect >= CORRECTS_TO_SWITCH) {
+        categoriesCompleted++;
+        consecutiveCorrect = 0; // Kategori tamamlanınca sayaç sıfırlanır
+        
+        if (categoriesCompleted < 6) {
+            currentRuleIndex++;
+            currentRule = WCST_RULES_ORDER[currentRuleIndex];
+        }
+    }
+}
+
+function processWrongAnswer(chosenTarget, previousRule) {
+    const feedbackEl = document.getElementById('wcst-feedback');
+    feedbackEl.innerText = "Yanlış";
+    feedbackEl.className = 'wrong';
+    totalErrors++;
+    consecutiveCorrect = 0; // Yanlış cevapta sayaç her zaman sıfırlanır
+
+    // Perseverasyon analizi
+    // Eğer bir önceki kural varsa VE oyuncunun seçimi o kurala uyuyorsa, bu bir PERSEVERATİF TEPKİDİR.
+    if (previousRule && checkMatch(currentResponseCard, chosenTarget, previousRule)) {
+        perseverativeResponses++;
+        // Bu perseveratif tepki, aynı zamanda (zaten bildiğimiz gibi) yeni kurala göre yanlış olduğu için,
+        // aynı zamanda bir PERSEVERATİF HATADIR.
+        perseverativeErrors++;
     }
 }
 
@@ -495,9 +494,10 @@ function gameOverWcst() {
     const nonPerseverativeErrors = totalErrors - perseverativeErrors;
     const modal = document.createElement('div');
     modal.classList.add('game-over-modal');
-    modal.innerHTML = `...`; // Önceki koddan aynı, uzun olmasın diye kısalttım
     modal.innerHTML = `<div class="modal-content" style="text-align: left; max-width: 450px;"><h3>Egzersiz Sonuçları</h3><div class="wcst-results"><p>Toplam Tepki Sayısı: <strong>${cardsUsed}</strong></p><p>Toplam Doğru Sayısı: <strong>${score}</strong></p><p>Toplam Hata Sayısı: <strong>${totalErrors}</strong></p><p>Tamamlanan Kategori Sayısı: <strong>${categoriesCompleted}</strong></p><hr><p>Perseveratif Tepki Sayısı: <strong>${perseverativeResponses}</strong></p><p>Perseveratif Hata Sayısı: <strong>${perseverativeErrors}</strong></p><p>Perseveratif Olmayan Hata Sayısı: <strong>${nonPerseverativeErrors}</strong></p></div><button id="play-again-button">Tekrar Oyna</button></div>`;
     document.body.appendChild(modal);
     document.getElementById('play-again-button').addEventListener('click', () => { modal.remove(); startWcst(); });
 }
+
+
 });
