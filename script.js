@@ -105,20 +105,155 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStroopTimer() { stroopTimeLeft--; if(document.querySelector('#stroop-timer span')) document.querySelector('#stroop-timer span').innerText = stroopTimeLeft; if (stroopTimeLeft <= 0) { clearInterval(stroopTimer); showGameOverModal('stroop', false, { score: stroopScore }); } }
 
     // ==================================================================
-    // ---- N-BACK TESTİ (GELİŞTİRİLMİŞ RİTİM) ----
-    // ==================================================================
-    let nbackLevel, nbackSequence, nbackCurrentStep, nbackScore, nbackErrors, canPressButton, nbackGameLoop;
-    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ';
-    const NBACK_TRIAL_COUNT = 25;
-    const NBACK_PREPARE_TIME = 500;
-    const NBACK_STIMULUS_TIME = 1500;
-    function startNBack() { if (nbackGameLoop) clearTimeout(nbackGameLoop); showNBackLevelSelection(); }
-    function showNBackLevelSelection() { gameContent.innerHTML = `<h2>N-Back Testi</h2><h3>Lütfen bir zorluk seviyesi seçin:</h3><p>Ekranda beliren harfin, seçtiğiniz seviye kadar (N) önceki harfle aynı olup olmadığını takip edin.</p><div class="level-selection-container"><button class="level-choice" data-level="1">1-Back (Kolay)</button><button class="level-choice" data-level="2">2-Back (Orta)</button><button class="level-choice" data-level="3">3-Back (Zor)</button></div>`; document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { nbackLevel = parseInt(event.target.dataset.level); initializeNBackGame(); }); }); }
-    function initializeNBackGame() { gameContent.innerHTML = `<h2>${nbackLevel}-Back Testi</h2><div class="nback-container"><div id="nback-stats"><div>Doğru: <span id="nback-correct">0</span></div><div>Hata: <span id="nback-errors">0</span></div></div><div id="nback-stimulus-box">...</div><p>Eşleşme gördüğünüzde butona basın.</p><div id="nback-controls"><button id="nback-match-button">Eşleşme</button></div><div id="nback-feedback"></div></div>`; nbackSequence = []; nbackCurrentStep = 0; nbackScore = 0; nbackErrors = 0; canPressButton = false; generateNBackSequence(); document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress); nbackGameLoop = setTimeout(runNBackStep, 1000); }
-    function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
-    function runNBackStep() { if (nbackCurrentStep > 0) { checkMissedMatch(); } if (nbackCurrentStep >= NBACK_TRIAL_COUNT) { showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors }); return; } const stimulusBox = document.getElementById('nback-stimulus-box'); const feedbackEl = document.getElementById('nback-feedback'); if (!stimulusBox) return; stimulusBox.innerText = '+'; if (feedbackEl) feedbackEl.innerText = ''; nbackGameLoop = setTimeout(() => { if (document.getElementById('nback-stimulus-box')) { stimulusBox.innerText = nbackSequence[nbackCurrentStep]; canPressButton = true; nbackCurrentStep++; nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME); } }, NBACK_PREPARE_TIME); }
-    function handleNBackMatchPress() { if (!canPressButton) return; const feedbackEl = document.getElementById('nback-feedback'); const currentIndex = nbackCurrentStep - 1; const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]); if (isMatch) { nbackScore++; feedbackEl.innerText = "Doğru!"; feedbackEl.className = 'correct'; } else { nbackErrors++; feedbackEl.innerText = "Yanlış Alarm!"; feedbackEl.className = 'wrong'; } updateNBackStats(); canPressButton = false; }
-    function checkMissedMatch() { const prevStepIndex = nbackCurrentStep - 1; if (prevStepIndex >= nbackLevel) { const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel]; if (wasMatch && canPressButton) { nbackErrors++; updateNBackStats(); const feedbackEl = document.getElementById('nback-feedback'); if(feedbackEl) { feedbackEl.innerText = "Kaçırdın!"; feedbackEl.className = 'wrong'; } } } }
-    function updateNBackStats() { const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors'); if (correctEl) correctEl.innerText = nbackScore; if (errorsEl) errorsEl.innerText = nbackErrors; }
+// ---- N-BACK TESTİ (GELİŞTİRİLMİŞ RİTİM VE ARAYÜZ) ----
+// ==================================================================
 
+// --- Sabitleri Güncelliyoruz ---
+let nbackLevel, nbackSequence, nbackCurrentStep, nbackScore, nbackErrors, canPressButton, nbackGameLoop;
+const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ';
+const NBACK_TRIAL_COUNT = 25;
+const NBACK_PREPARE_TIME = 1000; // "Sonraki..." ekranının kalma süresi (1 saniye)
+const NBACK_STIMULUS_TIME = 2000; // Harfin kalma süresi (2 saniye)
+
+function startNBack() {
+    if (currentGameTimer) clearTimeout(currentGameTimer); // Sıralı Hatırlama'dan kalma bir timer varsa temizle
+    if (nbackGameLoop) clearTimeout(nbackGameLoop);
+    showNBackLevelSelection();
+}
+
+function showNBackLevelSelection() {
+    gameContent.innerHTML = `
+        <h2>N-Back Testi</h2>
+        <h3>Lütfen bir zorluk seviyesi seçin:</h3>
+        <p>Ekranda beliren harfin, seçtiğiniz seviye kadar (N) önceki harfle aynı olup olmadığını takip edin.</p>
+        <div class="level-selection-container">
+            <button class="level-choice" data-level="1">1-Back (Kolay)</button>
+            <button class="level-choice" data-level="2">2-Back (Orta)</button>
+            <button class="level-choice" data-level="3">3-Back (Zor)</button>
+        </div>
+    `;
+    document.querySelectorAll('.level-choice').forEach(button => {
+        button.addEventListener('click', (event) => {
+            nbackLevel = parseInt(event.target.dataset.level);
+            initializeNBackGame();
+        });
+    });
+}
+
+function initializeNBackGame() {
+    gameContent.innerHTML = `
+        <h2>${nbackLevel}-Back Testi</h2>
+        <div class="nback-container">
+            <div id="nback-stats">
+                <div>Doğru: <span id="nback-correct">0</span></div>
+                <div>Hata: <span id="nback-errors">0</span></div>
+            </div>
+            <div id="nback-stimulus-box">...</div>
+            <p>Eşleşme gördüğünüzde butona basın.</p>
+            <div id="nback-controls">
+                <button id="nback-match-button">Eşleşme</button>
+            </div>
+            <div id="nback-feedback"></div>
+        </div>
+    `;
+    nbackSequence = []; nbackCurrentStep = 0; nbackScore = 0; nbackErrors = 0; canPressButton = false;
+    generateNBackSequence();
+    document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
+    nbackGameLoop = setTimeout(runNBackStep, 1000);
+}
+
+function generateNBackSequence() {
+    for (let i = 0; i < NBACK_TRIAL_COUNT; i++) {
+        if (i >= nbackLevel && Math.random() < 0.3) {
+            nbackSequence.push(nbackSequence[i - nbackLevel]);
+        } else {
+            const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length));
+            nbackSequence.push(randomChar);
+        }
+    }
+}
+
+// --- Bu fonksiyonu güncelliyoruz ---
+function runNBackStep() {
+    // 1. Önceki adımdaki "kaçırma" hatasını kontrol et
+    if (nbackCurrentStep > 0) {
+        checkMissedMatch();
+    }
+
+    // 2. Testin bitip bitmediğini kontrol et
+    if (nbackCurrentStep >= NBACK_TRIAL_COUNT) {
+        showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors });
+        return;
+    }
+
+    const stimulusBox = document.getElementById('nback-stimulus-box');
+    const feedbackEl = document.getElementById('nback-feedback');
+    if (!stimulusBox) return; // Eğer kullanıcı menüye döndüyse döngüyü durdur
+
+    // 3. Hazırlık Ekranını Göster ("Sonraki...")
+    if (feedbackEl) feedbackEl.innerText = ''; // Eski geri bildirimi temizle
+    stimulusBox.style.fontSize = '2.5em'; // Yazı boyutunu küçült
+    stimulusBox.style.color = '#2ecc71';  // Yeşil renk
+    stimulusBox.innerHTML = 'Sonraki →'; // Ok işareti ile birlikte
+
+    // 4. Kısa bir beklemeden sonra yeni harfi göster
+    nbackGameLoop = setTimeout(() => {
+        const currentStimulusBox = document.getElementById('nback-stimulus-box');
+        if (currentStimulusBox) { // Eleman hala ekrandaysa devam et
+            currentStimulusBox.style.fontSize = '8em'; // Yazı boyutunu eski haline getir
+            currentStimulusBox.style.color = '#2c3e50'; // Rengi eski haline getir
+            currentStimulusBox.innerText = nbackSequence[nbackCurrentStep];
+            canPressButton = true; // Oyuncu artık bu harf için butona basabilir
+
+            // Bir sonraki adıma geç
+            nbackCurrentStep++;
+            
+            // Bir sonraki döngüyü ayarla (Harfin ekranda kalma süresi)
+            nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME);
+        }
+    }, NBACK_PREPARE_TIME);
+}
+
+function handleNBackMatchPress() {
+    if (!canPressButton) return;
+
+    const feedbackEl = document.getElementById('nback-feedback');
+    const currentIndex = nbackCurrentStep - 1;
+    const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]);
+
+    if (isMatch) {
+        nbackScore++;
+        feedbackEl.innerText = "Doğru!";
+        feedbackEl.className = 'correct';
+    } else {
+        nbackErrors++;
+        feedbackEl.innerText = "Yanlış Alarm!";
+        feedbackEl.className = 'wrong';
+    }
+    updateNBackStats();
+    canPressButton = false;
+}
+
+function checkMissedMatch() {
+    const prevStepIndex = nbackCurrentStep - 1;
+    if (prevStepIndex >= nbackLevel) {
+        const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel];
+        if (wasMatch && canPressButton) {
+            nbackErrors++;
+            updateNBackStats();
+            const feedbackEl = document.getElementById('nback-feedback');
+            if(feedbackEl) {
+                feedbackEl.innerText = "Kaçırdın!";
+                feedbackEl.className = 'wrong';
+            }
+        }
+    }
+}
+
+function updateNBackStats() {
+    const correctEl = document.getElementById('nback-correct');
+    const errorsEl = document.getElementById('nback-errors');
+    if (correctEl) correctEl.innerText = nbackScore;
+    if (errorsEl) errorsEl.innerText = nbackErrors;
+}
 });
