@@ -44,29 +44,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- GENEL OYUN SONU FONKSİYONU ----
     function showGameOverModal(game, isWin, data) {
-        const modal = document.createElement('div');
-        modal.classList.add('game-over-modal');
-        let content = '';
+    const modal = document.createElement('div');
+    modal.classList.add('game-over-modal');
+    let content = '';
 
-        if (game === 'hangman') {
-            const message = isWin ? 'Tebrikler, Kazandınız!' : 'Maalesef, Kaybettiniz!';
-            content = `<h3>${message}</h3><p>Doğru Kelime: <strong>${data.secretWord}</strong></p>`;
-        } else if (game === 'sequence') {
-            content = `<h3>Oyun Bitti!</h3><p>Ulaştığınız en yüksek seviye: <strong>${data.level}</strong></p>`;
-        } else if (game === 'stroop') {
-            content = `<h3>Süre Doldu!</h3><p>Skorunuz: <strong>${data.score}</strong></p>`;
-        }
-        
-        if (content === '') return;
+    if (game === 'hangman') {
+        const message = isWin ? 'Tebrikler, Kazandınız!' : 'Maalesef, Kaybettiniz!';
+        content = `<h3>${message}</h3><p>Doğru Kelime: <strong>${data.secretWord}</strong></p>`;
+    } else if (game === 'sequence') {
+        content = `<h3>Oyun Bitti!</h3><p>Ulaştığınız en yüksek seviye: <strong>${data.level}</strong></p>`;
+    } else if (game === 'stroop') {
+        content = `<h3>Süre Doldu!</h3><p>Skorunuz: <strong>${data.score}</strong></p>`;
+    } else if (game === 'n-back') { // <-- YENİ EKLENEN BÖLÜM
+        content = `<h3>Egzersiz Bitti!</h3>
+                   <p>Seviye: <strong>${data.level}-Back</strong></p>
+                   <p>Doğru Tespit: <strong>${data.score}</strong></p>
+                   <p>Hata: <strong>${data.errors}</strong></p>`;
+    }
+    
+    if (content === '') return;
 
-        modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">Tekrar Oyna</button></div>`;
-        document.body.appendChild(modal);
+    modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">Tekrar Oyna</button></div>`;
+    document.body.appendChild(modal);
 
-        document.getElementById('play-again-button').addEventListener('click', () => {
-            modal.remove();
-            if (game === 'hangman') startHangman();
-            else if (game === 'sequence') startSequenceMemory();
-            else if (game === 'stroop') startStroopTest();
+    document.getElementById('play-again-button').addEventListener('click', () => {
+        modal.remove();
+        if (game === 'hangman') startHangman();
+        else if (game === 'sequence') startSequenceMemory();
+        else if (game === 'stroop') startStroopTest();
+        else if (game === 'n-back') startNBack(); // <-- YENİ EKLENEN BÖLÜM
+    });
+}
         });
     }
 
