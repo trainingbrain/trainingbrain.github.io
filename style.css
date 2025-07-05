@@ -759,4 +759,11 @@ footer {
     gap: 30px;
     font-size: 1.2em;
 }
-
+.game-description {
+    font-size: 1.1em;
+    color: #555;
+    max-width: 600px;
+    margin: 15px auto 25px auto;
+    line-height: 1.6;
+    font-style: italic;
+}
