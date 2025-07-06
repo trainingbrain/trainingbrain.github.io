@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Dil etiketini "en" olarak güncelledik -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Başlık ve açıklamayı İngilizce'ye çevirdik -->
+    <title>DEEP BRAIN: Neurologist-Guided Cognitive & Brain Exercises</title>
+    <meta name="description" content="Improve your memory, attention, and problem-solving skills with free, science-based cognitive exercises guided by a neurologist. Keep your brain fit with our games.">
+    
+    <!-- Linkler ana dizinden çağrıldığı için aynı kalıyor -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>DEEP BRAİN</h1>
+        <!-- Metinleri İngilizce'ye çeviriyoruz -->
+        <p>Cognitive Exercises Guided by a Neurology Doctor</p>
+        <nav class="main-nav">
+            <!-- Linkler artık /en/ klasörüne göre ayarlandı -->
+            <a href="/en/index.html">Home</a>
+            <a href="/en/blog.html">Blog</a>
+            <a href="/en/about.html">About</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="selection-screen">
+            <!-- Metinleri İngilizce'ye çeviriyoruz -->
+            <h2>Which skill would you like to improve?</h2>
+            <div class="game-selection-container">
+                <button class="game-choice" data-game="adam-asmaca">Hangman (Language)</button>
+                <button class="game-choice" data-game="sirali-hatirlama">Sequence Memory (Memory)</button>
+                <button class="game-choice" data-game="stroop-testi">Stroop Test (Attention)</button>
+                <button class="game-choice" data-game="n-back">N-Back Test (Working Memory)</button>
+            </div>
+        </div>
+        <div id="game-container" class="hidden">
+            <div id="game-content"></div>
+            <button id="back-to-menu">Back to Menu</button>
+        </div>
+    </main>
+    <footer>
+        <p>© 2025 - Deep Brain. All rights reserved.</p>
+    </footer>
+    <!-- Script dosyası ana dizinden çağrıldığı için aynı kalıyor -->
+    <script src="/script.js"></script>
+</body>
+</html>
