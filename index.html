@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- Bu sayfanın dili önemli değil, çünkü her iki dilde de metin var -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to DEEP BRAİN - Zihin Egzersizleri</title>
+    <meta name="description" content="Nörolog destekli, bilimsel zihin ve beyin egzersizleri platformu. Türkçe ve İngilizce dil seçenekleriyle.">
+    
+    <!-- Favicon ve Ana CSS Dosyası -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/style.css"> <!-- Ana dizindeki style.css'i kullanır -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Hreflang etiketleri (Google'a yol göstermek için) -->
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://trainingbrain.github.io/" />
+
+    <style>
+        /* Sadece bu giriş sayfasına özel stiller */
+        body.landing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .language-selector {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+        }
+        .language-selector h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .language-selector p {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+        .lang-buttons a {
+            text-decoration: none;
+            color: white;
+            border: 2px solid white;
+            padding: 15px 40px;
+            margin: 10px 15px;
+            border-radius: 8px;
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        .lang-buttons a:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body class="landing">
+
+    <div class="language-selector">
+        <h1>DEEP BRAİN</h1>
+        <p>Lütfen dil seçimi yapınız. / Please select your language.</p>
+        <div class="lang-buttons">
+            <a href="/tr/">Türkçe</a>
+            <a href="/en/">English</a>
+        </div>
+    </div>
+
+</body>
+</html>
