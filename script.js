@@ -94,24 +94,139 @@ document.addEventListener('DOMContentLoaded', () => {
     async function showSequence() { const tiles = document.querySelectorAll('.sequence-tile'); document.getElementById('sequence-status').innerText = langTexts[currentLang].watchSequence; for (const tileIndex of sequence) { await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 300); }); if (tiles[tileIndex]) tiles[tileIndex].classList.add('active'); await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 600); }); if (tiles[tileIndex]) tiles[tileIndex].classList.remove('active'); } canPlayerClick = true; document.getElementById('sequence-status').innerText = langTexts[currentLang].yourTurn; }
     function handleTileClick(tileId) { if (!canPlayerClick) return; playerSequence.push(tileId); const tile = document.querySelector(`[data-tile-id='${tileId}']`); tile.classList.add('active'); setTimeout(() => tile.classList.remove('active'), 200); const lastIndex = playerSequence.length - 1; if (playerSequence[lastIndex] !== sequence[lastIndex]) { showGameOverModal('sequence', false, { level: sequenceLevel }); return; } if (playerSequence.length === sequence.length) { canPlayerClick = false; currentGameTimer = setTimeout(nextSequenceLevel, 1000); } }
     
-    // ---- STROOP TESTİ OYUNU ----
-    let stroopScore, stroopTimer, stroopTimeLeft, currentCorrectColorName;
-    function startStroopTest() { clearInterval(stroopTimer); gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div>Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`; document.getElementById('stroop-start-button').addEventListener('click', runStroopGame); }
-    function runStroopGame() { document.getElementById('stroop-start-screen').classList.add('hidden'); document.getElementById('stroop-game-area').classList.remove('hidden'); stroopScore = 0; stroopTimeLeft = 60; document.querySelector('#stroop-game-area #stroop-score span').innerText = stroopScore; document.querySelector('#stroop-game-area #stroop-timer span').innerText = stroopTimeLeft; stroopTimer = setInterval(updateStroopTimer, 1000); nextStroopRound(); }
-    function nextStroopRound() { const currentStroopColors = langTexts[currentLang].stroopColors; const colorNames = Object.keys(currentStroopColors); let randomWordName = colorNames[Math.floor(Math.random() * colorNames.length)]; let randomColorValue = Object.values(currentStroopColors)[Math.floor(Math.random() * colorNames.length)]; let randomColorName = Object.keys(currentStroopColors).find(key => currentStroopColors[key] === randomColorValue); while (randomWordName === randomColorName) { randomColorValue = Object.values(currentStroopColors)[Math.floor(Math.random() * colorNames.length)]; randomColorName = Object.keys(currentStroopColors).find(key => currentStroopColors[key] === randomColorValue); } currentCorrectColorName = randomColorName; const wordElement = document.getElementById('stroop-word'); if(wordElement) { wordElement.innerText = randomWordName; wordElement.style.color = randomColorValue; } const choicesContainer = document.getElementById('stroop-choices'); if(choicesContainer) { choicesContainer.innerHTML = ''; shuffleArray(colorNames).forEach(name => { const button = document.createElement('button'); button.classList.add('stroop-button'); button.innerText = name; button.addEventListener('click', () => checkStroopAnswer(name)); choicesContainer.appendChild(button); }); } }
-    function checkStroopAnswer(chosenColorName) { stroopScore += (chosenColorName === currentCorrectColorName) ? 1 : -1; stroopScore = Math.max(0, stroopScore); if(document.querySelector('#stroop-score span')) document.querySelector('#stroop-score span').innerText = stroopScore; nextStroopRound(); }
-    function updateStroopTimer() { stroopTimeLeft--; if(document.querySelector('#stroop-timer span')) document.querySelector('#stroop-timer span').innerText = stroopTimeLeft; if (stroopTimeLeft <= 0) { clearInterval(stroopTimer); showGameOverModal('stroop', false, { score: stroopScore }); } }
-
-    // ---- N-BACK TESTİ ----
+    // ==================================================================
+    // ---- STROOP TESTİ OYUNU (DÜZELTİLMİŞ) ----
+    // ==================================================================
+    let stroopScore, stroopTimer, stroopTimeLeft, currentCorrectColorName, stroopColors; // stroopColors'ı global yaptık
+    
+    function startStroopTest() {
+        clearInterval(stroopTimer);
+        stroopColors = langTexts[currentLang].stroopColors; // Doğru dilin renklerini burada alıyoruz
+        gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
+        document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
+    }
+    
+    function runStroopGame() {
+        document.getElementById('stroop-start-screen').classList.add('hidden');
+        document.getElementById('stroop-game-area').classList.remove('hidden');
+        stroopScore = 0;
+        stroopTimeLeft = 60;
+        // HTML'de ID ekleyerek daha güvenli seçim yapıyoruz
+        gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
+        stroopTimer = setInterval(updateStroopTimer, 1000);
+        nextStroopRound();
+    }
+    
+    function nextStroopRound() {
+        const colorNames = Object.keys(stroopColors);
+        const colorValues = Object.values(stroopColors);
+        let randomWordName = colorNames[Math.floor(Math.random() * colorNames.length)];
+        let randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
+        let randomColorName = Object.keys(stroopColors).find(key => stroopColors[key] === randomColorValue);
+        
+        while (randomWordName === randomColorName) {
+            randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
+            randomColorName = Object.keys(stroopColors).find(key => stroopColors[key] === randomColorValue);
+        }
+        
+        currentCorrectColorName = randomColorName;
+        const wordElement = document.getElementById('stroop-word');
+        if (wordElement) {
+            wordElement.innerText = randomWordName;
+            wordElement.style.color = randomColorValue;
+        }
+        
+        const choicesContainer = document.getElementById('stroop-choices');
+        if (choicesContainer) {
+            choicesContainer.innerHTML = '';
+            shuffleArray(colorNames).forEach(name => {
+                const button = document.createElement('button');
+                button.classList.add('stroop-button');
+                button.innerText = name;
+                button.addEventListener('click', () => checkStroopAnswer(name));
+                choicesContainer.appendChild(button);
+            });
+        }
+    }
+    
+    function checkStroopAnswer(chosenColorName) {
+        stroopScore += (chosenColorName === currentCorrectColorName) ? 1 : -1;
+        stroopScore = Math.max(0, stroopScore);
+        const scoreVal = document.getElementById('stroop-score-val');
+        if (scoreVal) scoreVal.innerText = stroopScore;
+        nextStroopRound();
+    }
+    
+    function updateStroopTimer() {
+        stroopTimeLeft--;
+        const timerVal = document.getElementById('stroop-timer-val');
+        if (timerVal) timerVal.innerText = stroopTimeLeft;
+        if (stroopTimeLeft <= 0) {
+            clearInterval(stroopTimer);
+            showGameOverModal('stroop', false, { score: stroopScore });
+        }
+    }
+    // ==================================================================
+    // ---- N-BACK TESTİ (DÜZELTİLMİŞ) ----
+    // ==================================================================
     let nbackLevel, nbackSequence, nbackCurrentStep, nbackScore, nbackErrors, canPressButton, nbackGameLoop;
     const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
-    function startNBack() { if (nbackGameLoop) clearTimeout(nbackGameLoop); showNBackLevelSelection(); }
-    function showNBackLevelSelection() { gameContent.innerHTML = `<h2>${langTexts[currentLang].nbackTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].nbackDesc}</p><p>${langTexts[currentLang].nbackInstruction}</p><div class="level-selection-container"><button class="level-choice" data-level="1">${langTexts[currentLang].nbackLevels["1"]}</button><button class="level-choice" data-level="2">${langTexts[currentLang].nbackLevels["2"]}</button><button class="level-choice" data-level="3">${langTexts[currentLang].nbackLevels["3"]}</button></div>`; document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { nbackLevel = parseInt(event.target.dataset.level); initializeNBackGame(); }); }); }
-    function initializeNBackGame() { gameContent.innerHTML = `<h2>${nbackLevel}-Back Test</h2><div class="nback-container"><div id="nback-stats"><div>${langTexts[currentLang].correctDetection} <span id="nback-correct">0</span></div><div>${langTexts[currentLang].error}: <span id="nback-errors">0</span></div></div><div id="nback-stimulus-box">...</div><p>Eşleşme gördüğünüzde butona basın.</p><div id="nback-controls"><button id="nback-match-button">Eşleşme</button></div><div id="nback-feedback"></div></div>`; nbackSequence = []; nbackCurrentStep = 0; nbackScore = 0; nbackErrors = 0; canPressButton = false; generateNBackSequence(); document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress); nbackGameLoop = setTimeout(runNBackStep, 1000); }
+    
+    function startNBack() {
+        if (nbackGameLoop) clearTimeout(nbackGameLoop);
+        showNBackLevelSelection();
+    }
+    
+    function showNBackLevelSelection() {
+        gameContent.innerHTML = `
+            <h2>${langTexts[currentLang].nbackTitle}</h2>
+            <h3>${langTexts[currentLang].levelSelect}</h3>
+            <p class="game-description">${langTexts[currentLang].nbackDesc}</p>
+            <p>${langTexts[currentLang].nbackInstruction}</p>
+            <div class="level-selection-container">
+                <button class="level-choice" data-level="1">${langTexts[currentLang].nbackLevels["1"]}</button>
+                <button class="level-choice" data-level="2">${langTexts[currentLang].nbackLevels["2"]}</button>
+                <button class="level-choice" data-level="3">${langTexts[currentLang].nbackLevels["3"]}</button>
+            </div>
+        `;
+        document.querySelectorAll('.level-choice').forEach(button => {
+            button.addEventListener('click', (event) => {
+                nbackLevel = parseInt(event.target.dataset.level);
+                initializeNBackGame();
+            });
+        });
+    }
+    
+    function initializeNBackGame() {
+        gameContent.innerHTML = `
+            <h2>${nbackLevel}-Back Test</h2>
+            <div class="nback-container">
+                <div id="nback-stats">
+                    <div>${langTexts[currentLang].correctDetection} <span id="nback-correct">0</span></div>
+                    <div>${langTexts[currentLang].error}: <span id="nback-errors">0</span></div>
+                </div>
+                <div id="nback-stimulus-box">...</div>
+                <!-- DÜZELTİLDİ: Metinler artık dil nesnesinden geliyor -->
+                <p>${currentLang === 'tr' ? 'Eşleşme gördüğünüzde butona basın.' : 'Press the button when you see a match.'}</p>
+                <div id="nback-controls">
+                    <button id="nback-match-button">${currentLang === 'tr' ? 'Eşleşme' : 'Match'}</button>
+                </div>
+                <div id="nback-feedback"></div>
+            </div>
+        `;
+        nbackSequence = []; nbackCurrentStep = 0; nbackScore = 0; nbackErrors = 0; canPressButton = false;
+        generateNBackSequence();
+        document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
+        nbackGameLoop = setTimeout(runNBackStep, 1000);
+    }
+    
+    // Geri kalan N-Back fonksiyonları (generateNBackSequence, runNBackStep, vb.) bir önceki mesajdaki gibi aynı kalabilir,
+    // çünkü onlar zaten `langTexts` nesnesini kullanacak şekilde güncellenmişti.
+    // Emin olmak için tam hallerini tekrar veriyorum:
     function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
     function runNBackStep() { if (nbackCurrentStep > 0) { checkMissedMatch(); } if (nbackCurrentStep >= NBACK_TRIAL_COUNT) { showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors }); return; } const stimulusBox = document.getElementById('nback-stimulus-box'); const feedbackEl = document.getElementById('nback-feedback'); if (!stimulusBox) return; stimulusBox.style.fontSize = '2.5em'; stimulusBox.style.color = '#2ecc71'; stimulusBox.innerHTML = `${langTexts[currentLang].next} →`; if (feedbackEl) feedbackEl.innerText = ''; nbackGameLoop = setTimeout(() => { const currentStimulusBox = document.getElementById('nback-stimulus-box'); if (currentStimulusBox) { currentStimulusBox.style.fontSize = '8em'; currentStimulusBox.style.color = '#2c3e50'; currentStimulusBox.innerText = nbackSequence[nbackCurrentStep]; canPressButton = true; nbackCurrentStep++; nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME); } }, NBACK_PREPARE_TIME); }
     function handleNBackMatchPress() { if (!canPressButton) return; const feedbackEl = document.getElementById('nback-feedback'); const currentIndex = nbackCurrentStep - 1; const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]); if (isMatch) { nbackScore++; feedbackEl.innerText = langTexts[currentLang].correct; feedbackEl.className = 'correct'; } else { nbackErrors++; feedbackEl.innerText = langTexts[currentLang].falseAlarm; feedbackEl.className = 'wrong'; } updateNBackStats(); canPressButton = false; }
     function checkMissedMatch() { const prevStepIndex = nbackCurrentStep - 1; if (prevStepIndex >= nbackLevel) { const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel]; if (wasMatch && canPressButton) { nbackErrors++; updateNBackStats(); const feedbackEl = document.getElementById('nback-feedback'); if(feedbackEl) { feedbackEl.innerText = langTexts[currentLang].missed; feedbackEl.className = 'wrong'; } } } }
     function updateNBackStats() { const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors'); if (correctEl) correctEl.innerText = nbackScore; if (errorsEl) errorsEl.innerText = nbackErrors; }
-    
+        
 });
