@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"> <!-- Dil etiketini "en" olarak güncelledik -->
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Başlık ve açıklamayı İngilizce'ye çevirdik -->
     <title>DEEP BRAIN: Neurologist-Guided Cognitive & Brain Exercises</title>
     <meta name="description" content="Improve your memory, attention, and problem-solving skills with free, science-based cognitive exercises guided by a neurologist. Keep your brain fit with our games.">
     <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/index.html" />
     <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/index.html" />
     <link rel="alternate" hreflang="x-default" href="https://trainingbrain.github.io/en/index.html" />
-    <!-- Linkler ana dizinden çağrıldığı için aynı kalıyor -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,24 +16,35 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>DEEP BRAİN</h1>
-        <!-- Metinleri İngilizce'ye çeviriyoruz -->
+        <h1>DEEP BRAIN</h1>
         <p>Cognitive Exercises Guided by a Neurology Doctor</p>
         <nav class="main-nav">
-            <!-- Linkler artık /en/ klasörüne göre ayarlandı -->
-            <a href="/en/index.html">Home</a>
-            <a href="/en/blog.html">Blog</a>
-            <a href="/en/about.html">About</a>
+            <a href="/en/index.html" class="active" data-nav="home">Home</a>
+            <a href="#" data-nav="games">Cognitive Exercises & Games</a>
+            <a href="#" data-nav="tests">Cognitive Tests</a>
+            <a href="/en/blog.html" data-nav="blog">Blog</a>
+            <a href="/en/about.html" data-nav="about">About</a>
         </nav>
     </header>
 
     <main>
-        <div id="selection-screen">
-            <!-- Metinleri İngilizce'ye çeviriyoruz -->
+        <section id="homepage-main-content" class="homepage-content">
+            <img src="/image_8b5565.jpg" alt="Abstract Brain Network Image" class="hero-image">
+            <h2>Explore Your Mind, Unlock Your Potential</h2>
+            <p>
+                DEEP BRAIN is a comprehensive platform offering science-based cognitive exercises and neuropsychometric tests, guided by a neurologist. Our goal is to sharpen your memory, enhance your attention, improve your problem-solving skills, and support your overall cognitive health. Elevate your brain fitness with our free and interactive games.
+            </p>
+            <div class="call-to-action-buttons">
+                <a href="#" class="cta-button primary" data-nav="games-cta">Start Cognitive Exercises</a>
+                <a href="/en/about.html" class="cta-button secondary" data-nav="about-cta">Learn More About Us</a>
+            </div>
+        </section>
+
+        <div id="selection-screen" class="hidden">
             <h2>Which skill would you like to improve?</h2>
             <div class="game-selection-container">
                 <button class="game-choice" data-game="adam-asmaca">Hangman (Language)</button>
@@ -44,15 +53,24 @@
                 <button class="game-choice" data-game="n-back">N-Back Test (Working Memory)</button>
             </div>
         </div>
+
+        <div id="cognitive-tests-screen" class="hidden">
+            <h2>Cognitive Tests</h2>
+            <div class="game-selection-container">
+                <button class="game-choice" data-game="wcst">Wisconsin Card Sorting Test</button>
+                <button class="game-choice" data-game="trail-making">Trail Making Test (Coming Soon!)</button>
+            </div>
+        </div>
+
         <div id="game-container" class="hidden">
             <div id="game-content"></div>
             <button id="back-to-menu">Back to Menu</button>
         </div>
     </main>
+
     <footer>
         <p>© 2025 - Deep Brain. All rights reserved.</p>
     </footer>
-    <!-- Script dosyası ana dizinden çağrıldığı için aynı kalıyor -->
     <script src="/script.js"></script>
 </body>
 </html>
