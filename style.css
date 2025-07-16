@@ -26,7 +26,7 @@ body {
     line-height: 1.7; /* Metinler arası boşluğu artırın */
 
     /* Ana Sayfa Arka Plan Görseli */
-    background-image: url('/image_8b561c.jpg'); /* İlk görsel */
+    background-image: url('/neuronbackground.webp'); /* İlk görsel */
     background-size: cover; /* Tüm alanı kapla */
     background-position: center center; /* Ortala */
     background-attachment: fixed; /* Sayfa kaydırıldığında sabit kal */
