@@ -7,8 +7,7 @@
     <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/index.html" />
     <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/index.html" />
     <link rel="alternate" hreflang="x-default" href="https://trainingbrain.github.io/tr/index.html" />
-    <meta name="description" content=""Bilimsel temelli zihin egzersizleri ile bilişsel kapasitenizi arttırın! Nörolog rehberliğinde hazırlanan ücretsiz oyunlarla hafızanızı keskinleştirin, dikkatinizi toplayın ve zihinsel olarak formda kalın."">
-    <!-- Linkler ana dizinden (root) çağrılmalı -->
+    <meta name="description" content="Bilimsel temelli zihin egzersizleri ile bilişsel kapasitenizi arttırın! Nörolog rehberliğinde hazırlanan ücretsiz oyunlarla hafızanızı keskinleştirin, dikkatinizi toplayın ve zihinsel olarak formda kalın.">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -17,41 +16,61 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <h1>DEEP BRAİN</h1>
         <p>Bir Nöroloji Doktoru Rehberliğinde Zihin Egzersizleri</p>
         <nav class="main-nav">
-            <!-- Linkler artık /tr/ klasörüne göre ayarlandı -->
-            <a href="/tr/index.html">Ana Sayfa</a>
-            <a href="/tr/blog.html">Blog</a>
-            <a href="/tr/hakkimda.html">Hakkımda</a>
+            <a href="/tr/index.html" class="active" data-nav="home">Ana Sayfa</a>
+            <a href="#" data-nav="games">Zihinsel Egzersiz & Oyunlar</a>
+            <a href="#" data-nav="tests">Bilişsel Testler</a>
+            <a href="/tr/blog.html" data-nav="blog">Blog</a>
+            <a href="/tr/hakkimda.html" data-nav="about">Hakkımda</a>
         </nav>
     </header>
 
     <main>
-        <div id="selection-screen">
+        <section id="homepage-main-content" class="homepage-content">
+            <img src="/image_8b5565.jpg" alt="Soyut Beyin Ağı Görseli" class="hero-image">
+            <h2>Zihninizi Keşfedin, Potansiyelinizi Açığa Çıkarın</h2>
+            <p>
+                DEEP BRAİN, bir nöroloji doktorunun rehberliğinde, bilimsel temelli zihin egzersizleri ve nöropsikometrik testler sunan kapsamlı bir platformdur. Amacımız, hafızanızı keskinleştirmek, dikkatinizi artırmak, problem çözme becerilerinizi geliştirmek ve genel bilişsel sağlığınızı desteklemektir. Ücretsiz ve etkileşimli oyunlarımızla beyin fitness'ınızı bir üst seviyeye taşıyın.
+            </p>
+            <div class="call-to-action-buttons">
+                <a href="#" class="cta-button primary" data-nav="games-cta">Zihinsel Egzersizlere Başla</a>
+                <a href="/tr/hakkimda.html" class="cta-button secondary" data-nav="about-cta">Hakkımızda Daha Fazla Bilgi Edinin</a>
+            </div>
+        </section>
+
+        <div id="selection-screen" class="hidden">
             <h2>Hangi Becerinizi Geliştirmek İstersiniz?</h2>
             <div class="game-selection-container">
-                 <!-- Bu butonlar JavaScript ile yönetildiği için yollarını değiştirmeye gerek yok -->
                 <button class="game-choice" data-game="adam-asmaca">Adam Asmaca (Dil Becerisi)</button>
                 <button class="game-choice" data-game="sirali-hatirlama">Sıralı Hatırlama (Hafıza)</button>
                 <button class="game-choice" data-game="stroop-testi">Stroop Testi (Dikkat)</button>
-                <button class="game-choice" data-game="wcst">Wisconsin Kart Eşleştirme Egzersizi</button>
                 <button class="game-choice" data-game="n-back">N-Back Testi (Çalışma Belleği)</button>
             </div>
         </div>
+
+        <div id="cognitive-tests-screen" class="hidden">
+            <h2>Bilişsel Testler</h2>
+            <div class="game-selection-container">
+                <button class="game-choice" data-game="wcst">Wisconsin Kart Eşleştirme Testi</button>
+                <button class="game-choice" data-game="trail-making">İz Sürme Testi (Yakında!)</button>
+            </div>
+        </div>
+
         <div id="game-container" class="hidden">
             <div id="game-content"></div>
             <button id="back-to-menu">Ana Menüye Dön</button>
         </div>
     </main>
+
     <footer>
         <p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p>
     </footer>
-    <!-- Script dosyası da ana dizinden çağrılmalı -->
     <script src="/script.js"></script>
 </body>
 </html>
