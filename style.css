@@ -11,11 +11,12 @@
     --border-color: #e0e0e0; /* Kenarlık Rengi */
     --box-shadow-light: 0 4px 15px rgba(0,0,0,0.05);
     --box-shadow-medium: 0 8px 25px rgba(0,0,0,0.08);
+    --stroop-yellow: #f1c40f; /* Stroop testi için sarı */
 }
 
 body {
     font-family: 'Nunito', sans-serif;
-    background-color: var(--light-bg);
+    background-color: var(--light-bg); /* Eski arka plan rengi */
     color: var(--text-color-dark);
     margin: 0;
     padding: 0;
@@ -24,16 +25,7 @@ body {
     min-height: 100vh;
     text-align: center;
     line-height: 1.7; /* Metinler arası boşluğu artırın */
-
-    /* Ana Sayfa Arka Plan Görseli */
-    background-image: url('/neuronbackground.webp'); /* İlk görsel */
-    background-size: cover; /* Tüm alanı kapla */
-    background-position: center center; /* Ortala */
-    background-attachment: fixed; /* Sayfa kaydırıldığında sabit kal */
-    background-repeat: no-repeat;
-    /* Görselin üzerine hafif bir koyu katman ekleyerek içeriğin okunabilirliğini artırın */
-    background-blend-mode: multiply; /* Çarpma modu */
-    background-color: rgba(44, 62, 80, 0.7); /* Koyu gri/mavi ile karıştır */
+    /* Arka plan görseli kaldırıldı */
 }
 
 /* Header Alanı */
@@ -745,8 +737,7 @@ footer {
 .color-red { color: var(--accent-red); }
 .color-green { color: var(--accent-green); }
 .color-blue { color: var(--primary-color); } /* Mavi, ana renk ile eşleşsin */
-.color-yellow { color: var(--stroop-yellow); } /* Yeni bir sarı değişkeni */
-:root { --stroop-yellow: #f1c40f; }
+.color-yellow { color: var(--stroop-yellow); }
 
 
 /* --- WCST Başlangıç ve Sonuç Ekranı Stilleri --- */
