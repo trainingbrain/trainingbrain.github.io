@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameChoiceButtons = document.querySelectorAll('.game-choice');
     const backToMenuButton = document.getElementById('back-to-menu');
     const mainNavLinks = document.querySelectorAll('.main-nav a');
-    const ctaButtons = document.querySelectorAll('.cta-button'); // Ana sayfadaki CTA butonları
+    const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); // Ana sayfadaki CTA butonları
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             nbackLevels: {"1": "1-Back (Kolay)", "2": "2-Back (Orta)", "3": "3-Back (Zor)"},
             missed: "Kaçırdın!", exerciseOver: "Egzersiz Bitti!", correctDetection: "Doğru Tespit:", error: "Hata:",
             backToMenu: "Ana Menüye Dön", next: "Sonraki",
-            wcstDev: "Bu egzersiz şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin.", // WCST için metin
-            trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin." // İz Sürme Testi için metin
+            wcstDev: "Bu egzersiz şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin.",
+            trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin."
         },
         en: {
             levelSelect: "Please select a difficulty level:", correct: "Correct!", wrong: "Wrong!", playAgain: "Play Again",
@@ -61,25 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentGameTimer = null;
 
-    // --- Yeni Navigasyon ve CTA Buton Olayları ---
+    // --- Navigasyon ve CTA Buton Olayları ---
     mainNavLinks.forEach(link => {
         link.addEventListener('click', (event) => {
-            // Eğer link zaten bir href'e sahipse (blog, hakkımda gibi), varsayılan davranışı engelleme
-            if (link.getAttribute('href') !== '#') {
-                // Sadece ana sayfa, egzersizler ve testler için yönlendirme yap
-                if (link.dataset.nav === 'home') {
-                    // Ana sayfaya gidiyorsa tüm diğer ekranları gizle
-                    homepageMainContent.classList.remove('hidden');
-                    selectionScreen.classList.add('hidden');
-                    cognitiveTestsScreen.classList.add('hidden');
-                    gameContainer.classList.add('hidden');
-                }
-                // Diğer linkler (blog, hakkımda) doğal HTML link davranışıyla devam eder
+            // Blog veya Hakkımda gibi doğrudan linke sahip olanlar için HTML'in varsayılan davranışına izin ver
+            if (link.dataset.nav === 'blog' || link.dataset.nav === 'about') {
+                // Sadece aktif sınıfını yönet
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
-                return; 
+                return; // HTML linkini takip et
             }
-            event.preventDefault(); // Varsayılan link davranışını engelle
+            
+            event.preventDefault(); // Diğer durumlarda varsayılan link davranışını engelle
 
             // Tüm içerik ekranlarını gizle
             homepageMainContent.classList.add('hidden');
@@ -87,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cognitiveTestsScreen.classList.add('hidden');
             gameContainer.classList.add('hidden'); // Oyun aktifse onu da gizle
             
-            // Oyun içi timer'ları temizle
+            // Oyun içi timer'ları temizle ve içeriği sıfırla
             if (currentGameTimer) clearTimeout(currentGameTimer);
             if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
             if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
@@ -111,10 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ctaButtons.forEach(button => {
         button.addEventListener('click', (event) => {
-            if (button.getAttribute('href') !== '#') {
-                return; // Eğer link bir URL'e gidiyorsa JS ile engelleme
+            // Blog CTA'sı için doğrudan linke izin ver
+            if (button.dataset.nav === 'blog-cta') {
+                return; // HTML linkini takip et
             }
-            event.preventDefault(); // Varsayılan link davranışını engelle
+
+            event.preventDefault(); // Diğer CTA'lar için varsayılan link davranışını engelle
 
             homepageMainContent.classList.add('hidden');
             selectionScreen.classList.add('hidden');
@@ -127,8 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // CTA'dan gelince menüdeki ilgili linki de aktif yap
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 document.querySelector('.main-nav a[data-nav="games"]').classList.add('active');
+            } else if (ctaType === 'tests-cta') {
+                cognitiveTestsScreen.classList.remove('hidden');
+                // CTA'dan gelince menüdeki ilgili linki de aktif yap
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                document.querySelector('.main-nav a[data-nav="tests"]').classList.add('active');
             }
-            // 'about-cta' zaten href'i ile çalışacak, bu kısım tetiklenmez.
         });
     });
 
