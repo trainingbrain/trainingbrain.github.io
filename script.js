@@ -66,15 +66,33 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (event) => {
             // Eğer link zaten bir href'e sahipse (blog, hakkımda gibi), varsayılan davranışı engelleme
             if (link.getAttribute('href') !== '#') {
-                return;
+                // Sadece ana sayfa, egzersizler ve testler için yönlendirme yap
+                if (link.dataset.nav === 'home') {
+                    // Ana sayfaya gidiyorsa tüm diğer ekranları gizle
+                    homepageMainContent.classList.remove('hidden');
+                    selectionScreen.classList.add('hidden');
+                    cognitiveTestsScreen.classList.add('hidden');
+                    gameContainer.classList.add('hidden');
+                }
+                // Diğer linkler (blog, hakkımda) doğal HTML link davranışıyla devam eder
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                link.classList.add('active');
+                return; 
             }
             event.preventDefault(); // Varsayılan link davranışını engelle
 
-            // Tüm ekranları gizle
+            // Tüm içerik ekranlarını gizle
             homepageMainContent.classList.add('hidden');
             selectionScreen.classList.add('hidden');
             cognitiveTestsScreen.classList.add('hidden');
-            gameContainer.classList.add('hidden');
+            gameContainer.classList.add('hidden'); // Oyun aktifse onu da gizle
+            
+            // Oyun içi timer'ları temizle
+            if (currentGameTimer) clearTimeout(currentGameTimer);
+            if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
+            if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
+            gameContent.innerHTML = ''; // Oyun içeriğini temizle
+            const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); // Oyun bitiş modalını kaldır
 
             // Navigasyon linklerini pasif yap
             mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
@@ -88,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (navType === 'tests') {
                 cognitiveTestsScreen.classList.remove('hidden'); // Bilişsel Testler ekranını göster
             }
-            // Blog ve Hakkımda linkleri zaten kendi href'leriyle çalışacak
         });
     });
 
@@ -107,14 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctaType = button.dataset.nav;
             if (ctaType === 'games-cta') {
                 selectionScreen.classList.remove('hidden');
+                // CTA'dan gelince menüdeki ilgili linki de aktif yap
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 document.querySelector('.main-nav a[data-nav="games"]').classList.add('active');
-                document.querySelector('.main-nav a[data-nav="home"]').classList.remove('active');
             }
-            // 'about-cta' zaten href'i ile çalışacak
+            // 'about-cta' zaten href'i ile çalışacak, bu kısım tetiklenmez.
         });
     });
 
-    // Oyun Seçim Butonları
+    // Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için)
     gameChoiceButtons.forEach(button => {
         button.addEventListener('click', () => {
             const game = button.dataset.game;
@@ -122,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cognitiveTestsScreen.classList.add('hidden'); // Bilişsel testler ekranını da gizle
             gameContainer.classList.remove('hidden'); // Oyun konteynerini göster
 
-            // Navigasyon linklerini pasif yap
+            // Navigasyon linklerini pasif yap, oyun içindeyken özel bir aktiflik olmasın
             mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
 
             if (backToMenuButton) backToMenuButton.innerText = langTexts[currentLang].backToMenu;
@@ -142,19 +160,26 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContainer.classList.add('hidden'); 
         homepageMainContent.classList.remove('hidden'); // Ana sayfayı tekrar göster
         
+        // Oyun içi timer'ları temizle
+        if (currentGameTimer) clearTimeout(currentGameTimer);
+        if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
+        if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
+
         gameContent.innerHTML = ''; 
         const modal = document.querySelector('.game-over-modal'); 
         if (modal) modal.remove(); 
-        if (currentGameTimer) clearTimeout(currentGameTimer); 
-        if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer); 
-        if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop); 
 
         // Navigasyon linklerini güncelle
         mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
         document.querySelector('.main-nav a[data-nav="home"]').classList.add('active');
     });
 
-    // Sayfa yüklendiğinde Ana Sayfa linkini aktif yap
+    // Sayfa yüklendiğinde Ana Sayfa linkini aktif yap ve diğer ekranları gizle
+    // Bu, sitenin başlangıçta Ana Sayfa içeriğini göstermesini sağlar.
+    homepageMainContent.classList.remove('hidden');
+    selectionScreen.classList.add('hidden');
+    cognitiveTestsScreen.classList.add('hidden');
+    gameContainer.classList.add('hidden');
     document.querySelector('.main-nav a[data-nav="home"]').classList.add('active');
 
 
@@ -199,10 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function runStroopGame() {
         document.getElementById('stroop-start-screen').classList.add('hidden');
-        // document.getElementById('stroop-game-area').classList.remove('hidden'); // Bu satır gereksiz olabilir, gameContent zaten değişiyor
         stroopScore = 0;
         stroopTimeLeft = 60;
-        // HTML'de ID ekleyerek daha güvenli seçim yapıyoruz
         gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
         stroopTimer = setInterval(updateStroopTimer, 1000);
         nextStroopRound();
