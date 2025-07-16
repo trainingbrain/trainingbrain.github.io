@@ -16,7 +16,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background-color: var(--light-bg); /* Eski arka plan rengi */
+    background-color: var(--light-bg); /* Genel sayfa arka planı artık görsel içermiyor, düz renk */
     color: var(--text-color-dark);
     margin: 0;
     padding: 0;
@@ -25,7 +25,6 @@ body {
     min-height: 100vh;
     text-align: center;
     line-height: 1.7; /* Metinler arası boşluğu artırın */
-    /* Arka plan görseli kaldırıldı */
 }
 
 /* Header Alanı */
@@ -917,9 +916,17 @@ footer {
     font-style: italic;
 }
 
-/* Yeni Ana Sayfa İçeriği Stilleri */
+/* Ana Sayfa İçeriği Stilleri */
 .homepage-content {
-    background-color: var(--white);
+    background-color: var(--white); /* Arka plan resmi buraya taşındı */
+    background-image: url('/neuronbackground.webp'); /* Sadece ana sayfa içeriğinde görülecek */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll; /* Sabit değil, kendi bölümü içinde kayabilir */
+    background-repeat: no-repeat;
+    background-blend-mode: multiply;
+    background-color: rgba(44, 62, 80, 0.7); /* Koyu gri/mavi ile karıştır */
+
     padding: 40px;
     border-radius: 15px;
     box-shadow: var(--box-shadow-medium);
@@ -930,7 +937,17 @@ footer {
     align-items: center;
     gap: 30px;
     text-align: center;
+    color: white; /* Metin rengini beyaza çevirdik okunabilirlik için */
 }
+
+/* Homepage-content içindeki elemanların renklerini ayarlayalım */
+.homepage-content h2 {
+    color: var(--white); /* Ana başlık beyaz olsun */
+}
+.homepage-content p {
+    color: rgba(255, 255, 255, 0.9); /* Paragraflar hafif şeffaf beyaz */
+}
+
 
 .homepage-content .hero-image {
     width: 60%; /* Oranı koruyarak büyüt */
@@ -939,21 +956,6 @@ footer {
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     animation: fadeIn 1.5s ease-out; /* Hafif giriş animasyonu */
-}
-
-.homepage-content h2 {
-    font-size: 2.8em;
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    font-weight: 800;
-}
-
-.homepage-content p {
-    font-size: 1.25em;
-    line-height: 1.8;
-    color: var(--text-color-dark);
-    max-width: 700px;
-    margin: 0 auto;
 }
 
 .homepage-content .call-to-action-buttons {
@@ -972,30 +974,14 @@ footer {
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 2px solid var(--white); /* CTA buton kenarlıkları beyaz */
+    color: var(--white); /* CTA buton metinleri beyaz */
+    background-color: transparent; /* Şeffaf arka plan */
 }
 
-.homepage-content .cta-button.primary {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: 2px solid var(--primary-color);
-}
-
-.homepage-content .cta-button.primary:hover {
-    background-color: #2980b9;
-    border-color: #2980b9;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-
-.homepage-content .cta-button.secondary {
-    background-color: transparent;
-    color: var(--secondary-color);
-    border: 2px solid var(--secondary-color);
-}
-
-.homepage-content .cta-button.secondary:hover {
-    background-color: var(--secondary-color);
-    color: var(--white);
+.homepage-content .cta-button:hover {
+    background-color: var(--white); /* Hover'da beyaz arka plan */
+    color: var(--secondary-color); /* Hover'da koyu metin */
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
@@ -1051,7 +1037,7 @@ footer {
         font-size: 0.95em;
     }
 
-    #game-container, .page-container, .language-selector, .modal-content {
+    #game-container, .page-container, .modal-content { /* language-selector kaldırıldı */
         padding: 20px;
         margin: 15px auto;
         width: auto;
