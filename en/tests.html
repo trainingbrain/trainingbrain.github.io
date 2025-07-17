@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive Tests - DEEP BRAIN</title>
-    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/tests.html" />
-    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/tests.html" />
     <link rel="stylesheet" href="/style.css">
-    </head>
-<body>
+    <!-- Diğer head etiketleriniz -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body id="page-tests-en">
     <header>
         <h1>DEEP BRAIN</h1>
         <p>Cognitive Exercises Guided by a Neurology Doctor</p>
@@ -20,7 +26,6 @@
             <a href="/en/about.html">About</a>
         </nav>
     </header>
-
     <main>
         <div id="cognitive-tests-screen">
             <h2>Cognitive Tests</h2>
@@ -30,54 +35,38 @@
                 <button class="game-choice" data-game="trail-making" disabled>Trail Making Test (Coming Soon!)</button>
             </div>
         </div>
-    
         <div id="wcst-main-container" class="hidden page-container">
-             <div id="game-content">
-                <div id="wcst-start-screen">
-                    <h2>Wisconsin Card Sorting Test</h2>
-                    <div class="wcst-education-level">
-                        <h3>Please select your education level:</h3>
-                        <div class="education-options">
-                            <button class="education-btn" data-level="primary">Primary School</button>
-                            <button class="education-btn" data-level="middle">Middle School</button>
-                            <button class="education-btn" data-level="high">High School</button>
-                            <button class="education-btn" data-level="university">University</button>
-                        </div>
-                    </div>
-                    <div class="wcst-instructions">
-                        <h3>Instructions</h3>
-                        <p>This is a somewhat unusual test...</p>
-                    </div>
-                    <button id="wcst-start-btn" disabled>Start Test</button>
-                </div>
-                <div id="wcst-game-screen" class="hidden">
-                     <div class="wcst-info-panel">
-                        <div>Categories Completed: <span id="wcst-categories">0</span></div>
-                        <div>Total Errors: <span id="wcst-total-errors">0</span></div>
-                        <div>Perseverative Errors: <span id="wcst-perse-errors">0</span></div>
-                        <div>Cards Left: <span id="wcst-cards-left">128</span></div>
-                    </div>
-                    <div id="stimulus-cards-container" class="card-area"></div>
-                    <div id="wcst-feedback"></div>
-                    <div id="response-card-container" class="card-area">
-                        <div id="current-response-card"></div>
+            <div id="wcst-start-screen">
+                <h2>Wisconsin Card Sorting Test</h2>
+                <div class="wcst-education-level">
+                    <h3>Please select your education level:</h3>
+                    <div class="education-options">
+                        <button class="education-btn" data-level="primary">Primary School</button>
+                        <button class="education-btn" data-level="middle">Middle School</button>
+                        <button class="education-btn" data-level="high">High School</button>
+                        <button class="education-btn" data-level="university">University</button>
                     </div>
                 </div>
-                <div id="wcst-results-modal" class="game-over-modal hidden">
-                    <div class="modal-content">
-                        <h3>Test Results</h3>
-                        <div class="wcst-results"></div>
-                        <button id="wcst-back-to-tests">Back to Tests Page</button>
-                    </div>
+                <div class="wcst-instructions">
+                    <h3>Instructions</h3>
+                    <p>This is a somewhat unusual test because you need to match each card given to you with one of the four key cards. I cannot tell you how to match the cards, but I will tell you each time whether your match is "right" or "wrong." There is no time limit for this test, so you do not need to rush.</p>
                 </div>
+                <button id="wcst-start-btn" disabled>Start Test</button>
             </div>
-            <button id="back-to-menu">Back</button> 
+            <div id="wcst-game-screen" class="hidden">
+                 <div class="wcst-info-panel">
+                    <div>Categories: <span id="wcst-categories">0</span></div>
+                    <div>Errors: <span id="wcst-total-errors">0</span></div>
+                    <div>Cards Left: <span id="wcst-cards-left">128</span></div>
+                </div>
+                <div id="stimulus-cards-container" class="card-area"></div>
+                <div id="wcst-feedback"></div>
+                <div id="response-card-container" class="card-area"><div id="current-response-card"></div></div>
+            </div>
+            <button id="back-to-menu">Back</button>
         </div>
     </main>
-
-    <footer>
-        <p>© 2025 - Deep Brain. All rights reserved.</p>
-    </footer>
+    <footer><p>© 2025 - Deep Brain. All rights reserved.</p></footer>
     <script src="/script.js"></script>
 </body>
 </html>
