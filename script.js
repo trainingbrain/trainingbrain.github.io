@@ -2,15 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DEEP BRAIN Script Başlatıldı. Sayfa ID:", document.body.id);
 
     // ==================================================================
-    // ---- GLOBAL KURULUM (TÜM SAYFALARDA ÇALIŞIR) ----
+    // ---- 1. GLOBAL KURULUM (TÜM SAYFALARDA ÇALIŞIR) ----
     // ==================================================================
     const pageId = document.body.id;
     const mainNavLinks = document.querySelectorAll('.main-nav a');
     const currentLang = window.location.pathname.startsWith('/en') ? 'en' : 'tr';
+    
+    // Global Timer'lar
     let currentGameTimer = null;
     let stroopTimer = null;
     let nbackGameLoop = null;
 
+    // Dil Metinleri (Tüm metinler burada)
     const langTexts = {
         tr: {
             levelSelect: "Lütfen bir zorluk seviyesi seçin:", correct: "Doğru!", wrong: "Yanlış!", playAgain: "Tekrar Oyna",
@@ -54,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // Navigasyon Menüsü Aktif Link Ayarı
     const currentPath = window.location.pathname;
     mainNavLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
@@ -65,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==================================================================
-    // ---- SAYFAYA ÖZEL MANTIK BAŞLANGIÇ ----
+    // ---- 2. SAYFAYA ÖZEL MANTIK ----
     // ==================================================================
 
     // ---- ZİHİNSEL EGZERSİZLER SAYFASI KODLARI ----
@@ -143,15 +147,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ==================================================================
-    // ---- TÜM OYUN ve TEST FONKSİYONLARI (GLOBAL KAPSAM) ----
+    // ---- 3. TÜM OYUN ve TEST FONKSİYONLARI (GLOBAL KAPSAM) ----
     // ==================================================================
 
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
 
     function showGameOverModal(game, isWin, data) {
+        // Clear all timers
         if (currentGameTimer) clearTimeout(currentGameTimer);
         if (stroopTimer !== null) clearInterval(stroopTimer);
         if (nbackGameLoop !== null) clearTimeout(nbackGameLoop);
+
+        // Remove any existing modal first
+        const existingModal = document.querySelector('.game-over-modal');
+        if (existingModal) existingModal.remove();
 
         const modal = document.createElement('div');
         modal.classList.add('game-over-modal');
@@ -172,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
         document.body.appendChild(modal);
 
+        // Make modal visible
+        setTimeout(() => modal.style.opacity = '1', 10);
+
         document.getElementById('play-again-button').addEventListener('click', () => {
             modal.remove();
             if (game === 'hangman') startHangman();
@@ -181,15 +193,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---- ADAM ASMACA OYUNU ----
-    let hangmanSecretWord, hangmanCorrectLetters, hangmanWrongGuessCount; const hangmanMaxWrongGuesses = 6;
+    // ---- ADAM ASMACA FONKSİYONLARI ----
+    let hangmanSecretWord, hangmanCorrectLetters, hangmanWrongGuessCount;
+    const hangmanMaxWrongGuesses = 6;
+    
     function startHangman() { showHangmanLevelSelection(); }
+
     function showHangmanLevelSelection() { 
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
         gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
         document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { initializeHangmanGame(event.target.dataset.level); }); }); 
     }
+    
     function initializeHangmanGame(level) { 
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
@@ -202,12 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
         displayHangmanWord(); 
         createHangmanKeyboard(); 
     }
+    
     function displayHangmanWord() { 
         const wordDisplay = document.querySelector('.word-display'); 
         if (!wordDisplay) return; 
         wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
-        if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); } 
+        if (wordDisplay.innerText.replace(/\s/g, '') === hangmanSecretWord) { 
+            showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); 
+        } 
     }
+    
     function createHangmanKeyboard() { 
         const keyboard = document.querySelector('.keyboard'); 
         if (!keyboard) return; 
@@ -220,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             keyboard.appendChild(keyButton); 
         }); 
     }
+    
     function handleHangmanGuess(letter, button) { 
         button.disabled = true; 
         if (hangmanSecretWord.includes(letter)) { 
@@ -231,8 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('wrong');
         } 
         displayHangmanWord(); 
-        if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); } 
+        if (hangmanWrongGuessCount >= hangmanMaxWrongGuesses) { 
+            showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); 
+        } 
     }
+    
     function updateHangmanFigure() { 
         const guessesText = document.querySelector('.guesses-text span'); 
         if (guessesText) { guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; } 
@@ -241,8 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }); 
     }
 
-    // ---- SIRALI HATIRLAMA OYUNU ----
+    // ---- SIRALI HATIRLAMA FONKSİYONLARI ----
     let sequence, playerSequence, sequenceLevel, canPlayerClick;
+    
     function startSequenceMemory() { 
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
@@ -263,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sequenceLevel = 0; 
         currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
     }
+    
     async function nextSequenceLevel() { 
         sequenceLevel++; 
         playerSequence = []; 
@@ -273,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sequence.push(Math.floor(Math.random() * 9)); 
         await showSequence(); 
     }
+    
     async function showSequence() { 
         const tiles = document.querySelectorAll('.sequence-tile'); 
         const status = document.getElementById('sequence-status');
@@ -286,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canPlayerClick = true; 
         if (status) status.innerText = langTexts[currentLang].yourTurn; 
     }
+    
     function handleTileClick(tileId) { 
         if (!canPlayerClick) return; 
         playerSequence.push(tileId); 
@@ -305,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } 
     }
     
-    // ---- STROOP TESTİ ----
+    // ---- STROOP TESTİ FONKSİYONLARI ----
     function startStroopTest() {
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
@@ -313,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
+    
     function runStroopGame() {
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
@@ -369,12 +398,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ---- N-BACK TESTİ ----
-    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
+    // ---- N-BACK TESTİ FONKSİYONLARI ----
+    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ';
+    const NBACK_TRIAL_COUNT = 25;
+    const NBACK_PREPARE_TIME = 1000;
+    const NBACK_STIMULUS_TIME = 2000;
+    
     function startNBack() {
         if (nbackGameLoop) clearTimeout(nbackGameLoop);
         showNBackLevelSelection();
     }
+    
     function showNBackLevelSelection() {
         const gameContent = document.getElementById('game-content');
         if (!gameContent) return;
@@ -386,6 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+    
     function initializeNBackGame(nbackLevel) {
         let nbackSequence = []; let nbackCurrentStep = 0; let nbackScore = 0; let nbackErrors = 0; let canPressButton = false;
         const gameContent = document.getElementById('game-content');
@@ -396,6 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nbackGameLoop = setTimeout(runNBackStep, 1000);
 
         function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
+        
         function runNBackStep() {
             if (nbackCurrentStep > 0) { checkMissedMatch(); }
             if (nbackCurrentStep >= NBACK_TRIAL_COUNT) {
@@ -418,6 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, NBACK_PREPARE_TIME);
         }
+        
         function handleNBackMatchPress() {
             if (!canPressButton) return;
             const feedbackEl = document.getElementById('nback-feedback'); const currentIndex = nbackCurrentStep - 1;
@@ -432,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateNBackStats();
             canPressButton = false;
         }
+        
         function checkMissedMatch() {
             const prevStepIndex = nbackCurrentStep - 1;
             if (prevStepIndex >= nbackLevel) {
@@ -444,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+        
         function updateNBackStats() {
             const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors');
             if (correctEl) correctEl.innerText = nbackScore;
