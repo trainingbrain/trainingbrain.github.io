@@ -1125,3 +1125,164 @@ footer {
         font-size: 5em;
     }
 }
+/* ================================== */
+/* WISCONSIN CARD SORTING TEST (WCST) STYLES   */
+/* ================================== */
+
+/* Genel Test Konteyneri */
+#wcst-start-screen, #wcst-game-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+}
+
+/* Eğitim ve Yönerge Ekranı */
+.wcst-education-level, .wcst-instructions {
+    width: 100%;
+    max-width: 700px;
+    background: #fdfdfd;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-light);
+    text-align: center;
+}
+
+.education-options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.education-btn {
+    padding: 12px 28px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-color);
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.education-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+}
+
+.education-btn.selected {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+#wcst-start-btn {
+    padding: 15px 40px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--accent-green);
+    color: white;
+    transition: all 0.3s;
+}
+
+#wcst-start-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Ana Test Ekranı Stilleri */
+.wcst-info-panel {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    padding: 15px;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.card-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+    min-height: 200px;
+}
+
+#stimulus-cards-container {
+    background-color: #e9edf0;
+    border-radius: 12px;
+}
+
+/* WCST Kart Genel Stili */
+.wcst-card {
+    width: 120px;
+    height: 160px;
+    background-color: white;
+    border: 3px solid #b0bec5;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#stimulus-cards-container .wcst-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+
+/* Kart İçindeki Şekiller */
+.card-shape {
+    fill: currentColor; /* Renk, parent elementin 'color' özelliğinden gelecek */
+}
+
+/* Geri Bildirim Alanı */
+#wcst-feedback {
+    min-height: 40px;
+    font-size: 2.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+#wcst-feedback.correct { color: var(--accent-green); }
+#wcst-feedback.wrong { color: var(--accent-red); }
+
+/* Sonuç Ekranı */
+.wcst-results {
+    text-align: left;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 1.1em;
+}
+
+.wcst-results p {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 5px;
+    border-bottom: 1px solid #eee;
+}
+.wcst-results p:last-of-type { border-bottom: none; }
+.wcst-results strong { color: var(--primary-color); }
