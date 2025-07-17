@@ -85,10 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sadece aktif sınıfını yönet
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
-                return; // HTML linkini takip et
+                return; // HTML linkini takip et (sayfa yenilenecek)
             }
             
-            event.preventDefault(); // Diğer durumlarda varsayılan link davranışını engelle
+            event.preventDefault(); // Diğer durumlarda varsayılan link davranışını engelle (sayfa yenilenmesin)
 
             hideContentScreens(); // Önce içerik ekranlarını gizle
             
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (ctaType === 'tests-cta') {
                 cognitiveTestsScreen.classList.remove('hidden');
                 // CTA'dan gelince menüdeki ilgili linki de aktif yap
-                mainNavLinks.forEach(navLink => navLink.classList.remove('active')); // Diğer aktifleri temizle
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active')); 
                 document.querySelector('.main-nav a[data-nav="tests"]').classList.add('active');
             }
         });
@@ -174,14 +174,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.main-nav a[data-nav="home"]').classList.add('active'); // Ana Sayfa linkini aktif yap
 
 
-    function showGameOverModal(game, isWin, data) { if (currentGameTimer) clearTimeout(currentGameTimer); if (nbackGameLoop) clearTimeout(nbackGameLoop); const modal = document.createElement('div'); modal.classList.add('game-over-modal'); let content = '';
-        if (game === 'hangman') { content = `<h3>${isWin ? langTexts[currentLang].winMessage : langTexts[currentLang].loseMessage}</h3><p>${langTexts[currentLang].secretWord} <strong>${data.secretWord}</strong></p>`; }
-        else if (game === 'sequence') { content = `<h3>${langTexts[currentLang].gameover}</h3><p>${langTexts[currentLang].highestLevel} <strong>${data.level}</strong></p>`; }
-        else if (game === 'stroop') { content = `<h3>${langTexts[currentLang].timeUp}</h3><p>${langTexts[currentLang].yourScore} <strong>${data.score}</strong></p>`; }
-        else if (game === 'n-back') { content = `<h3>${langTexts[currentLang].exerciseOver}</h3><p>${langTexts[currentLang].level}: <strong>${data.level}-Back</strong></p><p>${langTexts[currentLang].correctDetection} <strong>${data.score}</strong></p><p>${langTexts[currentLang].error}: <strong>${data.errors}</strong></p>`; }
-        if (content === '') return;
-        modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`; document.body.appendChild(modal);
-        document.getElementById('play-again-button').addEventListener('click', () => { modal.remove(); if (game === 'hangman') startHangman(); else if (game === 'sequence') startSequenceMemory(); else if (game === 'stroop') startStroopTest(); else if (game === 'n-back') startNBack(); });
+    function showGameOverModal(game, isWin, data) { 
+        // Tüm aktif timer'ları temizle ve oyunu durdur
+        if (currentGameTimer) clearTimeout(currentGameTimer); 
+        if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer); // stroopTimer global olarak tanımlanmışsa
+        if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop); // nbackGameLoop global olarak tanımlanmışsa
+        
+        const modal = document.createElement('div'); 
+        modal.classList.add('game-over-modal'); 
+        let content = '';
+
+        if (game === 'hangman') { 
+            content = `<h3>${isWin ? langTexts[currentLang].winMessage : langTexts[currentLang].loseMessage}</h3><p>${langTexts[currentLang].secretWord} <strong>${data.secretWord}</strong></p>`; 
+        } else if (game === 'sequence') { 
+            content = `<h3>${langTexts[currentLang].gameover}</h3><p>${langTexts[currentLang].highestLevel} <strong>${data.level}</strong></p>`; 
+        } else if (game === 'stroop') { 
+            content = `<h3>${langTexts[currentLang].timeUp}</h3><p>${langTexts[currentLang].yourScore} <strong>${data.score}</strong></p>`; 
+        } else if (game === 'n-back') { 
+            content = `<h3>${langTexts[currentLang].exerciseOver}</h3><p>${langTexts[currentLang].level}: <strong>${data.level}-Back</strong></p><p>${langTexts[currentLang].correctDetection} <strong>${data.score}</strong></p><p>${langTexts[currentLang].error}: <strong>${data.errors}</strong></p>`; 
+        }
+        
+        if (content === '') return; // İçerik yoksa modalı gösterme
+        
+        modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`; 
+        document.body.appendChild(modal);
+        
+        document.getElementById('play-again-button').addEventListener('click', () => { 
+            modal.remove(); 
+            // Oyunu tekrar başlat
+            if (game === 'hangman') startHangman(); 
+            else if (game === 'sequence') startSequenceMemory(); 
+            else if (game === 'stroop') startStroopTest(); 
+            else if (game === 'n-back') startNBack(); 
+        });
     }
 
     // ---- ADAM ASMACA OYUNU ----
