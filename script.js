@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // OYUN TIMER DEĞİŞKENLERİ: Bunlar GLOBAL SCOPE'ta (DOMContentLoaded içinde ama fonksiyon dışında) tanımlanmalı.
     // Bu, showScreen fonksiyonu onları çağırdığında zaten var olmalarını sağlar.
     let currentGameTimer = null;
-    let stroopTimer = null; // GLOBAL OLARAK TANIMLANDI
-    let nbackGameLoop = null; // GLOBAL OLARAK TANIMLANDI
+    let stroopTimer = null; 
+    let nbackGameLoop = null; 
 
 
     // Elementlerin doğru bulunup bulunmadığını kontrol edelim
@@ -90,10 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cognitiveTestsScreen) cognitiveTestsScreen.classList.add('hidden');
         if (gameContainer) gameContainer.classList.add('hidden');
         
-        // Oyun içi timer'ları temizle ve içeriği sıfırla (global tanımlanmış timer'lar)
+        // Oyun içi timer'ları temizle ve içeriği sıfırla
         if (currentGameTimer) clearTimeout(currentGameTimer);
-        if (stroopTimer !== null) clearInterval(stroopTimer); // stroopTimer globalde tanımlı olduğu için doğrudan kontrol et
-        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); // nbackGameLoop globalde tanımlı olduğu için doğrudan kontrol et
+        // Correct usage: Clear timers only if they are not null.
+        if (stroopTimer !== null) clearInterval(stroopTimer); 
+        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); 
         
         gameContent.innerHTML = ''; 
         const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); 
@@ -256,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); // Timer'ı sadece tanımlıysa temizle
-        const stroopColors = langTexts[currentLang].stroopColors; // local stroopColors tanımlandı
+        stroopColors = langTexts[currentLang].stroopColors; 
         gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
@@ -271,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function nextStroopRound() {
-        const colorNames = Object.keys(langTexts[currentLang].stroopColors); 
+        const colorNames = Object.keys(langTexts[currentLang].stroopColors); // StroopColors'ı buradan al
         const colorValues = Object.values(langTexts[currentLang].stroopColors);
         let randomWordName = colorNames[Math.floor(Math.random() * colorNames.length)];
         let randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
