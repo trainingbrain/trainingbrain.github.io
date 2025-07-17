@@ -37,10 +37,44 @@
                 <button class="game-choice" data-game="trail-making">Trail Making Test (Coming Soon!)</button>
             </div>
         </div>
-
-        <div id="game-container" class="hidden"> 
-            <div id="game-content"></div>
-            <button id="back-to-menu">Back</button> 
+    
+        <div id="wcst-main-container" class="hidden">
+            <div id="wcst-start-screen" class="page-container">
+                <h3>Wisconsin Card Sorting Test (WCST)</h3>
+                <p class="game-description">
+                    This is a somewhat unusual test because you need to match each card given to you with one of the four key cards. I cannot tell you how to match the cards, but I will tell you each time whether your match is "right" or "wrong." There is no time limit for this test, so you do not need to rush.
+                </p>
+                <div class="wcst-education-level">
+                    <h4>Select Your Education Level:</h4>
+                    <div class="education-options">
+                        <button class="education-btn" data-level="primary">Primary School</button>
+                        <button class="education-btn" data-level="middle">Middle School</button>
+                        <button class="education-btn" data-level="high">High School</button>
+                        <button class="education-btn" data-level="university">University</button>
+                    </div>
+                </div>
+                <button id="wcst-start-btn" disabled>Start Test</button>
+            </div>
+    
+            <div id="wcst-game-area" class="hidden page-container">
+                <div id="wcst-stimulus-cards" class="card-area">
+                    </div>
+                <div id="wcst-response-area">
+                    <div id="wcst-response-card" class="card-area">
+                        </div>
+                    <div id="wcst-feedback"></div>
+                </div>
+                <div id="wcst-stats">
+                    <p>Correct: <span id="wcst-correct-count">0</span></p>
+                    <p>Errors: <span id="wcst-error-count">0</span></p>
+                    <p>Category: <span id="wcst-category-count">0</span></p>
+                </div>
+            </div>
+    
+            <div id="game-container" class="hidden"> 
+                <div id="game-content"></div>
+                <button id="back-to-menu">Back</button> 
+            </div>
         </div>
     </main>
 
