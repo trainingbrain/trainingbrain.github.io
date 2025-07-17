@@ -360,4 +360,68 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errorsEl) errorsEl.innerText = nbackErrors; 
         }
     }
+    // ======================================================
+    // ======== WISCONSIN KART EŞLEME TESTİ - KONTROL KODLARI ========
+    // ======================================================
+    document.addEventListener('DOMContentLoaded', () => {
+    
+        // İlgili HTML elementlerini seçelim
+        const testsScreen = document.getElementById('cognitive-tests-screen');
+        const wcstButton = document.querySelector('.game-choice[data-game="wcst"]');
+        const wcstMainContainer = document.getElementById('wcst-main-container');
+        const backToMenuButton = document.getElementById('back-to-menu');
+        
+        // --- WCST Başlangıç Ekranı Elementleri ---
+        const wcstStartScreen = document.getElementById('wcst-start-screen');
+        const educationButtons = document.querySelectorAll('.education-btn');
+        const startTestButton = document.getElementById('wcst-start-btn');
+    
+        // --- WCST Oyun Ekranı Elementleri ---
+        const wcstGameScreen = document.getElementById('wcst-game-screen');
+        
+        // Sadece 'tests.html' sayfasındaysak bu kodları çalıştır
+        if (testsScreen && wcstButton && wcstMainContainer) {
+    
+            // 1. "Wisconsin Kart Eşleştirme Testi" butonuna tıklandığında...
+            wcstButton.addEventListener('click', () => {
+                // Ana test seçim ekranını gizle
+                testsScreen.classList.add('hidden');
+                // WCST test konteynerini göster
+                wcstMainContainer.classList.remove('hidden');
+            });
+    
+            // 2. "Geri Dön" butonuna tıklandığında...
+            backToMenuButton.addEventListener('click', () => {
+                // WCST test konteynerini gizle
+                wcstMainContainer.classList.add('hidden');
+                // Ana test seçim ekranını göster
+                testsScreen.classList.remove('hidden');
+                // Testi sıfırlama fonksiyonu (daha sonra yazılacak)
+                // resetWCST(); 
+            });
+    
+            // 3. Eğitim seviyesi butonlarına tıklandığında...
+            educationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Önce diğer seçili butonların seçimini kaldır
+                    educationButtons.forEach(btn => btn.classList.remove('selected'));
+                    // Tıklanan butonu seçili yap
+                    button.classList.add('selected');
+                    // Testi Başlat butonunu aktif hale getir
+                    startTestButton.disabled = false; 
+                });
+            });
+    
+            // 4. "Teste Başla" butonuna tıklandığında...
+            startTestButton.addEventListener('click', () => {
+                // Başlangıç ekranını gizle
+                wcstStartScreen.classList.add('hidden');
+                // Oyun ekranını göster
+                wcstGameScreen.classList.remove('hidden');
+                // ASIL OYUNU BAŞLATMA FONKSİYONU BURADA ÇAĞIRILACAK
+                // initializeWCSTGame(); 
+                console.log("WCST Oyunu Başlatılıyor!");
+            });
+    }
+});
 });
