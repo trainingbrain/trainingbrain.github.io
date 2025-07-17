@@ -489,4 +489,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errorsEl) errorsEl.innerText = nbackErrors;
         }
     }
+    /* Her zaman gizli kalması gereken elementler için Kural */
+.hidden {
+    display: none !important;
+}
+
+/* Oyun bitişi modal'ının görünürlüğü için */
+.game-over-modal {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
 });
