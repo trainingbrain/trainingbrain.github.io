@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zihinsel Egzersizler ve Oyunlar - DEEP BRAİN</title>
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/games.html" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/games.html" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>DEEP BRAİN</h1>
+        <p>Bir Nöroloji Doktoru Rehberliğinde Zihin Egzersizleri</p>
+        <nav class="main-nav">
+            <a href="/tr/index.html">Ana Sayfa</a>
+            <a href="/tr/games.html" class="active">Zihinsel Egzersiz & Oyunlar</a>
+            <a href="/tr/tests.html">Bilişsel Testler</a>
+            <a href="/tr/blog.html">Blog</a>
+            <a href="/tr/hakkimda.html">Hakkımda</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="selection-screen">
+            <h2>Hangi Becerinizi Geliştirmek İstersiniz?</h2>
+            <div class="game-selection-container">
+                <button class="game-choice" data-game="adam-asmaca">Adam Asmaca (Dil Becerisi)</button>
+                <button class="game-choice" data-game="sirali-hatirlama">Sıralı Hatırlama (Hafıza)</button>
+                <button class="game-choice" data-game="stroop-testi">Stroop Testi (Dikkat)</button>
+                <button class="game-choice" data-game="n-back">N-Back Testi (Çalışma Belleği)</button>
+            </div>
+        </div>
+
+        <div id="game-container" class="hidden"> 
+            <div id="game-content"></div>
+            <button id="back-to-menu">Geri Dön</button> </div>
+    </main>
+
+    <footer>
+        <p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p>
+    </footer>
+    <script src="/script.js"></script>
+</body>
+</html>
