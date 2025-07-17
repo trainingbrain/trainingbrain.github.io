@@ -32,54 +32,69 @@
     <main>
         <div id="cognitive-tests-screen">
             <h2>Bilişsel Testler</h2>
+            <p class="page-intro">Yürütücü işlevlerinizi, dikkatinizi ve bilişsel esnekliğinizi değerlendirmek için tasarlanmış standart nöropsikolojik testler.</p>
             <div class="game-selection-container">
                 <button class="game-choice" data-game="wcst">Wisconsin Kart Eşleştirme Testi</button>
-                <button class="game-choice" data-game="trail-making">İz Sürme Testi (Yakında!)</button>
+                <button class="game-choice" data-game="trail-making" disabled>İz Sürme Testi (Yakında!)</button>
             </div>
         </div>
     
         <div id="wcst-main-container" class="hidden">
-            <div id="wcst-start-screen" class="page-container">
-                <h3>Wisconsin Kart Eşleştirme Testi (WCST)</h3>
-                <p class="game-description">
-                    Bu biraz değişik bir oyun çünkü testi nasıl yapacağınız konusunda size verilen herbir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor. Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.
-                </p>
-                <div class="wcst-education-level">
-                    <h4>Eğitim Seviyenizi Seçin:</h4>
-                    <div class="education-options">
-                        <button class="education-btn" data-level="ilkokul">İlkokul</button>
-                        <button class="education-btn" data-level="ortaokul">Ortaokul</button>
-                        <button class="education-btn" data-level="lise">Lise</button>
-                        <button class="education-btn" data-level="universite">Üniversite</button>
-                    </div>
-                </div>
-                <button id="wcst-start-btn" disabled>Testi Başlat</button>
-            </div>
-    
-            <div id="wcst-game-area" class="hidden page-container">
-                <div id="wcst-stimulus-cards" class="card-area">
-                    </div>
-                <div id="wcst-response-area">
-                    <div id="wcst-response-card" class="card-area">
+            <div id="game-content">
+                <div id="wcst-start-screen">
+                    <h2>Wisconsin Kart Eşleme Testi</h2>
+                    
+                    <div class="wcst-education-level">
+                        <h3>Lütfen eğitim düzeyinizi seçin:</h3>
+                        <div class="education-options">
+                            <button class="education-btn" data-level="ilkokul">İlkokul</button>
+                            <button class="education-btn" data-level="ortaokul">Ortaokul</button>
+                            <button class="education-btn" data-level="lise">Lise</button>
+                            <button class="education-btn" data-level="universite">Üniversite</button>
                         </div>
+                    </div>
+
+                    <div class="wcst-instructions">
+                        <h3>Yönergeler</h3>
+                        <p>
+                            Bu biraz değişik bir oyun çünkü testi nasıl yapacağınız konusunda size verilen herbir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor. Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.
+                        </p>
+                    </div>
+
+                    <button id="wcst-start-btn" disabled>Teste Başla</button>
+                </div>
+
+
+                <div id="wcst-game-screen" class="hidden">
+                    <div class="wcst-info-panel">
+                        <div>Tamamlanan Kategori: <span id="wcst-categories">0</span></div>
+                        <div>Toplam Hata: <span id="wcst-total-errors">0</span></div>
+                        <div>Perseveratif Hata: <span id="wcst-perse-errors">0</span></div>
+                        <div>Kalan Kart: <span id="wcst-cards-left">128</span></div>
+                    </div>
+
+                    <div id="stimulus-cards-container" class="card-area"></div>
                     <div id="wcst-feedback"></div>
+                    <div id="response-card-container" class="card-area">
+                        <div id="current-response-card"></div>
+                    </div>
                 </div>
-                <div id="wcst-stats">
-                    <p>Doğru Cevap: <span id="wcst-correct-count">0</span></p>
-                    <p>Yanlış Cevap: <span id="wcst-error-count">0</span></p>
-                    <p>Kategori: <span id="wcst-category-count">0</span></p>
+
+                <div id="wcst-results-modal" class="game-over-modal hidden">
+                    <div class="modal-content">
+                        <h3>Test Sonuçları</h3>
+                        <div class="wcst-results"></div>
+                        <button id="wcst-back-to-tests">Testler Sayfasına Geri Dön</button>
+                    </div>
                 </div>
-            </div>
-    
-            <div id="game-container" class="hidden"> 
-                <div id="game-content"></div>
-                <button id="back-to-menu">Geri Dön</button> 
-            </div>
+                </div>
+            <button id="back-to-menu">Geri Dön</button> 
         </div>
+
     </main>
 
     <footer>
-        <p>© 2025 - Deep Brain. Tüm hakları sakallıdır.</p>
+        <p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p>
     </footer>
     <script src="/script.js"></script>
 </body>
