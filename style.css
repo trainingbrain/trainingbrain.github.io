@@ -27,27 +27,32 @@ body {
     line-height: 1.7; /* Metinler arası boşluğu artırın */
 }
 
-/* Header Alanı */
+/* Header Alanı - background.jpg ile kaplanıyor */
 header {
-    background-color: var(--white);
+    background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)), url('/background.jpg'); /* Koyu katman ve resim */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    color: white; /* Header metinlerini okunabilir yapmak için beyaz */
+    
     padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky; /* Sayfa kaydırıldığında üstte sabit kalsın */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Açık renkli kenarlık */
+    position: sticky; 
     top: 0;
-    z-index: 50; /* Diğer elementlerin önüne gelsin */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Hafif gölge */
+    z-index: 50; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Biraz daha belirgin gölge */
 }
 
 header h1 {
-    color: var(--secondary-color);
+    color: var(--white); /* Başlık beyaz olsun */
     margin: 0;
-    font-size: 2.8em; /* Daha büyük ve dikkat çekici */
-    font-weight: 800; /* Daha cesur */
+    font-size: 2.8em; 
+    font-weight: 800; 
     margin-bottom: 10px;
 }
 
 header p {
-    color: var(--text-color-light);
+    color: rgba(255, 255, 255, 0.9); /* Paragraf hafif şeffaf beyaz */
     font-size: 1.1em;
     margin-top: 5px;
     margin-bottom: 15px;
@@ -63,7 +68,7 @@ header p {
 
 .main-nav a {
     text-decoration: none;
-    color: var(--secondary-color);
+    color: var(--white); /* Navigasyon linkleri beyaz olsun */
     font-weight: bold;
     padding: 5px 10px;
     border-bottom: 2px solid transparent;
@@ -71,16 +76,17 @@ header p {
 }
 
 .main-nav a:hover {
-    border-color: var(--primary-color);
+    border-color: var(--primary-color); /* Hover'da ana renk */
     color: var(--primary-color);
 }
 
-/* Aktif sayfa için stil */
 .main-nav a.active { 
     border-color: var(--primary-color);
     color: var(--primary-color);
     font-weight: 700;
 }
+
+/* Diğer mevcut CSS kodları aşağıdan itibaren aynı kalır */
 
 /* Ana İçerik */
 main {
@@ -89,7 +95,7 @@ main {
 }
 
 h2 {
-    font-size: 2.2em; /* Alt başlıklar için uygun boyut */
+    font-size: 2.2em;
     font-weight: 700;
     color: var(--secondary-color);
     margin-bottom: 30px;
@@ -102,7 +108,7 @@ h3 {
 
 p {
     font-size: 1.1em;
-    line-height: 1.8; /* Paragraflar için daha fazla satır aralığı */
+    line-height: 1.8;
     margin-bottom: 1em;
 }
 
@@ -112,7 +118,6 @@ p {
     color: var(--text-color-light);
 }
 
-/* Oyun Seçim Butonları */
 .game-selection-container {
     display: flex;
     justify-content: center;
@@ -139,14 +144,12 @@ p {
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-/* Oyun Alanı ve Geri Butonu */
-/* game-container sadece oyunlar çalıştığında görünecek */
 #game-container {
     background-color: var(--white);
     padding: 30px;
     border-radius: 12px;
     box-shadow: var(--box-shadow-medium);
-    max-width: 900px; /* Daha geniş bir alan */
+    max-width: 900px; 
     margin: 20px auto;
 }
 
@@ -154,12 +157,12 @@ p {
     background-color: var(--accent-red);
     color: var(--white);
     border: none;
-    padding: 12px 25px; /* Biraz daha büyük */
-    border-radius: 8px; /* Daha uyumlu yuvarlaklık */
+    padding: 12px 25px; 
+    border-radius: 8px; 
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    margin-top: 30px; /* Daha fazla boşluk */
+    margin-top: 30px; 
 }
 
 #back-to-menu:hover {
@@ -167,29 +170,25 @@ p {
     transform: translateY(-2px);
 }
 
-/* Alt Bilgi */
 footer {
     padding: 20px;
     background-color: var(--secondary-color);
     color: #ecf0f1;
     font-size: 0.9em;
-    margin-top: auto; /* Sayfanın en altına yapıştır */
+    margin-top: auto;
 }
 
-/* Yardımcı Class */
-/* Bu class'lar artık doğrudan HTML'de kullanılmayacak, sadece JS ile elementler oluşturulursa*/
 .hidden {
     display: none;
 }
 
-/* --- Genel Oyun Sonu Modalı --- */
 .game-over-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Daha belirgin koyuluk */
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -201,7 +200,7 @@ footer {
     padding: 40px;
     border-radius: 12px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Daha belirgin gölge */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     max-width: 450px;
     width: 90%;
 }
@@ -229,7 +228,6 @@ footer {
     transform: translateY(-2px);
 }
 
-/* --- Adam Asmaca Oyun Stilleri --- */
 #game-content {
     display: flex;
     flex-direction: column;
@@ -292,7 +290,7 @@ footer {
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    max-width: 650px; /* Daha geniş klavye alanı */
+    max-width: 650px; 
     margin-top: 20px;
 }
 
@@ -332,8 +330,6 @@ footer {
     box-shadow: none;
 }
 
-
-/* --- Sıralı Hatırlama Oyun Stilleri --- */
 #sequence-status {
     font-size: 1.7em;
     font-weight: bold;
@@ -344,13 +340,13 @@ footer {
 
 #sequence-game-board {
     display: grid;
-    grid-template-columns: repeat(3, 120px); /* Kutucukları büyütün */
+    grid-template-columns: repeat(3, 120px); 
     grid-template-rows: repeat(3, 120px);
-    gap: 20px; /* Boşlukları artırın */
-    background-color: #dbe3e7; /* Daha yumuşak bir arka plan */
+    gap: 20px; 
+    background-color: #dbe3e7; 
     padding: 20px;
     border-radius: 15px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* İç gölge */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); 
 }
 
 .sequence-tile {
@@ -359,10 +355,10 @@ footer {
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
     border: 2px solid #95a5a6;
-    display: flex; /* Ortalamak için */
+    display: flex; 
     justify-content: center;
     align-items: center;
-    font-size: 3em; /* Sayılar veya semboller için */
+    font-size: 3em; 
     font-weight: bold;
     color: var(--secondary-color);
 }
@@ -375,20 +371,18 @@ footer {
 
 .sequence-tile.active {
     background-color: var(--primary-color);
-    transform: scale(1.08); /* Daha belirgin büyüme */
+    transform: scale(1.08); 
     border-color: #2980b9;
     color: var(--white);
-    box-shadow: 0 0 15px var(--primary-color); /* Parlama efekti */
+    box-shadow: 0 0 15px var(--primary-color); 
 }
 
-
-/* --- Stroop Testi Oyun Stilleri --- */
 #stroop-word {
-    font-size: 5.5em; /* Daha büyük */
+    font-size: 5.5em; 
     font-weight: bold;
     text-transform: uppercase;
     margin: 40px 0;
-    min-height: 100px; /* İçeriğin kaymasını engeller */
+    min-height: 100px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -406,13 +400,13 @@ footer {
     background-color: #f0f0f0;
     color: var(--text-color-dark);
     border: 2px solid #ccc;
-    padding: 15px 35px; /* Biraz daha geniş */
-    border-radius: 10px; /* Daha yuvarlak */
-    font-size: 1.3em; /* Daha büyük font */
+    padding: 15px 35px; 
+    border-radius: 10px; 
+    font-size: 1.3em; 
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 140px; /* Daha geniş butonlar */
+    min-width: 140px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -425,9 +419,9 @@ footer {
     display: flex;
     justify-content: space-around;
     width: 100%;
-    max-width: 500px; /* Daha geniş alan */
+    max-width: 500px; 
     margin: 20px auto;
-    font-size: 1.6em; /* Daha büyük font */
+    font-size: 1.6em; 
     font-weight: 600;
     color: var(--secondary-color);
 }
@@ -437,7 +431,6 @@ footer {
     color: var(--primary-color);
 }
 
-/* --- Stroop Testi Başlangıç Ekranı Stilleri --- */
 #stroop-start-screen {
     padding: 30px;
 }
@@ -472,8 +465,6 @@ footer {
     background-color: #27ae60;
     transform: translateY(-2px);
 }
-
-/* --- Blog Sayfası ve Makale Stilleri --- */
 
 .page-container {
     background-color: var(--white);
@@ -512,7 +503,7 @@ footer {
 .article-preview h3 a {
     text-decoration: none;
     color: var(--secondary-color);
-    font-size: 1.7em; /* Biraz büyütülmüş */
+    font-size: 1.7em; 
     transition: color 0.3s;
     font-weight: 700;
 }
@@ -522,7 +513,7 @@ footer {
 }
 
 .article-meta {
-    font-size: 0.95em; /* Hafif büyütülmüş */
+    font-size: 0.95em; 
     color: var(--text-color-light);
     margin-top: 8px;
     margin-bottom: 18px;
@@ -568,7 +559,6 @@ footer {
     transform: translateY(-2px);
 }
 
-/* Tam Makale Stilleri */
 .full-article h1 {
     font-size: 2.5em;
     color: var(--secondary-color);
@@ -597,7 +587,6 @@ footer {
     margin-bottom: 1.2em;
 }
 
-/* Liste maddeleri için stil */
 .full-article ul, .full-article ol {
     margin-left: 20px;
     margin-bottom: 1em;
@@ -610,14 +599,12 @@ footer {
     margin-bottom: 0.5em;
 }
 
-
-/* --- Adam Asmaca Seviye Seçim Stilleri --- */
 .level-selection-container {
     display: flex;
     justify-content: center;
     gap: 20px;
     margin-top: 30px;
-    flex-wrap: wrap; /* Mobil için sarma */
+    flex-wrap: wrap; 
 }
 
 .level-choice {
@@ -631,7 +618,6 @@ footer {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Farklı seviyeler için farklı renkler */
 .level-choice[data-level="basit"] {
     border-color: var(--accent-green);
     color: var(--accent-green);
@@ -643,7 +629,7 @@ footer {
 }
 
 .level-choice[data-level="orta"] {
-    border-color: #f39c12; /* Turuncu */
+    border-color: #f39c12; 
     color: #f39c12;
 }
 .level-choice[data-level="orta"]:hover {
@@ -662,8 +648,6 @@ footer {
     box-shadow: 0 5px 10px rgba(231, 76, 60, 0.2);
 }
 
-/* --- Wisconsin Kart Eşleştirme Egzersizi Stilleri --- */
-
 .wcst-container {
     display: flex;
     flex-direction: column;
@@ -675,14 +659,14 @@ footer {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    font-size: 1.3em; /* Daha büyük */
+    font-size: 1.3em; 
     font-weight: bold;
     color: var(--secondary-color);
 }
 
 #wcst-feedback {
-    min-height: 40px; /* Daha fazla yer */
-    font-size: 2em; /* Daha büyük */
+    min-height: 40px; 
+    font-size: 2em; 
     font-weight: bold;
 }
 
@@ -698,51 +682,51 @@ footer {
     width: 100%;
     display: flex;
     justify-content: space-around;
-    padding: 25px; /* Daha fazla padding */
+    padding: 25px; 
     background-color: #ecf0f1;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Hafif dış gölge */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
 }
 
 .card {
-    width: 110px; /* Kartları büyüt */
+    width: 110px; 
     height: 150px;
-    border: 2px solid #aebac1; /* Daha yumuşak kenarlık */
+    border: 2px solid #aebac1; 
     background-color: white;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 8px; /* Boşluk artırıldı */
+    gap: 8px; 
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    transition: all 0.2s; /* Geçişler eklendi */
+    transition: all 0.2s; 
+}
+
+#target-cards-container .card {
+    cursor: pointer;
 }
 
 #target-cards-container .card:hover {
-    transform: translateY(-8px); /* Daha belirgin kalkma */
+    transform: translateY(-8px); 
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    border-color: var(--primary-color); /* Hover'da renk değişimi */
+    border-color: var(--primary-color); 
 }
 
 .card-shape {
     fill: currentColor;
-    width: 60px; /* Şekillerin boyutunu büyüt */
+    width: 60px; 
     height: 60px;
 }
 
-/* Renkler için yardımcı sınıflar */
 .color-red { color: var(--accent-red); }
 .color-green { color: var(--accent-green); }
-.color-blue { color: var(--primary-color); } /* Mavi, ana renk ile eşleşsin */
+.color-blue { color: var(--primary-color); } 
 .color-yellow { color: var(--stroop-yellow); }
-
-
-/* --- WCST Başlangıç ve Sonuç Ekranı Stilleri --- */
 
 .wcst-start-screen {
     text-align: left;
-    max-width: 650px; /* Daha geniş */
+    max-width: 650px; 
     margin: 0 auto;
 }
 
@@ -776,11 +760,11 @@ footer {
 }
 
 .education-btn, #wcst-start-btn {
-    padding: 12px 28px; /* Biraz daha büyük */
+    padding: 12px 28px; 
     font-size: 1.15em;
     cursor: pointer;
     border-radius: 8px;
-    border: 2px solid var(--primary-color); /* Kalın kenarlık */
+    border: 2px solid var(--primary-color); 
     background-color: transparent;
     color: var(--primary-color);
     font-weight: bold;
@@ -802,7 +786,7 @@ footer {
 
 #wcst-start-btn {
     display: block;
-    margin: 30px auto; /* Daha fazla boşluk */
+    margin: 30px auto; 
     background-color: var(--accent-green);
     border-color: var(--accent-green);
     color: white;
@@ -817,7 +801,6 @@ footer {
     transform: none;
 }
 
-/* Sonuç Modalı için daha detaylı stil */
 .wcst-results p {
     font-size: 1.1em;
     line-height: 1.8;
@@ -833,27 +816,25 @@ footer {
     color: var(--primary-color);
 }
 
-/* --- N-Back Testi Stilleri --- */
-
 .nback-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px; /* Daha fazla boşluk */
+    gap: 30px; 
 }
 
 #nback-stimulus-box {
-    width: 220px; /* Büyütülmüş */
+    width: 220px; 
     height: 220px;
-    border: 4px solid var(--secondary-color); /* Kalın kenarlık */
-    border-radius: 15px; /* Daha yuvarlak */
+    border: 4px solid var(--secondary-color); 
+    border-radius: 15px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 8.5em; /* Daha büyük font */
+    font-size: 8.5em; 
     font-weight: bold;
     color: var(--secondary-color);
-    background-color: #fcfcfc; /* Hafif arka plan */
+    background-color: #fcfcfc; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
@@ -862,8 +843,8 @@ footer {
 }
 
 #nback-match-button {
-    padding: 22px 55px; /* Daha büyük */
-    font-size: 1.6em; /* Daha büyük */
+    padding: 22px 55px; 
+    font-size: 1.6em; 
     font-weight: bold;
     cursor: pointer;
     background-color: var(--primary-color);
@@ -895,7 +876,7 @@ footer {
 
 #nback-stats {
     display: flex;
-    gap: 40px; /* Daha fazla boşluk */
+    gap: 40px; 
     font-size: 1.3em;
     color: var(--secondary-color);
     font-weight: 600;
@@ -904,7 +885,6 @@ footer {
     color: var(--primary-color);
     font-weight: bold;
 }
-
 
 .game-description {
     font-size: 1.1em;
@@ -917,44 +897,42 @@ footer {
 
 /* Ana Sayfa İçeriği Stilleri */
 .homepage-content {
-    background-color: var(--white); /* Arka plan resmi buraya taşındı */
+    background-color: var(--white); 
     background-image: url('/neuronbackground.webp'); /* Sadece ana sayfa içeriğinde görülecek */
     background-size: cover;
     background-position: center center;
-    background-attachment: scroll; /* Sabit değil, kendi bölümü içinde kayabilir */
+    background-attachment: scroll; 
     background-repeat: no-repeat;
     background-blend-mode: multiply;
-    background-color: rgba(44, 62, 80, 0.7); /* Koyu gri/mavi ile karıştır */
+    background-color: rgba(44, 62, 80, 0.7); 
 
     padding: 40px;
     border-radius: 15px;
     box-shadow: var(--box-shadow-medium);
-    max-width: 1000px; /* Daha geniş alan */
+    max-width: 1000px; 
     margin: 30px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
     text-align: center;
-    color: white; /* Metin rengini beyaza çevirdik okunabilirlik için */
+    color: white; 
 }
 
-/* Homepage-content içindeki elemanların renklerini ayarlayalım */
 .homepage-content h2 {
-    color: var(--white); /* Ana başlık beyaz olsun */
+    color: var(--white); 
 }
 .homepage-content p {
-    color: rgba(255, 255, 255, 0.9); /* Paragraflar hafif şeffaf beyaz */
+    color: rgba(255, 255, 255, 0.9); 
 }
 
-
 .homepage-content .hero-image {
-    width: 60%; /* Oranı koruyarak büyüt */
-    max-width: 400px; /* Maksimum boyut */
+    width: 60%; 
+    max-width: 400px; 
     height: auto;
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    animation: fadeIn 1.5s ease-out; /* Hafif giriş animasyonu */
+    animation: fadeIn 1.5s ease-out; 
 }
 
 .homepage-content .call-to-action-buttons {
@@ -968,19 +946,19 @@ footer {
 .homepage-content .cta-button {
     text-decoration: none;
     padding: 18px 40px;
-    border-radius: 50px; /* Yuvarlak butonlar */
+    border-radius: 50px; 
     font-size: 1.2em;
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border: 2px solid var(--white); /* CTA buton kenarlıkları beyaz */
-    color: var(--white); /* CTA buton metinleri beyaz */
-    background-color: transparent; /* Şeffaf arka plan */
+    border: 2px solid var(--white); 
+    color: var(--white); 
+    background-color: transparent; 
 }
 
 .homepage-content .cta-button:hover {
-    background-color: var(--white); /* Hover'da beyaz arka plan */
-    color: var(--secondary-color); /* Hover'da koyu metin */
+    background-color: var(--white); 
+    color: var(--secondary-color); 
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
@@ -1036,7 +1014,7 @@ footer {
         font-size: 0.95em;
     }
 
-    #game-container, .page-container, .modal-content { /* language-selector kaldırıldı */
+    #game-container, .page-container, .modal-content { 
         padding: 20px;
         margin: 15px auto;
         width: auto;
