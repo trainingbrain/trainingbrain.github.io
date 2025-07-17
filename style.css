@@ -1286,3 +1286,7 @@ footer {
 }
 .wcst-results p:last-of-type { border-bottom: none; }
 .wcst-results strong { color: var(--primary-color); }
+/* Her zaman gizli kalması gereken elementler için Kural */
+.hidden {
+    display: none !important;
+}
