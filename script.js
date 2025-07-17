@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ---- HTML ELEMANLARI ----
     const homepageMainContent = document.getElementById('homepage-main-content');
-    const selectionScreen = document.getElementById('selection-screen');
-    const cognitiveTestsScreen = document.getElementById('cognitive-tests-screen'); // Yeni test ekranı
-    const gameContainer = document.getElementById('game-container');
-    const gameContent = document.getElementById('game-content');
-    const gameChoiceButtons = document.querySelectorAll('.game-choice');
-    const backToMenuButton = document.getElementById('back-to-menu');
-    const mainNavLinks = document.querySelectorAll('.main-nav a');
-    const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); // Ana sayfadaki CTA butonları
+    const selectionScreen = document.getElementById('selection-screen'); // Zihinsel Egzersizler & Oyunlar ekranı
+    const cognitiveTestsScreen = document.getElementById('cognitive-tests-screen'); // Bilişsel Testler ekranı
+    const gameContainer = document.getElementById('game-container'); // Oyunların çalıştığı konteyner
+    const gameContent = document.getElementById('game-content'); // Oyunların iç içeriği
+    const gameChoiceButtons = document.querySelectorAll('.game-choice'); // Tüm oyun/test seçim butonları
+    const backToMenuButton = document.getElementById('back-to-menu'); // Oyun içindeki "Ana Menüye Dön" butonu
+    const mainNavLinks = document.querySelectorAll('.main-nav a'); // Üst navigasyon menüsü linkleri
+    const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); // Ana sayfadaki büyük CTA butonları
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -61,11 +61,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentGameTimer = null;
 
-    // --- Navigasyon ve CTA Buton Olayları ---
+    // Fonksiyon: Sadece belirli içerik ekranlarını gizler, header ve nav'ı etkilemez
+    function hideContentScreens() {
+        homepageMainContent.classList.add('hidden');
+        selectionScreen.classList.add('hidden');
+        cognitiveTestsScreen.classList.add('hidden');
+        gameContainer.classList.add('hidden'); // Oyun aktifse onu da gizle
+        
+        // Oyun içi timer'ları temizle ve içeriği sıfırla
+        if (currentGameTimer) clearTimeout(currentGameTimer);
+        if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
+        if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
+        gameContent.innerHTML = ''; // Oyun içeriğini temizle
+        const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); // Oyun bitiş modalını kaldır
+    }
+
+    // --- Navigasyon Link Olayları ---
     mainNavLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             // Blog veya Hakkımda gibi doğrudan linke sahip olanlar için HTML'in varsayılan davranışına izin ver
             if (link.dataset.nav === 'blog' || link.dataset.nav === 'about') {
+                hideContentScreens(); // Mevcut içerik ekranlarını gizle
                 // Sadece aktif sınıfını yönet
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
@@ -74,19 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             event.preventDefault(); // Diğer durumlarda varsayılan link davranışını engelle
 
-            // Tüm içerik ekranlarını gizle
-            homepageMainContent.classList.add('hidden');
-            selectionScreen.classList.add('hidden');
-            cognitiveTestsScreen.classList.add('hidden');
-            gameContainer.classList.add('hidden'); // Oyun aktifse onu da gizle
+            hideContentScreens(); // Önce içerik ekranlarını gizle
             
-            // Oyun içi timer'ları temizle ve içeriği sıfırla
-            if (currentGameTimer) clearTimeout(currentGameTimer);
-            if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
-            if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
-            gameContent.innerHTML = ''; // Oyun içeriğini temizle
-            const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); // Oyun bitiş modalını kaldır
-
             // Navigasyon linklerini pasif yap
             mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
             link.classList.add('active'); // Tıklanan linki aktif yap
@@ -102,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Ana Sayfa CTA Buton Olayları ---
     ctaButtons.forEach(button => {
         button.addEventListener('click', (event) => {
             // Blog CTA'sı için doğrudan linke izin ver
@@ -111,11 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             event.preventDefault(); // Diğer CTA'lar için varsayılan link davranışını engelle
 
-            homepageMainContent.classList.add('hidden');
-            selectionScreen.classList.add('hidden');
-            cognitiveTestsScreen.classList.add('hidden');
-            gameContainer.classList.add('hidden');
-
+            hideContentScreens(); // Önce içerik ekranlarını gizle
+            
             const ctaType = button.dataset.nav;
             if (ctaType === 'games-cta') {
                 selectionScreen.classList.remove('hidden');
@@ -125,21 +128,21 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (ctaType === 'tests-cta') {
                 cognitiveTestsScreen.classList.remove('hidden');
                 // CTA'dan gelince menüdeki ilgili linki de aktif yap
-                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
+                mainNavLinks.forEach(navLink => navLink.classList.remove('active')); // Diğer aktifleri temizle
                 document.querySelector('.main-nav a[data-nav="tests"]').classList.add('active');
             }
         });
     });
 
-    // Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için)
+    // --- Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için) ---
     gameChoiceButtons.forEach(button => {
         button.addEventListener('click', () => {
             const game = button.dataset.game;
-            selectionScreen.classList.add('hidden'); // Oyun seçimi ekranını gizle
-            cognitiveTestsScreen.classList.add('hidden'); // Bilişsel testler ekranını da gizle
+            hideContentScreens(); // Oyun başlamadan önce sadece içerik ekranlarını gizle
             gameContainer.classList.remove('hidden'); // Oyun konteynerini göster
 
             // Navigasyon linklerini pasif yap, oyun içindeyken özel bir aktiflik olmasın
+            // (veya isterseniz ilgili oyun kategorisi linkini aktif bırakabilirsiniz - şimdilik pasif)
             mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
 
             if (backToMenuButton) backToMenuButton.innerText = langTexts[currentLang].backToMenu;
@@ -149,37 +152,26 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (game === 'sirali-hatirlama') startSequenceMemory();
             else if (game === 'stroop-testi') startStroopTest();
             else if (game === 'wcst') { gameContent.innerHTML = `<h2>Wisconsin Card Sorting Exercise</h2><p>${langTexts[currentLang].wcstDev}</p>`; } 
-            else if (game === 'trail-making') { gameContent.innerHTML = `<h2>Trail Making Test</h2><p>${langTexts[currentLang].trailMakingDev}</p>`; }
+            else if (game === 'trail-making') { gameContent.innerHTML = `<h2>İz Sürme Testi</h2><p>${langTexts[currentLang].trailMakingDev}</p>`; }
             else if (game === 'n-back') startNBack();
         });
     });
 
-    // Ana Menüye Dön Butonu
+    // --- Ana Menüye Dön Butonu ---
     backToMenuButton.addEventListener('click', () => { 
-        gameContainer.classList.add('hidden'); 
+        hideContentScreens(); // İçerik ekranlarını gizle
         homepageMainContent.classList.remove('hidden'); // Ana sayfayı tekrar göster
         
-        // Oyun içi timer'ları temizle
-        if (currentGameTimer) clearTimeout(currentGameTimer);
-        if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer);
-        if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop);
-
-        gameContent.innerHTML = ''; 
-        const modal = document.querySelector('.game-over-modal'); 
-        if (modal) modal.remove(); 
-
         // Navigasyon linklerini güncelle
         mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
         document.querySelector('.main-nav a[data-nav="home"]').classList.add('active');
     });
 
-    // Sayfa yüklendiğinde Ana Sayfa linkini aktif yap ve diğer ekranları gizle
-    // Bu, sitenin başlangıçta Ana Sayfa içeriğini göstermesini sağlar.
-    homepageMainContent.classList.remove('hidden');
-    selectionScreen.classList.add('hidden');
-    cognitiveTestsScreen.classList.add('hidden');
-    gameContainer.classList.add('hidden');
-    document.querySelector('.main-nav a[data-nav="home"]').classList.add('active');
+    // --- Sayfa Yüklendiğinde Başlangıç Durumu ---
+    // Bu, sitenin ilk yüklendiğinde Ana Sayfa içeriğini göstermesini sağlar.
+    hideContentScreens(); // Başlangıçta tüm içerik ekranlarını gizle
+    homepageMainContent.classList.remove('hidden'); // Sadece Ana Sayfayı göster
+    document.querySelector('.main-nav a[data-nav="home"]').classList.add('active'); // Ana Sayfa linkini aktif yap
 
 
     function showGameOverModal(game, isWin, data) { if (currentGameTimer) clearTimeout(currentGameTimer); if (nbackGameLoop) clearTimeout(nbackGameLoop); const modal = document.createElement('div'); modal.classList.add('game-over-modal'); let content = '';
