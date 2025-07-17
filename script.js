@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded event fired. Script is running."); // Script'in çalışıp çalışmadığını kontrol
+
     // ---- HTML ELEMANLARI ----
     const homepageMainContent = document.getElementById('homepage-main-content');
     const selectionScreen = document.getElementById('selection-screen'); // Zihinsel Egzersizler & Oyunlar ekranı
@@ -9,6 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToMenuButton = document.getElementById('back-to-menu'); // Oyun içindeki "Ana Menüye Dön" butonu
     const mainNavLinks = document.querySelectorAll('.main-nav a'); // Üst navigasyon menüsü linkleri
     const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); // Ana sayfadaki büyük CTA butonları
+
+    // Elementlerin doğru bulunup bulunmadığını kontrol edelim
+    console.log("homepageMainContent found:", !!homepageMainContent);
+    console.log("selectionScreen found:", !!selectionScreen);
+    console.log("cognitiveTestsScreen found:", !!cognitiveTestsScreen);
+    console.log("gameContainer found:", !!gameContainer);
+    console.log("gameContent found:", !!gameContent);
+    console.log("gameChoiceButtons count:", gameChoiceButtons.length);
+    console.log("backToMenuButton found:", !!backToMenuButton);
+    console.log("mainNavLinks count:", mainNavLinks.length);
+    console.log("ctaButtons count:", ctaButtons.length);
+
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -63,11 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Yeni: Tek bir fonksiyonla hangi ekranın aktif olacağını kontrol edelim
     function showScreen(screenToShow) {
+        console.log("showScreen called with:", screenToShow ? screenToShow.id : 'null'); // Hata ayıklama
+
         // Tüm ana içerik ekranlarını gizle
-        homepageMainContent.classList.add('hidden');
-        selectionScreen.classList.add('hidden');
-        cognitiveTestsScreen.classList.add('hidden');
-        gameContainer.classList.add('hidden');
+        if (homepageMainContent) homepageMainContent.classList.add('hidden');
+        if (selectionScreen) selectionScreen.classList.add('hidden');
+        if (cognitiveTestsScreen) cognitiveTestsScreen.classList.add('hidden');
+        if (gameContainer) gameContainer.classList.add('hidden');
         
         // Oyun içi timer'ları temizle ve içeriği sıfırla
         if (currentGameTimer) clearTimeout(currentGameTimer);
@@ -77,17 +93,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); 
 
         // İstenen ekranı göster
-        screenToShow.classList.remove('hidden');
+        if (screenToShow) { // screenToShow null/undefined ise hata vermesin
+            screenToShow.classList.remove('hidden');
+        } else {
+            console.error("Attempted to show a null or undefined screen!"); // Hata ayıklama
+        }
+
 
         // Navigasyon linklerinin aktifliğini yönet
         mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
         // Eğer gösterilen ekran homepageMainContent ise "Ana Sayfa" linkini aktif yap
         if (screenToShow === homepageMainContent) {
-            document.querySelector('.main-nav a[data-nav="home"]').classList.add('active');
+            const homeLink = document.querySelector('.main-nav a[data-nav="home"]');
+            if (homeLink) homeLink.classList.add('active');
         } else if (screenToShow === selectionScreen) {
-            document.querySelector('.main-nav a[data-nav="games"]').classList.add('active');
+            const gamesLink = document.querySelector('.main-nav a[data-nav="games"]');
+            if (gamesLink) gamesLink.classList.add('active');
         } else if (screenToShow === cognitiveTestsScreen) {
-            document.querySelector('.main-nav a[data-nav="tests"]').classList.add('active');
+            const testsLink = document.querySelector('.main-nav a[data-nav="tests"]');
+            if (testsLink) testsLink.classList.add('active');
         }
         // Blog ve Hakkımda linkleri kendi href'leriyle zaten aktif yönetimi yapıyor
     }
@@ -95,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Navigasyon Link Olayları ---
     mainNavLinks.forEach(link => {
         link.addEventListener('click', (event) => {
+            console.log("Nav link clicked:", link.dataset.nav); // Hata ayıklama
             // Blog veya Hakkımda gibi doğrudan linke sahip olanlar için HTML'in varsayılan davranışına izin ver
             if (link.dataset.nav === 'blog' || link.dataset.nav === 'about') {
                 showScreen(homepageMainContent); // Geçişten önce ana sayfaya dön ve diğer ekranları gizle
@@ -120,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Ana Sayfa CTA Buton Olayları ---
     ctaButtons.forEach(button => {
         button.addEventListener('click', (event) => {
+            console.log("CTA button clicked:", button.dataset.nav); // Hata ayıklama
             // Blog CTA'sı için doğrudan linke izin ver
             if (button.dataset.nav === 'blog-cta') {
                 showScreen(homepageMainContent); // Geçişten önce ana sayfaya dön ve diğer ekranları gizle
@@ -140,10 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için) ---
     gameChoiceButtons.forEach(button => {
         button.addEventListener('click', () => {
+            console.log("Game choice button clicked:", button.dataset.game); // Hata ayıklama
             const game = button.dataset.game;
             showScreen(gameContainer); // Oyun konteynerini göster (diğer her şey gizlenmiş olacak)
 
             // Navigasyon linklerini pasif yap, oyun içindeyken özel bir aktiflik olmasın
+            // (veya isterseniz ilgili oyun kategorisi linkini aktif bırakabilirsiniz - şimdilik pasif)
             mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
 
             if (backToMenuButton) backToMenuButton.innerText = langTexts[currentLang].backToMenu;
@@ -160,17 +188,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Ana Menüye Dön Butonu ---
     backToMenuButton.addEventListener('click', () => { 
+        console.log("Back to menu button clicked."); // Hata ayıklama
         showScreen(homepageMainContent); // Ana sayfayı tekrar göster
     });
 
     // --- Sayfa Yüklendiğinde Başlangıç Durumu ---
     // Bu, sitenin ilk yüklendiğinde Ana Sayfa içeriğini göstermesini sağlar.
+    console.log("Initializing page to homepage."); // Hata ayıklama
     showScreen(homepageMainContent); // Sadece Ana Sayfayı göster ve "Ana Sayfa" linkini aktif yap
 
 
     function showGameOverModal(game, isWin, data) { 
         // Tüm aktif timer'ları temizle ve oyunu durdur
         if (currentGameTimer) clearTimeout(currentGameTimer); 
+        // stroopTimer ve nbackGameLoop'un varlığını kontrol etmeden doğrudan kullanımdan kaçınalım.
+        // typeof kontrolü ile daha güvenli:
         if (typeof stroopTimer !== 'undefined') clearInterval(stroopTimer); 
         if (typeof nbackGameLoop !== 'undefined') clearTimeout(nbackGameLoop); 
         
