@@ -1,38 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOMContentLoaded event fired. Script is running."); 
+    console.log("Script is running."); 
 
     // ---- HTML ELEMANLARI ----
-    const homepageMainContent = document.getElementById('homepage-main-content');
-    const selectionScreen = document.getElementById('selection-screen'); // Zihinsel Egzersizler & Oyunlar ekranı
-    const cognitiveTestsScreen = document.getElementById('cognitive-tests-screen'); // Bilişsel Testler ekranı
-    const gameContainer = document.getElementById('game-container'); // Oyunların çalıştığı konteyner
-    const gameContent = document.getElementById('game-content'); // Oyunların iç içeriği
-    const gameChoiceButtons = document.querySelectorAll('.game-choice'); // Tüm oyun/test seçim butonları
-    const backToMenuButton = document.getElementById('back-to-menu'); // Oyun içindeki "Ana Menüye Dön" butonu
-    const mainNavLinks = document.querySelectorAll('.main-nav a'); // Üst navigasyon menüsü linkleri
-    const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); // Ana sayfadaki büyük CTA butonları
-
-    // OYUN TIMER DEĞİŞKENLERİ: Bunlar GLOBAL SCOPE'ta tanımlanmalı
+    // Bu elementler sadece oyun veya test sayfalarında bulunacak
+    const gameContainer = document.getElementById('game-container'); 
+    const gameContent = document.getElementById('game-content'); 
+    const gameChoiceButtons = document.querySelectorAll('.game-choice'); 
+    const backToMenuButton = document.getElementById('back-to-menu'); 
+    
+    // Global oyun timer değişkenleri (Tüm oyun fonksiyonları bunlara erişmeli)
     let currentGameTimer = null;
     let stroopTimer = null; 
     let nbackGameLoop = null; 
 
-
-    // Elementlerin doğru bulunup bulunmadığını kontrol edelim
-    console.log("homepageMainContent found:", !!homepageMainContent);
-    console.log("selectionScreen found:", !!selectionScreen);
-    console.log("cognitiveTestsScreen found:", !!cognitiveTestsScreen);
-    console.log("gameContainer found:", !!gameContainer);
-    console.log("gameContent found:", !!gameContent);
-    console.log("gameChoiceButtons count:", gameChoiceButtons.length);
-    console.log("backToMenuButton found:", !!backToMenuButton);
-    console.log("mainNavLinks count:", mainNavLinks.length);
-    console.log("ctaButtons count:", ctaButtons.length);
-
-
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
     // ==================================================================
+    // Bu langTexts objesi tüm sayfalarda kullanılabilir
     const langTexts = {
         tr: {
             levelSelect: "Lütfen bir zorluk seviyesi seçin:", correct: "Doğru!", wrong: "Yanlış!", playAgain: "Tekrar Oyna",
@@ -50,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nbackInstruction: "Ekranda beliren harfin, seçtiğiniz seviye kadar (N) önceki harfle aynı olup olmadığını takip edin. Eğer harf aynı ise eşleme butonuna basın.",
             nbackLevels: {"1": "1-Back (Kolay)", "2": "2-Back (Orta)", "3": "3-Back (Zor)"},
             missed: "Kaçırdın!", exerciseOver: "Egzersiz Bitti!", correctDetection: "Doğru Tespit:", error: "Hata:",
-            backToMenu: "Ana Menüye Dön", next: "Sonraki",
+            backToMenu: "Geri Dön", next: "Sonraki", // Games/Tests sayfasından geri dönmek için
             wcstDev: "Bu egzersiz şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin.",
             trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin."
         },
@@ -70,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nbackInstruction: "Track if the letter on the screen is the same as the one that appeared N steps before. If the letter is the same, press the match button.",
             nbackLevels: {"1": "1-Back (Easy)", "2": "2-Back (Medium)", "3": "3-Back (Hard)"},
             missed: "Missed!", exerciseOver: "Exercise Over!", correctDetection: "Correct Detections:", error: "Errors:",
-            backToMenu: "Back to Menu", next: "Next",
+            backToMenu: "Back", next: "Next", 
             wcstDev: "This exercise is currently under development. Please check back later.",
             trailMakingDev: "Trail Making Test is currently under development. Please check back later."
         }
@@ -79,124 +63,58 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
-    // Fonksiyon: Sadece belirli içerik ekranlarını gizler, header ve nav'ı etkilemez
-    function showScreen(screenToShow) {
-        console.log("showScreen called with:", screenToShow ? screenToShow.id : 'null'); 
+    // Sadece oyun veya test sayfalarında bu kod çalışacak
+    // homepageMainContent, selectionScreen, cognitiveTestsScreen gibi elementler sadece kendi sayfalarında var olacak
+    if (gameContainer && gameContent && gameChoiceButtons.length > 0) {
+        // Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için)
+        gameChoiceButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const game = button.dataset.game;
+                gameContainer.classList.remove('hidden'); // Oyun konteynerini göster (başlangıçta HTML'de hidden)
 
-        // Tüm ana içerik ekranlarını gizle
-        if (homepageMainContent) homepageMainContent.classList.add('hidden');
-        if (selectionScreen) selectionScreen.classList.add('hidden');
-        if (cognitiveTestsScreen) cognitiveTestsScreen.classList.add('hidden');
-        if (gameContainer) gameContainer.classList.add('hidden');
-        
-        // Oyun içi timer'ları temizle ve içeriği sıfırla (global tanımlanmış timer'lar)
-        if (currentGameTimer) clearTimeout(currentGameTimer);
-        // Doğru kullanım: Değişkenin null olmadığını kontrol etmeden clearInterval/clearTimeout çağırmamak
-        if (stroopTimer !== null) clearInterval(stroopTimer); 
-        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); 
-        
-        gameContent.innerHTML = ''; 
-        const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); 
+                if (backToMenuButton) {
+                    // Ana Menüye Dön butonunun metnini güncelleyelim
+                    // Hangi sayfadan geldiğimize göre farklı bir dönüş linki verebiliriz
+                    // Örneğin: games.html'den geldiysek back to games.html, tests.html'den geldiysek back to tests.html
+                    if (window.location.pathname.includes('/games.html')) {
+                        backToMenuButton.innerText = langTexts[currentLang].backToMenu;
+                        backToMenuButton.onclick = () => window.location.href = `/${currentLang}/games.html`; // Games sayfasına geri dön
+                    } else if (window.location.pathname.includes('/tests.html')) {
+                        backToMenuButton.innerText = langTexts[currentLang].backToMenu;
+                        backToMenuButton.onclick = () => window.location.href = `/${currentLang}/tests.html`; // Tests sayfasına geri dön
+                    }
+                }
+                
+                // Önceki oyun timer'larını ve içeriğini temizle
+                if (currentGameTimer) clearTimeout(currentGameTimer);
+                if (stroopTimer !== null) clearInterval(stroopTimer); 
+                if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); 
+                gameContent.innerHTML = ''; 
+                const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); 
 
-        // İstenen ekranı göster
-        if (screenToShow) { 
-            screenToShow.classList.remove('hidden');
-        } else {
-            console.error("Attempted to show a null or undefined screen! This might indicate an HTML ID mismatch or element not found."); 
-        }
+                // Oyunları başlat
+                if (game === 'adam-asmaca') startHangman();
+                else if (game === 'sirali-hatirlama') startSequenceMemory();
+                else if (game === 'stroop-testi') startStroopTest();
+                else if (game === 'wcst') { gameContent.innerHTML = `<h2>Wisconsin Kart Eşleştirme Egzersizi</h2><p>${langTexts[currentLang].wcstDev}</p>`; } 
+                else if (game === 'trail-making') { gameContent.innerHTML = `<h2>İz Sürme Testi</h2><p>${langTexts[currentLang].trailMakingDev}</p>`; }
+                else if (game === 'n-back') startNBack();
+            });
+        });
 
-        // Navigasyon linklerinin aktifliğini yönet
-        mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
-        // Gösterilen ekrana göre menü linkini aktif yap
-        if (screenToShow === homepageMainContent) {
-            const homeLink = document.querySelector('.main-nav a[data-nav="home"]');
-            if (homeLink) homeLink.classList.add('active');
-        } else if (screenToShow === selectionScreen) {
-            const gamesLink = document.querySelector('.main-nav a[data-nav="games"]');
-            if (gamesLink) gamesLink.classList.add('active');
-        } else if (screenToShow === cognitiveTestsScreen) {
-            const testsLink = document.querySelector('.main-nav a[data-nav="tests"]');
-            if (testsLink) testsLink.classList.add('active');
-        }
+        // Sayfa yüklendiğinde oyun konteynerini gizle (sadece oyun çalışırken görünür olacak)
+        gameContainer.classList.add('hidden');
     }
 
-    // --- Navigasyon Link Olayları ---
+    // Navigasyon aktif sınıfını yöneten kod (bu tüm sayfalarda çalışacak)
+    const currentPath = window.location.pathname;
     mainNavLinks.forEach(link => {
-        link.addEventListener('click', (event) => {
-            console.log("Nav link clicked:", link.dataset.nav); 
-            // Blog veya Hakkımda gibi doğrudan linke sahip olanlar için HTML'in varsayılan davranışına izin ver
-            if (link.dataset.nav === 'blog' || link.dataset.nav === 'about') {
-                // Bu linkler farklı HTML sayfalarına gidiyor, dolayısıyla JS ile ekranları gizlemeye gerek yok
-                // Sadece aktif sınıfını yönet
-                mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
-                link.classList.add('active');
-                return; // HTML linkini takip et (sayfa yenilenecek)
-            }
-            
-            event.preventDefault(); // Diğer durumlarda varsayılan link davranışını engelle (sayfa yenilenmesin)
-
-            const navType = link.dataset.nav;
-            if (navType === 'home') {
-                showScreen(homepageMainContent);
-            } else if (navType === 'games') {
-                showScreen(selectionScreen);
-            } else if (navType === 'tests') {
-                showScreen(cognitiveTestsScreen);
-            }
-        });
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
     });
-
-    // --- Ana Sayfa CTA Buton Olayları ---
-    ctaButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            console.log("CTA button clicked:", button.dataset.nav); 
-            // Blog CTA'sı için doğrudan linke izin ver
-            if (button.dataset.nav === 'blog-cta') {
-                return; // HTML linkini takip et
-            }
-
-            event.preventDefault(); // Diğer CTA'lar için varsayılan link davranışını engelle
-
-            const ctaType = button.dataset.nav;
-            if (ctaType === 'games-cta') {
-                showScreen(selectionScreen);
-            } else if (ctaType === 'tests-cta') {
-                showScreen(cognitiveTestsScreen);
-            }
-        });
-    });
-
-    // --- Oyun Seçim Butonları (Hem Zihinsel Egzersizler hem de Bilişsel Testler için) ---
-    gameChoiceButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log("Game choice button clicked:", button.dataset.game); 
-            const game = button.dataset.game;
-            showScreen(gameContainer); // Oyun konteynerini göster 
-
-            // Navigasyon linklerini pasif yap, oyun içindeyken özel bir aktiflik olmasın
-            mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
-
-            if (backToMenuButton) backToMenuButton.innerText = langTexts[currentLang].backToMenu;
-            
-            // Oyunları başlat
-            if (game === 'adam-asmaca') startHangman();
-            else if (game === 'sirali-hatirlama') startSequenceMemory();
-            else if (game === 'stroop-testi') startStroopTest();
-            else if (game === 'wcst') { gameContent.innerHTML = `<h2>Wisconsin Kart Eşleştirme Egzersizi</h2><p>${langTexts[currentLang].wcstDev}</p>`; } 
-            else if (game === 'trail-making') { gameContent.innerHTML = `<h2>İz Sürme Testi</h2><p>${langTexts[currentLang].trailMakingDev}</p>`; }
-            else if (game === 'n-back') startNBack();
-        });
-    });
-
-    // --- Ana Menüye Dön Butonu ---
-    backToMenuButton.addEventListener('click', () => { 
-        console.log("Back to menu button clicked."); 
-        showScreen(homepageMainContent); // Ana sayfayı tekrar göster
-    });
-
-    // --- Sayfa Yüklendiğinde Başlangıç Durumu ---
-    console.log("Initializing page to homepage."); 
-    showScreen(homepageMainContent); 
 
 
     function showGameOverModal(game, isWin, data) { 
@@ -257,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); 
-        // 'stroopColors' artık her çağrıda 'langTexts' üzerinden alınıyor
+        const stroopColors = langTexts[currentLang].stroopColors; // local stroopColors tanımlandı
         gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
@@ -349,18 +267,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                let nbackLevel = parseInt(event.target.dataset.level); // Yerel tanımlama
+                let nbackLevel = parseInt(event.target.dataset.level); 
                 initializeNBackGame(nbackLevel);
             });
         });
     }
     
     function initializeNBackGame(nbackLevel) {
-        let nbackSequence = []; // Yerel tanımlama
-        let nbackCurrentStep = 0; // Yerel tanımlama
-        let nbackScore = 0; // Yerel tanımlama
-        let nbackErrors = 0; // Yerel tanımlama
-        let canPressButton = false; // Yerel tanımlama
+        let nbackSequence = []; 
+        let nbackCurrentStep = 0; 
+        let nbackScore = 0; 
+        let nbackErrors = 0; 
+        let canPressButton = false; 
 
         gameContent.innerHTML = `
             <h2>${nbackLevel}-Back Test</h2>
@@ -379,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         generateNBackSequence();
         document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
-        nbackGameLoop = setTimeout(runNBackStep, 1000); // nbackGameLoop burada tanımlanıyor
+        nbackGameLoop = setTimeout(runNBackStep, 1000); 
 
         // İç fonksiyonlar, dış fonksiyonların değişkenlerine erişmeli
         function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
