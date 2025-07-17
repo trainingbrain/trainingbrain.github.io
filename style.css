@@ -75,7 +75,7 @@ header p {
     color: var(--primary-color);
 }
 
-/* Aktif sayfa için stil - JavaScript'e gerek kalmadan HTML class'ı ile yönetilecek */
+/* Aktif sayfa için stil */
 .main-nav a.active { 
     border-color: var(--primary-color);
     color: var(--primary-color);
@@ -140,6 +140,7 @@ p {
 }
 
 /* Oyun Alanı ve Geri Butonu */
+/* game-container sadece oyunlar çalıştığında görünecek */
 #game-container {
     background-color: var(--white);
     padding: 30px;
@@ -176,6 +177,7 @@ footer {
 }
 
 /* Yardımcı Class */
+/* Bu class'lar artık doğrudan HTML'de kullanılmayacak, sadece JS ile elementler oluşturulursa*/
 .hidden {
     display: none;
 }
@@ -715,10 +717,6 @@ footer {
     gap: 8px; /* Boşluk artırıldı */
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     transition: all 0.2s; /* Geçişler eklendi */
-}
-
-#target-cards-container .card {
-    cursor: pointer;
 }
 
 #target-cards-container .card:hover {
