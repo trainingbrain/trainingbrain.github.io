@@ -16,7 +16,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background-color: var(--light-bg); /* Genel sayfa arka planı artık görsel içermiyor, düz renk */
+    background-color: var(--light-bg); /* Genel sayfa arka planı düz renk */
     color: var(--text-color-dark);
     margin: 0;
     padding: 0;
@@ -75,7 +75,8 @@ header p {
     color: var(--primary-color);
 }
 
-.main-nav a.active { /* Aktif sayfa için stil */
+/* Aktif sayfa için stil - JavaScript'e gerek kalmadan HTML class'ı ile yönetilecek */
+.main-nav a.active { 
     border-color: var(--primary-color);
     color: var(--primary-color);
     font-weight: 700;
@@ -111,7 +112,7 @@ p {
     color: var(--text-color-light);
 }
 
-/* Oyun Seçim Butonları (Şimdilik hidden olarak duracak, JS ile görünür olacak) */
+/* Oyun Seçim Butonları */
 .game-selection-container {
     display: flex;
     justify-content: center;
