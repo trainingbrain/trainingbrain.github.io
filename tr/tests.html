@@ -37,10 +37,45 @@
                 <button class="game-choice" data-game="trail-making">İz Sürme Testi (Yakında!)</button>
             </div>
         </div>
-
-        <div id="game-container" class="hidden"> 
-            <div id="game-content"></div>
-            <button id="back-to-menu">Geri Dön</button> </div>
+    
+        <div id="wcst-main-container" class="hidden">
+            <div id="wcst-start-screen" class="page-container">
+                <h3>Wisconsin Kart Eşleştirme Testi (WCST)</h3>
+                <p class="game-description">
+                    Bu biraz değişik bir oyun çünkü testi nasıl yapacağınız konusunda size verilen herbir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor. Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.
+                </p>
+                <div class="wcst-education-level">
+                    <h4>Eğitim Seviyenizi Seçin:</h4>
+                    <div class="education-options">
+                        <button class="education-btn" data-level="ilkokul">İlkokul</button>
+                        <button class="education-btn" data-level="ortaokul">Ortaokul</button>
+                        <button class="education-btn" data-level="lise">Lise</button>
+                        <button class="education-btn" data-level="universite">Üniversite</button>
+                    </div>
+                </div>
+                <button id="wcst-start-btn" disabled>Testi Başlat</button>
+            </div>
+    
+            <div id="wcst-game-area" class="hidden page-container">
+                <div id="wcst-stimulus-cards" class="card-area">
+                    </div>
+                <div id="wcst-response-area">
+                    <div id="wcst-response-card" class="card-area">
+                        </div>
+                    <div id="wcst-feedback"></div>
+                </div>
+                <div id="wcst-stats">
+                    <p>Doğru Cevap: <span id="wcst-correct-count">0</span></p>
+                    <p>Yanlış Cevap: <span id="wcst-error-count">0</span></p>
+                    <p>Kategori: <span id="wcst-category-count">0</span></p>
+                </div>
+            </div>
+    
+            <div id="game-container" class="hidden"> 
+                <div id="game-content"></div>
+                <button id="back-to-menu">Geri Dön</button> 
+            </div>
+        </div>
     </main>
 
     <footer>
