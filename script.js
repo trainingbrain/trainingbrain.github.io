@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainNavLinks = document.querySelectorAll('.main-nav a'); 
     const ctaButtons = document.querySelectorAll('.homepage-content .cta-button'); 
 
-    // Global olarak tanımlanacak oyun değişkenleri
+    // OYUN TIMER DEĞİŞKENLERİ: Bunlar GLOBAL SCOPE'ta (DOMContentLoaded içinde ama fonksiyon dışında) tanımlanmalı.
+    // Bu, showScreen fonksiyonu onları çağırdığında zaten var olmalarını sağlar.
     let currentGameTimer = null;
     let stroopTimer = null; // GLOBAL OLARAK TANIMLANDI
     let nbackGameLoop = null; // GLOBAL OLARAK TANIMLANDI
@@ -89,11 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cognitiveTestsScreen) cognitiveTestsScreen.classList.add('hidden');
         if (gameContainer) gameContainer.classList.add('hidden');
         
-        // Oyun içi timer'ları temizle ve içeriği sıfırla
+        // Oyun içi timer'ları temizle ve içeriği sıfırla (global tanımlanmış timer'lar)
         if (currentGameTimer) clearTimeout(currentGameTimer);
-        // Doğru kullanım: Değişkenin türünü kontrol etmeden doğrudan clearInterval/clearTimeout çağırmamak
-        if (stroopTimer !== null) clearInterval(stroopTimer); // null olmadığını kontrol et
-        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); // null olmadığını kontrol et
+        if (stroopTimer !== null) clearInterval(stroopTimer); // stroopTimer globalde tanımlı olduğu için doğrudan kontrol et
+        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop); // nbackGameLoop globalde tanımlı olduğu için doğrudan kontrol et
         
         gameContent.innerHTML = ''; 
         const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove(); 
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Nav link clicked:", link.dataset.nav); 
             // Blog veya Hakkımda gibi doğrudan linke sahip olanlar için HTML'in varsayılan davranışına izin ver
             if (link.dataset.nav === 'blog' || link.dataset.nav === 'about') {
-                // Eğer bu linkler kendi başına bir sayfaya gidiyorsa showScreen'e gerek yok, doğrudan navigasyon
+                // Bu linkler farklı HTML sayfalarına gidiyor, dolayısıyla JS ile ekranları gizlemeye gerek yok
                 // Sadece aktif sınıfını yönet
                 mainNavLinks.forEach(navLink => navLink.classList.remove('active'));
                 link.classList.add('active');
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); // Timer'ı sadece tanımlıysa temizle
-        stroopColors = langTexts[currentLang].stroopColors; 
+        const stroopColors = langTexts[currentLang].stroopColors; // local stroopColors tanımlandı
         gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function nextStroopRound() {
-        const colorNames = Object.keys(langTexts[currentLang].stroopColors); // StroopColors'ı buradan al
+        const colorNames = Object.keys(langTexts[currentLang].stroopColors); 
         const colorValues = Object.values(langTexts[currentLang].stroopColors);
         let randomWordName = colorNames[Math.floor(Math.random() * colorNames.length)];
         let randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
@@ -376,6 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function runNBackStep() { if (nbackCurrentStep > 0) { checkMissedMatch(); } if (nbackCurrentStep >= NBACK_TRIAL_COUNT) { showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors }); return; } const stimulusBox = document.getElementById('nback-stimulus-box'); const feedbackEl = document.getElementById('nback-feedback'); if (!stimulusBox) return; stimulusBox.style.fontSize = '2.5em'; stimulusBox.style.color = '#2ecc71'; stimulusBox.innerHTML = `${langTexts[currentLang].next} →`; if (feedbackEl) feedbackEl.innerText = ''; nbackGameLoop = setTimeout(() => { const currentStimulusBox = document.getElementById('nback-stimulus-box'); if (currentStimulusBox) { currentStimulusBox.style.fontSize = '8em'; currentStimulusBox.style.color = '#2c3e50'; currentStimulusBox.innerText = nbackSequence[nbackCurrentStep]; canPressButton = true; nbackCurrentStep++; nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME); } }, NBACK_PREPARE_TIME); }
     function handleNBackMatchPress() { if (!canPressButton) return; const feedbackEl = document.getElementById('nback-feedback'); const currentIndex = nbackCurrentStep - 1; const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]); if (isMatch) { nbackScore++; feedbackEl.innerText = langTexts[currentLang].correct; feedbackEl.className = 'correct'; } else { nbackErrors++; feedbackEl.innerText = langTexts[currentLang].falseAlarm; feedbackEl.className = 'wrong'; } updateNBackStats(); canPressButton = false; }
     function checkMissedMatch() { const prevStepIndex = nbackCurrentStep - 1; if (prevStepIndex >= nbackLevel) { const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel]; if (wasMatch && canPressButton) { nbackErrors++; updateNBackStats(); const feedbackEl = document.getElementById('nback-feedback'); if(feedbackEl) { feedbackEl.innerText = langTexts[currentLang].missed; feedbackEl.className = 'wrong'; } } } }
-    function updateNBackStats() { const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors'); if (correctEl) correctEl.innerText = nbackScore; if (errorsEl) errorsEl.innerText = nbackErrors; }
+    function updateNBackStats() { const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors'); if (correctEl) errorsEl.innerText = nbackErrors; }
         
 });
