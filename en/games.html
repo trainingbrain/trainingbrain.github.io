@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Exercises and Games - DEEP BRAIN</title>
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/games.html" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/games.html" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>DEEP BRAIN</h1>
+        <p>Cognitive Exercises Guided by a Neurology Doctor</p>
+        <nav class="main-nav">
+            <a href="/en/index.html">Home</a>
+            <a href="/en/games.html" class="active">Cognitive Exercises & Games</a>
+            <a href="/en/tests.html">Cognitive Tests</a>
+            <a href="/en/blog.html">Blog</a>
+            <a href="/en/about.html">About</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="selection-screen">
+            <h2>Which skill would you like to improve?</h2>
+            <div class="game-selection-container">
+                <button class="game-choice" data-game="adam-asmaca">Hangman (Language)</button>
+                <button class="game-choice" data-game="sirali-hatirlama">Sequence Memory (Memory)</button>
+                <button class="game-choice" data-game="stroop-testi">Stroop Test (Attention)</button>
+                <button class="game-choice" data-game="n-back">N-Back Test (Working Memory)</button>
+            </div>
+        </div>
+
+        <div id="game-container" class="hidden"> 
+            <div id="game-content"></div>
+            <button id="back-to-menu">Back</button> 
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 - Deep Brain. All rights reserved.</p>
+    </footer>
+    <script src="/script.js"></script>
+</body>
+</html>
