@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectionScreenTests = document.getElementById('cognitive-tests-screen'); 
 
     // ==================================================================
-    // ---- GLOBAL OYUN DEĞİŞKENLERİ ----
+    // ---- GLOBAL OYUN DEĞİŞKENLERİ VE SABİTLERİ ----
     // Tüm oyunların skor, sayaç ve durum değişkenleri burada tanımlanmalı.
     // Fonksiyonlar içinde 'let' ile tekrar tanımlanmamalıdır.
     // ==================================================================
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stroop Testi değişkenleri
     let stroopScore = 0;
     let stroopTimeLeft = 0;
-    let currentCorrectColorName; // Bu globalde kalsın
+    let currentCorrectColorName; 
 
     // N-Back Testi değişkenleri
     let nbackLevel;
@@ -44,10 +44,30 @@ document.addEventListener('DOMContentLoaded', () => {
     let nbackScore = 0;
     let nbackErrors = 0;
     let canPressButton = false;
-    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; // Bu sabit kalabilir
-    const NBACK_TRIAL_COUNT = 25; // Bu sabit kalabilir
-    const NBACK_PREPARE_TIME = 1000; // Bu sabit kalabilir
-    const NBACK_STIMULUS_TIME = 2000; // Bu sabit kalabilir
+    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; 
+    const NBACK_TRIAL_COUNT = 25; 
+    const NBACK_PREPARE_TIME = 1000; 
+    const NBACK_STIMULUS_TIME = 2000; 
+
+
+    // WCST Kart Özellikleri ve Kuralları (Const olarak globalde kalabilir)
+    const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
+    const WCST_SHAPES = ['triangle', 'star', 'plus', 'circle'];
+    const WCST_COUNTS = [1, 2, 3, 4];
+    const WCST_RULE_ORDER = ['color', 'shape', 'number', 'color', 'shape', 'number']; 
+
+    const SHAPE_SVGS = { // SVG ikonları (Const olarak globalde kalabilir)
+        triangle: '<svg viewbox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
+        star: '<svg viewbox="0 0 100 100"><polygon points="50,10 61,40 95,40 67,60 78,90 50,70 22,90 33,60 5,40 39,40"/></svg>',
+        plus: '<svg viewbox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>',
+        circle: '<svg viewbox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>'
+    };
+
+    // WCST oyun değişkenleri (Her WCST başlatıldığında sıfırlanmalı, bu yüzden let ile tanımlanıp init fonksiyonunda resetlenmeli)
+    let wcstResponseDeck = [];
+    let wcstStimulusCards = [];
+    let wcstCurrentResponseCard = null;
+    let wcstState = {};
 
 
     // ==================================================================
@@ -483,13 +503,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ==================================================================
     // ---- DİĞER OYUN FONKSİYONLARI ----
+    // Adam Asmaca, Sıralı Hatırlama, Stroop Testi, N-Back Testi
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
     function startHangman() { 
-        hangmanCorrectLetters = []; 
-        hangmanWrongGuessCount = 0; 
-        
+        // Değişkenler her başlatıldığında sıfırlansın veya null atansın
+        let hangmanCurrentWord = ""; // Kelimeyi yerel yap
+        let hangmanDisplayedWord = []; // Gösterilen kelimeyi yerel yap
+        let hangmanRemainingGuesses = 6; // Kalan hakları yerel yap
+
+        showHangmanLevelSelection(); 
+
         function showHangmanLevelSelection() { 
             gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
             document.querySelectorAll('.level-choice').forEach(button => { 
@@ -499,11 +524,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }); 
         }
         function initializeHangmanGame(level) { 
-            hangmanCorrectLetters = []; 
-            hangmanWrongGuessCount = 0; 
+            hangmanCorrectLetters = []; // Globalden geldiği için burada let yok
+            hangmanWrongGuessCount = 0; // Globalden geldiği için burada let yok
+            
             const wordList = langTexts[currentLang].hangmanWords[level]; 
-            hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)]; 
-            gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanMaxWrongGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; 
+            hangmanCurrentWord = wordList[Math.floor(Math.random() * wordList.length)]; 
+            hangmanDisplayedWord = Array(hangmanCurrentWord.length).fill("_");
+            hangmanRemainingGuesses = 6; // Yerel değişkeni sıfırla
+
+            gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanRemainingGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; 
             updateHangmanFigure(); 
             displayHangmanWord(); 
             createHangmanKeyboard(); 
@@ -511,9 +540,9 @@ document.addEventListener('DOMContentLoaded', () => {
         function displayHangmanWord() { 
             const wordDisplay = document.querySelector('.word-display'); 
             if (!wordDisplay) return; 
-            wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
-            if (wordDisplay.innerText.replace(/\s+/g, '') === hangmanSecretWord) { // Boşlukları dikkate almadan kontrol et
-                showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); 
+            wordDisplay.innerHTML = hangmanDisplayedWord.join(" "); 
+            if (!hangmanDisplayedWord.includes("_")) { 
+                showGameOverModal('hangman', true, { secretWord: hangmanCurrentWord }); 
             } 
         }
         function createHangmanKeyboard() { 
@@ -530,36 +559,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         function handleHangmanGuess(letter, button) { 
             button.disabled = true; 
-            if (hangmanSecretWord.includes(letter)) { 
-                hangmanCorrectLetters.push(letter); 
-                button.classList.add('correct'); 
-            } else { 
-                hangmanWrongGuessCount++; 
+            if (!hangmanCurrentWord.includes(letter.toLowerCase()) && !hangmanCurrentWord.includes(letter.toUpperCase())) { // Büyük/küçük harf kontrolü
+                hangmanRemainingGuesses--; 
                 updateHangmanFigure(); 
                 button.classList.add('wrong');
-            } 
-            displayHangmanWord(); 
-            if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { 
-                showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); 
+                if (hangmanRemainingGuesses === 0) {
+                    showGameOverModal('hangman', false, { secretWord: hangmanCurrentWord }); 
+                }
+            } else { 
+                for (let i = 0; i < hangmanCurrentWord.length; i++) {
+                    if (hangmanCurrentWord[i].toLowerCase() === letter.toLowerCase()) {
+                        hangmanDisplayedWord[i] = hangmanCurrentWord[i]; // Orjinal harfin büyük/küçük halini koru
+                    }
+                }
+                button.classList.add('correct'); 
+                displayHangmanWord(); // Kelimeyi güncelle, kazanıp kazanmadığını kontrol edecek
             } 
         }
         function updateHangmanFigure() { 
             const guessesText = document.querySelector('.guesses-text span'); 
             if (guessesText) { 
-                guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; 
+                guessesText.innerText = hangmanRemainingGuesses; 
             } 
             document.querySelectorAll('.figure-part').forEach((part, index) => { 
-                part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none'; 
+                part.style.display = index < (hangmanMaxWrongGuesses - hangmanRemainingGuesses) ? 'block' : 'none'; // Yanlış tahmin sayısına göre figürü göster
             }); 
         }
     }
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     function startSequenceMemory() { 
-        sequence = []; 
-        playerSequence = []; 
-        sequenceLevel = 0; 
-        canPlayerClick = false; 
+        sequence = []; // Global değişkeni sıfırla
+        playerSequence = []; // Global değişkeni sıfırla
+        sequenceLevel = 0; // Global değişkeni sıfırla
+        canPlayerClick = false; // Global değişkeni sıfırla
 
         if (currentGameTimer) clearTimeout(currentGameTimer); 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
@@ -619,6 +652,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // ---- STROOP TESTİ OYUNU (DÜZELTİLMİŞ) ----
     // ==================================================================
+    // stroopTimer globalde tanımlı
+    
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); 
         
@@ -692,7 +727,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // ---- N-BACK TESTİ (DÜZELTİLMİŞ) ----
     // ==================================================================
-    // nbackGameLoop globalde tanımlı
     const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
     
     function startNBack() {
