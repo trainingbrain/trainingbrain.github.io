@@ -7,10 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameChoiceButtons = document.querySelectorAll('.game-choice');
     const backToMenuButton = document.getElementById('back-to-menu');
     
-    // Global oyun timer değişkenleri (yalnızca timer'lar, oyun değişkenleri yerel olacak)
+    // Orijinal yapınızdaki seçim ekranlarını bulalım (games.html ve tests.html'de bulunurlar)
+    const selectionScreenGames = document.getElementById('selection-screen'); 
+    const selectionScreenTests = document.getElementById('cognitive-tests-screen'); 
+
+    // Global oyun timer değişkenleri (yalnızca timer'lar, oyun değişkenleri her oyun fonksiyonunun içinde olacak)
     let currentGameTimer = null;
-    let stroopTimer = null;
-    let nbackGameLoop = null;
+    let stroopTimer = null; 
+    let nbackGameLoop = null; 
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -90,18 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
     // Sadece oyun veya test sayfalarında bu kod çalışacak
-    // HomepageMainContent gibi elementler sadece kendi sayfalarında var olacak
-    if (gameContainer && gameContent) { // gameContainer ve gameContent varsa devam et
+    if (gameContainer && gameContent) { 
         gameChoiceButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const game = button.dataset.game;
                 
                 // Oyun başlangıcında tüm ana seçim ekranlarını gizle
-                // selectionScreenGames ve selectionScreenTests sadece games.html ve tests.html'de var, kontrol et
-                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
-                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
+                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
+                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
                 
-                // WCST başlangıç ekranını da gizle
+                // WCST başlangıç ekranını da gizle (tests.html içinde olabilir)
                 if (document.getElementById('wcst-start-screen')) document.getElementById('wcst-start-screen').classList.add('hidden');
                 
                 gameContainer.classList.remove('hidden'); // Oyun konteynerini göster
@@ -152,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
     mainNavLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
+        // Kök dizin '/' ile index.html arasındaki uyumu kontrol et
         if (linkPath === currentPath || 
            (linkPath.endsWith('index.html') && currentPath === linkPath.replace('index.html', '')) || 
            (linkPath === `/${currentLang}/` && currentPath === `/${currentLang}/index.html`)) {
@@ -185,16 +188,15 @@ document.addEventListener('DOMContentLoaded', () => {
             content = `<h3>${langTexts[currentLang].exerciseOver}</h3><p>${langTexts[currentLang].level}: <strong>${data.level}-Back</strong></p><p>${langTexts[currentLang].correctDetection} <strong>${data.score}</strong></p><p>${langTexts[currentLang].error}: <strong>${data.errors}</strong></p>`;
         }
         // WCST için sonuç gösterimi showGameOverModal yerine kendi endWCST() fonksiyonunda yapıldığı için buraya eklemiyoruz
-        // Eğer WCST de modal kullanacaksa buraya eklenmeliydi.
         
-        if (content === '') return; // İçerik yoksa modalı gösterme
+        if (content === '') return; 
         
         modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
         document.body.appendChild(modal);
         
         document.getElementById('play-again-button').addEventListener('click', () => {
             modal.remove();
-            // Oyunu tekrar başlat
+            // Oyunu tekrar başlat (aynı sayfada kalıyoruz)
             if (game === 'hangman') startHangman();
             else if (game === 'sequence') startSequenceMemory();
             else if (game === 'stroop') startStroopTest();
@@ -210,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
     const WCST_SHAPES = ['triangle', 'star', 'plus', 'circle'];
     const WCST_COUNTS = [1, 2, 3, 4];
-    const WCST_RULE_ORDER = ['color', 'shape', 'number', 'color', 'shape', 'number']; // 6 kategori kuralı sırası
+    const WCST_RULE_ORDER = ['color', 'shape', 'number', 'color', 'shape', 'number']; 
 
     const SHAPE_SVGS = { // SVG ikonları (Const olarak globalde kalabilir)
         triangle: '<svg viewbox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
@@ -451,10 +453,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ---- ADAM ASMACA OYUNU ----
     function startHangman() { 
-        let hangmanSecretWord; // Yerel olarak tanımlandı
-        let hangmanCorrectLetters; // Yerel olarak tanımlandı
-        let hangmanWrongGuessCount; // Yerel olarak tanımlandı
-        const hangmanMaxWrongGuesses = 6; // Sabit olarak yerel tanımlandı
+        let hangmanSecretWord; 
+        let hangmanCorrectLetters; 
+        let hangmanWrongGuessCount; 
+        const hangmanMaxWrongGuesses = 6; 
 
         showHangmanLevelSelection(); 
 
@@ -524,10 +526,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     function startSequenceMemory() { 
-        let sequence; // Yerel olarak tanımlandı
-        let playerSequence; // Yerel olarak tanımlandı
-        let sequenceLevel; // Yerel olarak tanımlandı
-        let canPlayerClick; // Yerel olarak tanımlandı
+        let sequence; 
+        let playerSequence; 
+        let sequenceLevel; 
+        let canPlayerClick; 
 
         if (currentGameTimer) clearTimeout(currentGameTimer); 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
@@ -683,18 +685,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                nbackLevel = parseInt(event.target.dataset.level); // nbackLevel globalde tanımlı
-                initializeNBackGame();
+                let nbackLevel = parseInt(event.target.dataset.level); 
+                initializeNBackGame(nbackLevel);
             });
         });
     }
     
-    function initializeNBackGame() {
-        nbackSequence = []; // Yerel olarak tanımlandı
-        nbackCurrentStep = 0; // Yerel olarak tanımlandı
-        nbackScore = 0; // Yerel olarak tanımlandı
-        nbackErrors = 0; // Yerel olarak tanımlandı
-        canPressButton = false; // Yerel olarak tanımlandı
+    function initializeNBackGame(nbackLevel) {
+        let nbackSequence = []; 
+        let nbackCurrentStep = 0; 
+        let nbackScore = 0; 
+        let nbackErrors = 0; 
+        let canPressButton = false; 
 
         gameContent.innerHTML = `
             <h2>${nbackLevel}-Back Test</h2>
