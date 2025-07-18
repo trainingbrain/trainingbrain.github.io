@@ -40,6 +40,13 @@ header {
     top: 0;
     z-index: 50;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    /* YENİ: Başlığın yumuşak geçişi için eklendi */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* YENİ: Başlığı gizlemek için kullanılacak sınıf */
+header.header-hidden {
+    transform: translateY(-100%);
 }
 
 header h1 {
@@ -248,7 +255,6 @@ footer {
 
 /* --- YENİ ve DÜZELTİLMİŞ: WCST'ye Özel Stiller --- */
 .wcst-education-level, .wcst-instructions {width:100%;max-width:700px;background:#fdfdfd;padding:25px;border-radius:12px;border:1px solid var(--border-color);box-shadow:var(--box-shadow-light);text-align:center;margin-bottom:20px}.education-options{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:15px}.education-btn{padding:12px 28px;font-size:1.1em;cursor:pointer;border-radius:8px;border:2px solid var(--primary-color);background-color:transparent;color:var(--primary-color);font-weight:700;transition:all .3s}.education-btn:hover{background-color:var(--primary-color);color:#fff}.education-btn.selected{background-color:var(--secondary-color);border-color:var(--secondary-color);color:#fff;transform:scale(1.05)}#wcst-start-btn{padding:15px 40px;font-size:1.3em;font-weight:700;cursor:pointer;border:none;border-radius:10px;background-color:var(--accent-green);color:#fff;transition:all .3s}#wcst-start-btn:disabled{background-color:#bdc3c7;cursor:not-allowed;opacity:.7}#wcst-game-screen .card-area{width:100%;display:flex;justify-content:space-around;padding:15px;background-color:#ecf0f1;border-radius:12px;box-shadow:inset 0 2px 5px rgba(0,0,0,.1)}#response-card-container{background-color:transparent;box-shadow:none;min-height:180px}.wcst-card{width:110px;height:150px;background-color:#fff;border:3px solid #b0bec5;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1);display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:5px;padding:5px;box-sizing:border-box}#stimulus-cards-container .wcst-card{cursor:pointer;transition:transform .2s,box-shadow .2s}#stimulus-cards-container .wcst-card:hover{transform:translateY(-5px);box-shadow:0 8px 16px rgba(0,0,0,.15)}.wcst-card .card-shape{width:40%;height:40%}.wcst-card .card-shape svg{width:100%;height:100%;fill:currentColor}.color-red{color:var(--accent-red)}.color-green{color:var(--accent-green)}.color-blue{color:var(--primary-color)}.color-yellow{color:var(--stroop-yellow)}
-/* DÜZELTME: Geri bildirim yazısı stilleri */
 #wcst-feedback{min-height:40px;font-size:2.2em;font-weight:800;text-transform:uppercase;letter-spacing:2px;transition:transform .2s ease}
 #wcst-feedback.correct{color:var(--accent-green);transform:scale(1.1)}
 #wcst-feedback.wrong{color:var(--accent-red);transform:scale(1.1)}
