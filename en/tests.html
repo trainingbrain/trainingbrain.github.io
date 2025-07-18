@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive Tests - DEEP BRAIN</title>
     <link rel="stylesheet" href="/style.css">
-    <!-- Diğer head etiketleriniz -->
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/tests.html" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/tests.html" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -14,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
-<body id="page-tests-en">
+<body>
     <header>
         <h1>DEEP BRAIN</h1>
         <p>Cognitive Exercises Guided by a Neurology Doctor</p>
@@ -29,44 +30,21 @@
     <main>
         <div id="cognitive-tests-screen">
             <h2>Cognitive Tests</h2>
-            <p class="page-intro">Standard neuropsychological tests designed to assess your executive functions, attention, and cognitive flexibility.</p>
             <div class="game-selection-container">
                 <button class="game-choice" data-game="wcst">Wisconsin Card Sorting Test</button>
-                <button class="game-choice" data-game="trail-making" disabled>Trail Making Test (Coming Soon!)</button>
+                <button class="game-choice" data-game="trail-making">Trail Making Test (Coming Soon!)</button>
             </div>
         </div>
-        <div id="wcst-main-container" class="hidden page-container">
-            <div id="wcst-start-screen">
-                <h2>Wisconsin Card Sorting Test</h2>
-                <div class="wcst-education-level">
-                    <h3>Please select your education level:</h3>
-                    <div class="education-options">
-                        <button class="education-btn" data-level="primary">Primary School</button>
-                        <button class="education-btn" data-level="middle">Middle School</button>
-                        <button class="education-btn" data-level="high">High School</button>
-                        <button class="education-btn" data-level="university">University</button>
-                    </div>
-                </div>
-                <div class="wcst-instructions">
-                    <h3>Instructions</h3>
-                    <p>This is a somewhat unusual test because you need to match each card given to you with one of the four key cards. I cannot tell you how to match the cards, but I will tell you each time whether your match is "right" or "wrong." There is no time limit for this test, so you do not need to rush.</p>
-                </div>
-                <button id="wcst-start-btn" disabled>Start Test</button>
-            </div>
-            <div id="wcst-game-screen" class="hidden">
-                 <div class="wcst-info-panel">
-                    <div>Categories: <span id="wcst-categories">0</span></div>
-                    <div>Errors: <span id="wcst-total-errors">0</span></div>
-                    <div>Cards Left: <span id="wcst-cards-left">128</span></div>
-                </div>
-                <div id="stimulus-cards-container" class="card-area"></div>
-                <div id="wcst-feedback"></div>
-                <div id="response-card-container" class="card-area"><div id="current-response-card"></div></div>
+        <div id="game-container" class="hidden">
+            <div id="game-content">
+                <!-- Test content will be dynamically loaded here -->
             </div>
             <button id="back-to-menu">Back</button>
         </div>
     </main>
-    <footer><p>© 2025 - Deep Brain. All rights reserved.</p></footer>
+    <footer>
+        <p>© 2025 - Deep Brain. All rights reserved.</p>
+    </footer>
     <script src="/script.js"></script>
 </body>
 </html>
