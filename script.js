@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     const langTexts = {
         tr: {
-            // ... Diğer tüm Türkçe metinleriniz burada ...
             levelSelect: "Lütfen bir zorluk seviyesi seçin:", correct: "Doğru!", wrong: "Yanlış!", playAgain: "Tekrar Oyna",
             levelEasy: "Basit", levelMedium: "Orta", levelHard: "Zor",
             hangmanTitle: "Adam Asmaca", hangmanDesc: "Bu egzersiz, kelime dağarcığınızı, harf tanıma hızınızı ve sözel akıcılığınızı test eder. Doğru kelimeyi bulmak için stratejik düşünme becerilerinizi kullanın.",
@@ -55,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
             backToTests: "Testler Sayfasına Geri Dön"
         },
         en: {
-            // ... Diğer tüm İngilizce metinleriniz burada ...
             levelSelect: "Please select a difficulty level:", correct: "Correct!", wrong: "Wrong!", playAgain: "Play Again",
             levelEasy: "Easy", levelMedium: "Medium", levelHard: "Hard",
             hangmanTitle: "Hangman", hangmanDesc: "This exercise tests your vocabulary, letter recognition speed, and verbal fluency. Use your strategic thinking skills to find the correct word.",
@@ -286,10 +284,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const chosenStimulusIndex = parseInt(event.currentTarget.dataset.index);
         const chosenStimulusCard = stimulusCards[chosenStimulusIndex];
-        const currentRule = wcstState.rule;
         
-        // DÜZELTME: Kuralı 'number' değil, 'count' olarak kontrol etmeliyiz.
-        const isMatch = chosenStimulusCard[currentRule] === currentResponseCard[currentRule];
+        // DÜZELTME: Kural 'number' ise, karşılaştırılacak özelliğin 'count' olduğunu belirtiyoruz.
+        let ruleProperty = wcstState.rule;
+        if (ruleProperty === 'number') {
+            ruleProperty = 'count';
+        }
+        
+        const isMatch = chosenStimulusCard[ruleProperty] === currentResponseCard[ruleProperty];
 
         const feedbackEl = gameContent.querySelector('#wcst-feedback');
         feedbackEl.classList.remove('correct', 'wrong');
@@ -304,9 +306,12 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackEl.classList.add('wrong');
             wcstState.totalErrors++;
             
-            // Perseveratif Hata Hesaplaması
             if (wcstState.previousRule) {
-                const isPerseverative = chosenStimulusCard[wcstState.previousRule] === currentResponseCard[wcstState.previousRule];
+                let prevRuleProperty = wcstState.previousRule;
+                if (prevRuleProperty === 'number') {
+                    prevRuleProperty = 'count';
+                }
+                const isPerseverative = chosenStimulusCard[prevRuleProperty] === currentResponseCard[prevRuleProperty];
                 if (isPerseverative) {
                     wcstState.perseverativeErrors++;
                 }
@@ -319,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             wcstState.consecutiveCorrect = 0;
             const nextRuleIndex = wcstState.categoriesCompleted;
             
-            wcstState.previousRule = wcstState.rule; // Eski kuralı kaydet
+            wcstState.previousRule = wcstState.rule;
 
             if (nextRuleIndex < WCST_RULE_ORDER.length) {
                 wcstState.rule = WCST_RULE_ORDER[nextRuleIndex];
@@ -351,15 +356,12 @@ document.addEventListener('DOMContentLoaded', () => {
         wcstState.isTestOver = true;
         console.log("TEST BİTTİ!", wcstState);
 
-        // Diğer puanları hesapla
         wcstState.correctResponses = wcstState.cardsUsed - wcstState.totalErrors;
         wcstState.nonPerseverativeErrors = wcstState.totalErrors - wcstState.perseverativeErrors;
-        // Perseveratif Tepki (Perseverative Response) daha karmaşık bir kural gerektirir, şimdilik hata ile aynı tutuyoruz.
-        wcstState.perseverativeResponses = wcstState.perseverativeErrors;
+        wcstState.perseverativeResponses = wcstState.perseverativeErrors; // Basitleştirilmiş kural
 
         const T = langTexts[currentLang];
         
-        // Oyun alanını temizle ve sonuçları göster
         gameContent.innerHTML = `
             <div class="wcst-results page-container">
                 <h3>${T.resultsTitle}</h3>
