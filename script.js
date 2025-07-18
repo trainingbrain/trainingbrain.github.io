@@ -381,121 +381,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- ADAM ASMACA OYUNU ----
     let hangmanSecretWord, hangmanCorrectLetters, hangmanWrongGuessCount; const hangmanMaxWrongGuesses = 6;
     function startHangman() { showHangmanLevelSelection(); }
-    function showHangmanLevelSelection() { 
-        gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
-        document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { initializeHangmanGame(event.target.dataset.level); }); }); 
-    }
-    function initializeHangmanGame(level) { 
-        hangmanCorrectLetters = []; hangmanWrongGuessCount = 0; const wordList = langTexts[currentLang].hangmanWords[level]; hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)]; 
-        gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanMaxWrongGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; 
-        updateHangmanFigure(); displayHangmanWord(); createHangmanKeyboard(); 
-    }
-    function displayHangmanWord() { 
-        const wordDisplay = document.querySelector('.word-display'); if (!wordDisplay) return; 
-        wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
-        if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); } 
-    }
-    function createHangmanKeyboard() { 
-        const keyboard = document.querySelector('.keyboard'); if (!keyboard) return; 
-        keyboard.innerHTML = ''; (currentLang === 'tr' ? "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ").split('').forEach(letter => { 
-            const keyButton = document.createElement('button'); keyButton.innerText = letter; keyButton.classList.add('key'); 
-            keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton)); keyboard.appendChild(keyButton); 
-        }); 
-    }
-    function handleHangmanGuess(letter, button) { 
-        button.disabled = true; if (hangmanSecretWord.includes(letter)) { 
-            hangmanCorrectLetters.push(letter); button.classList.add('correct'); 
-        } else { 
-            hangmanWrongGuessCount++; updateHangmanFigure(); button.classList.add('wrong');
-        } 
-        displayHangmanWord(); if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { 
-            showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); 
-        } 
-    }
-    function updateHangmanFigure() { 
-        const guessesText = document.querySelector('.guesses-text span'); 
-        if (guessesText) { guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; } 
-        document.querySelectorAll('.figure-part').forEach((part, index) => { part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none'; }); 
-    }
+    function showHangmanLevelSelection() { gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { initializeHangmanGame(event.target.dataset.level); }); }); }
+    function initializeHangmanGame(level) { hangmanCorrectLetters = []; hangmanWrongGuessCount = 0; const wordList = langTexts[currentLang].hangmanWords[level]; hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)]; gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanMaxWrongGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; updateHangmanFigure(); displayHangmanWord(); createHangmanKeyboard(); }
+    function displayHangmanWord() { const wordDisplay = document.querySelector('.word-display'); if (!wordDisplay) return; wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); } }
+    function createHangmanKeyboard() { const keyboard = document.querySelector('.keyboard'); if (!keyboard) return; keyboard.innerHTML = ''; (currentLang === 'tr' ? "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ").split('').forEach(letter => { const keyButton = document.createElement('button'); keyButton.innerText = letter; keyButton.classList.add('key'); keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton)); keyboard.appendChild(keyButton); }); }
+    function handleHangmanGuess(letter, button) { button.disabled = true; if (hangmanSecretWord.includes(letter)) { hangmanCorrectLetters.push(letter); button.classList.add('correct'); } else { hangmanWrongGuessCount++; updateHangmanFigure(); button.classList.add('wrong');} displayHangmanWord(); if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); } }
+    function updateHangmanFigure() { const guessesText = document.querySelector('.guesses-text span'); if (guessesText) { guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; } document.querySelectorAll('.figure-part').forEach((part, index) => { part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none'; }); }
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     let sequence, playerSequence, sequenceLevel, canPlayerClick;
-    function startSequenceMemory() { 
-        if (currentGameTimer) clearTimeout(currentGameTimer); 
-        gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
-        const board = document.getElementById('sequence-game-board'); 
-        board.innerHTML = ''; for (let i = 0; i < 9; i++) { 
-            const tile = document.createElement('div'); tile.classList.add('sequence-tile'); 
-            tile.dataset.tileId = i; tile.addEventListener('click', () => handleTileClick(i)); board.appendChild(tile); 
-        } 
-        sequence = []; sequenceLevel = 0; 
-        currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
-    }
-    async function nextSequenceLevel() { 
-        sequenceLevel++; playerSequence = []; canPlayerClick = false; 
-        const status = document.getElementById('sequence-status'); 
-        status.innerText = `${langTexts[currentLang].level} ${sequenceLevel}`; 
-        await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 1000); }); 
-        sequence.push(Math.floor(Math.random() * 9)); 
-        await showSequence(); 
-    }
-    async function showSequence() { 
-        const tiles = document.querySelectorAll('.sequence-tile'); 
-        document.getElementById('sequence-status').innerText = langTexts[currentLang].watchSequence; 
-        for (const tileIndex of sequence) { 
-            await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 300); }); 
-            if (tiles[tileIndex]) tiles[tileIndex].classList.add('active'); 
-            await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 600); }); 
-            if (tiles[tileIndex]) tiles[tileIndex].classList.remove('active'); 
-        } 
-        canPlayerClick = true; 
-        document.getElementById('sequence-status').innerText = langTexts[currentLang].yourTurn; 
-    }
-    function handleTileClick(tileId) { 
-        if (!canPlayerClick) return; 
-        playerSequence.push(tileId); 
-        const tile = document.querySelector(`[data-tile-id='${tileId}']`); 
-        tile.classList.add('active'); 
-        setTimeout(() => tile.classList.remove('active'), 200); 
-        const lastIndex = playerSequence.length - 1; 
-        if (playerSequence[lastIndex] !== sequence[lastIndex]) { 
-            showGameOverModal('sequence', false, { level: sequenceLevel }); return; 
-        } 
-        if (playerSequence.length === sequence.length) { 
-            canPlayerClick = false; 
-            currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
-        } 
-    }
+    function startSequenceMemory() { if (currentGameTimer) clearTimeout(currentGameTimer); gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; const board = document.getElementById('sequence-game-board'); board.innerHTML = ''; for (let i = 0; i < 9; i++) { const tile = document.createElement('div'); tile.classList.add('sequence-tile'); tile.dataset.tileId = i; tile.addEventListener('click', () => handleTileClick(i)); board.appendChild(tile); } sequence = []; sequenceLevel = 0; currentGameTimer = setTimeout(nextSequenceLevel, 1000); }
+    async function nextSequenceLevel() { sequenceLevel++; playerSequence = []; canPlayerClick = false; const status = document.getElementById('sequence-status'); status.innerText = `${langTexts[currentLang].level} ${sequenceLevel}`; await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 1000); }); sequence.push(Math.floor(Math.random() * 9)); await showSequence(); }
+    async function showSequence() { const tiles = document.querySelectorAll('.sequence-tile'); document.getElementById('sequence-status').innerText = langTexts[currentLang].watchSequence; for (const tileIndex of sequence) { await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 300); }); if (tiles[tileIndex]) tiles[tileIndex].classList.add('active'); await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 600); }); if (tiles[tileIndex]) tiles[tileIndex].classList.remove('active'); } canPlayerClick = true; document.getElementById('sequence-status').innerText = langTexts[currentLang].yourTurn; }
+    function handleTileClick(tileId) { if (!canPlayerClick) return; playerSequence.push(tileId); const tile = document.querySelector(`[data-tile-id='${tileId}']`); tile.classList.add('active'); setTimeout(() => tile.classList.remove('active'), 200); const lastIndex = playerSequence.length - 1; if (playerSequence[lastIndex] !== sequence[lastIndex]) { showGameOverModal('sequence', false, { level: sequenceLevel }); return; } if (playerSequence.length === sequence.length) { canPlayerClick = false; currentGameTimer = setTimeout(nextSequenceLevel, 1000); } }
     
-    // ---- STROOP TESTİ OYUNU ----
+    // ==================================================================
+    // ---- STROOP TESTİ OYUNU (DÜZELTİLMİŞ) ----
+    // ==================================================================
+    let stroopScore, stroopTimeLeft, currentCorrectColorName; // stroopTimer kaldırıldı, globalde tanımlı
+    
     function startStroopTest() {
-        if (stroopTimer) clearInterval(stroopTimer);
-        gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div>`;
+        if (stroopTimer) clearInterval(stroopTimer); 
+        const stroopColors = langTexts[currentLang].stroopColors; // local stroopColors tanımlandı
+        gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
+    
     function runStroopGame() {
-        let stroopScore = 0;
-        let stroopTimeLeft = 60;
-        let currentCorrectColorName;
+        document.getElementById('stroop-start-screen').classList.add('hidden');
+        let stroopScore = 0; // Yerel tanımlama
+        let stroopTimeLeft = 60; // Yerel tanımlama
+        let currentCorrectColorName; // Yerel tanımlama
+
         gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
-        stroopTimer = setInterval(updateStroopTimer, 1000);
+        stroopTimer = setInterval(updateStroopTimer, 1000); // stroopTimer burada tanımlanıyor
         nextStroopRound();
+
+        // İç fonksiyonlar, dış fonksiyonların değişkenlerine erişmeli
         function nextStroopRound() {
-            const colorNames = Object.keys(langTexts[currentLang].stroopColors);
+            const colorNames = Object.keys(langTexts[currentLang].stroopColors); 
             const colorValues = Object.values(langTexts[currentLang].stroopColors);
             let randomWordName = colorNames[Math.floor(Math.random() * colorNames.length)];
             let randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
             let randomColorName = Object.keys(langTexts[currentLang].stroopColors).find(key => langTexts[currentLang].stroopColors[key] === randomColorValue);
+            
             while (randomWordName === randomColorName) {
                 randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
                 randomColorName = Object.keys(langTexts[currentLang].stroopColors).find(key => langTexts[currentLang].stroopColors[key] === randomColorValue);
             }
+            
             currentCorrectColorName = randomColorName;
             const wordElement = document.getElementById('stroop-word');
             if (wordElement) {
                 wordElement.innerText = randomWordName;
                 wordElement.style.color = randomColorValue;
             }
+            
             const choicesContainer = document.getElementById('stroop-choices');
             if (choicesContainer) {
                 choicesContainer.innerHTML = '';
@@ -508,6 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
+        
         function checkStroopAnswer(chosenColorName) {
             stroopScore += (chosenColorName === currentCorrectColorName) ? 1 : -1;
             stroopScore = Math.max(0, stroopScore);
@@ -515,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (scoreVal) scoreVal.innerText = stroopScore;
             nextStroopRound();
         }
+        
         function updateStroopTimer() {
             stroopTimeLeft--;
             const timerVal = document.getElementById('stroop-timer-val');
@@ -525,81 +468,123 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
-    // ---- N-BACK TESTİ ----
+    
+    // ==================================================================
+    // ---- N-BACK TESTİ (DÜZELTİLMİŞ) ----
+    // ==================================================================
+    // 'nbackGameLoop' kaldırıldı, globalde tanımlı
     const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
+    
     function startNBack() {
-        if (nbackGameLoop) clearTimeout(nbackGameLoop);
+        if (nbackGameLoop) clearTimeout(nbackGameLoop); 
         showNBackLevelSelection();
     }
+    
     function showNBackLevelSelection() {
-        gameContent.innerHTML = `<h2>${langTexts[currentLang].nbackTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].nbackDesc}</p><p>${langTexts[currentLang].nbackInstruction}</p><div class="level-selection-container"><button class="level-choice" data-level="1">${langTexts[currentLang].nbackLevels["1"]}</button><button class="level-choice" data-level="2">${langTexts[currentLang].nbackLevels["2"]}</button><button class="level-choice" data-level="3">${langTexts[currentLang].nbackLevels["3"]}</button></div>`;
+        gameContent.innerHTML = `
+            <h2>${langTexts[currentLang].nbackTitle}</h2>
+            <h3>${langTexts[currentLang].levelSelect}</h3>
+            <p class="game-description">${langTexts[currentLang].nbackDesc}</p>
+            <p>${langTexts[currentLang].nbackInstruction}</p>
+            <div class="level-selection-container">
+                <button class="level-choice" data-level="1">${langTexts[currentLang].nbackLevels["1"]}</button>
+                <button class="level-choice" data-level="2">${langTexts[currentLang].nbackLevels["2"]}</button>
+                <button class="level-choice" data-level="3">${langTexts[currentLang].nbackLevels["3"]}</button>
+            </div>
+        `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                let nbackLevel = parseInt(event.target.dataset.level);
+                let nbackLevel = parseInt(event.target.dataset.level); 
                 initializeNBackGame(nbackLevel);
             });
         });
     }
+    
     function initializeNBackGame(nbackLevel) {
-        let nbackSequence = []; let nbackCurrentStep = 0; let nbackScore = 0; let nbackErrors = 0; let canPressButton = false;
-        gameContent.innerHTML = `<h2>${nbackLevel}-Back Test</h2><div class="nback-container"><div id="nback-stats"><div>${langTexts[currentLang].correctDetection} <span id="nback-correct">0</span></div><div>${langTexts[currentLang].error}: <span id="nback-errors">0</span></div></div><div id="nback-stimulus-box">...</div><p>${currentLang === 'tr' ? 'Eşleşme gördüğünüzde butona basın.' : 'Press the button when you see a match.'}</p><div id="nback-controls"><button id="nback-match-button">${currentLang === 'tr' ? 'Eşleşme' : 'Match'}</button></div><div id="nback-feedback"></div></div>`;
+        let nbackSequence = []; 
+        let nbackCurrentStep = 0; 
+        let nbackScore = 0; 
+        let nbackErrors = 0; 
+        let canPressButton = false; 
+
+        gameContent.innerHTML = `
+            <h2>${nbackLevel}-Back Test</h2>
+            <div class="nback-container">
+                <div id="nback-stats">
+                    <div>${langTexts[currentLang].correctDetection} <span id="nback-correct">0</span></div>
+                    <div>${langTexts[currentLang].error}: <span id="nback-errors">0</span></div>
+                </div>
+                <div id="nback-stimulus-box">...</div>
+                <p>${currentLang === 'tr' ? 'Eşleşme gördüğünüzde butona basın.' : 'Press the button when you see a match.'}</p>
+                <div id="nback-controls">
+                    <button id="nback-match-button">${currentLang === 'tr' ? 'Eşleşme' : 'Match'}</button>
+                </div>
+                <div id="nback-feedback"></div>
+            </div>
+        `;
         generateNBackSequence();
         document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
-        nbackGameLoop = setTimeout(runNBackStep, 1000);
+        nbackGameLoop = setTimeout(runNBackStep, 1000); 
+
+        // İç fonksiyonlar, dış fonksiyonların değişkenlerine erişmeli
         function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
-        function runNBackStep() {
-            if (nbackCurrentStep > 0) { checkMissedMatch(); }
-            if (nbackCurrentStep >= NBACK_TRIAL_COUNT) {
-                showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors });
-                return;
-            }
-            const stimulusBox = document.getElementById('nback-stimulus-box'); const feedbackEl = document.getElementById('nback-feedback');
-            if (!stimulusBox) return;
-            stimulusBox.style.fontSize = '2.5em'; stimulusBox.style.color = '#2ecc71'; stimulusBox.innerHTML = `${langTexts[currentLang].next} →`;
-            if (feedbackEl) feedbackEl.innerText = '';
-            nbackGameLoop = setTimeout(() => {
-                const currentStimulusBox = document.getElementById('nback-stimulus-box');
-                if (currentStimulusBox) {
-                    currentStimulusBox.style.fontSize = '8em';
-                    currentStimulusBox.style.color = '#2c3e50';
-                    currentStimulusBox.innerText = nbackSequence[nbackCurrentStep];
-                    canPressButton = true;
-                    nbackCurrentStep++;
-                    nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME);
-                }
-            }, NBACK_PREPARE_TIME);
+        function runNBackStep() { 
+            if (nbackCurrentStep > 0) { checkMissedMatch(); } 
+            if (nbackCurrentStep >= NBACK_TRIAL_COUNT) { 
+                showGameOverModal('n-back', false, { level: nbackLevel, score: nbackScore, errors: nbackErrors }); 
+                return; 
+            } 
+            const stimulusBox = document.getElementById('nback-stimulus-box'); 
+            const feedbackEl = document.getElementById('nback-feedback'); 
+            if (!stimulusBox) return; 
+            stimulusBox.style.fontSize = '2.5em'; stimulusBox.style.color = '#2ecc71'; stimulusBox.innerHTML = `${langTexts[currentLang].next} →`; 
+            if (feedbackEl) feedbackEl.innerText = ''; 
+            nbackGameLoop = setTimeout(() => { 
+                const currentStimulusBox = document.getElementById('nback-stimulus-box'); 
+                if (currentStimulusBox) { 
+                    currentStimulusBox.style.fontSize = '8em'; 
+                    currentStimulusBox.style.color = '#2c3e50'; 
+                    currentStimulusBox.innerText = nbackSequence[nbackCurrentStep]; 
+                    canPressButton = true; 
+                    nbackCurrentStep++; 
+                    nbackGameLoop = setTimeout(runNBackStep, NBACK_STIMULUS_TIME); 
+                } 
+            }, NBACK_PREPARE_TIME); 
         }
-        function handleNBackMatchPress() {
-            if (!canPressButton) return;
-            const feedbackEl = document.getElementById('nback-feedback'); const currentIndex = nbackCurrentStep - 1;
-            const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]);
-            if (isMatch) {
-                nbackScore++;
-                if (feedbackEl) { feedbackEl.innerText = langTexts[currentLang].correct; feedbackEl.className = 'correct'; }
-            } else {
-                nbackErrors++;
-                if (feedbackEl) { feedbackEl.innerText = langTexts[currentLang].falseAlarm; feedbackEl.className = 'wrong'; }
-            }
-            updateNBackStats();
-            canPressButton = false;
+        function handleNBackMatchPress() { 
+            if (!canPressButton) return; 
+            const feedbackEl = document.getElementById('nback-feedback'); 
+            const currentIndex = nbackCurrentStep - 1; 
+            const isMatch = (currentIndex >= nbackLevel) && (nbackSequence[currentIndex] === nbackSequence[currentIndex - nbackLevel]); 
+            if (isMatch) { 
+                nbackScore++; 
+                feedbackEl.innerText = langTexts[currentLang].correct; 
+                feedbackEl.className = 'correct'; 
+            } else { 
+                nbackErrors++; 
+                feedbackEl.innerText = langTexts[currentLang].falseAlarm; 
+                feedbackEl.className = 'wrong'; 
+            } 
+            updateNBackStats(); 
+            canPressButton = false; 
         }
-        function checkMissedMatch() {
-            const prevStepIndex = nbackCurrentStep - 1;
-            if (prevStepIndex >= nbackLevel) {
-                const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel];
-                if (wasMatch && canPressButton) {
-                    nbackErrors++;
-                    updateNBackStats();
-                    const feedbackEl = document.getElementById('nback-feedback');
-                    if (feedbackEl) { feedbackEl.innerText = langTexts[currentLang].missed; feedbackEl.className = 'wrong'; }
-                }
-            }
+        function checkMissedMatch() { 
+            const prevStepIndex = nbackCurrentStep - 1; 
+            if (prevStepIndex >= nbackLevel) { 
+                const wasMatch = nbackSequence[prevStepIndex] === nbackSequence[prevStepIndex - nbackLevel]; 
+                if (wasMatch && canPressButton) { 
+                    nbackErrors++; 
+                    updateNBackStats(); 
+                    const feedbackEl = document.getElementById('nback-feedback'); 
+                    if(feedbackEl) { feedbackEl.innerText = langTexts[currentLang].missed; feedbackEl.className = 'wrong'; } 
+                } 
+            } 
         }
-        function updateNBackStats() {
-            const correctEl = document.getElementById('nback-correct'); const errorsEl = document.getElementById('nback-errors');
-            if (correctEl) correctEl.innerText = nbackScore;
-            if (errorsEl) errorsEl.innerText = nbackErrors;
+        function updateNBackStats() { 
+            const correctEl = document.getElementById('nback-correct'); 
+            const errorsEl = document.getElementById('nback-errors'); 
+            if (correctEl) correctEl.innerText = nbackScore; 
+            if (errorsEl) errorsEl.innerText = nbackErrors; 
         }
     }
 });
