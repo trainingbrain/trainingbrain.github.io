@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     const langTexts = {
         tr: {
+            // ... Diğer tüm Türkçe metinleriniz burada ...
             levelSelect: "Lütfen bir zorluk seviyesi seçin:", correct: "Doğru!", wrong: "Yanlış!", playAgain: "Tekrar Oyna",
             levelEasy: "Basit", levelMedium: "Orta", levelHard: "Zor",
             hangmanTitle: "Adam Asmaca", hangmanDesc: "Bu egzersiz, kelime dağarcığınızı, harf tanıma hızınızı ve sözel akıcılığınızı test eder. Doğru kelimeyi bulmak için stratejik düşünme becerilerinizi kullanın.",
@@ -41,9 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
             wcstInstructionsText: "Bu biraz değişik bir oyun çünkü testi nasıl yapacağınız konusunda size verilen herbir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor. Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.",
             startTest: "Teste Başla",
             educationLevels: { ilkokul: "İlkokul", ortaokul: "Ortaokul", lise: "Lise", universite: "Üniversite" },
-            trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin."
+            trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin.",
+            // YENİ: Sonuç Raporu Metinleri
+            resultsTitle: "Test Sonuçları",
+            totalResponses: "Toplam Tepki Sayısı",
+            categoriesCompleted: "Tamamlanan Kategori",
+            correctResponses: "Doğru Tepki Sayısı",
+            totalErrors: "Toplam Hata Sayısı",
+            perseverativeResponses: "Perseveratif Tepki Sayısı",
+            perseverativeErrors: "Perseveratif Hata Sayısı",
+            nonPerseverativeErrors: "Non-perseveratif Hata Sayısı",
+            backToTests: "Testler Sayfasına Geri Dön"
         },
         en: {
+            // ... Diğer tüm İngilizce metinleriniz burada ...
             levelSelect: "Please select a difficulty level:", correct: "Correct!", wrong: "Wrong!", playAgain: "Play Again",
             levelEasy: "Easy", levelMedium: "Medium", levelHard: "Hard",
             hangmanTitle: "Hangman", hangmanDesc: "This exercise tests your vocabulary, letter recognition speed, and verbal fluency. Use your strategic thinking skills to find the correct word.",
@@ -66,7 +78,17 @@ document.addEventListener('DOMContentLoaded', () => {
             wcstInstructionsText: "This is a somewhat unusual test because you need to match each card given to you with one of the four key cards. I cannot tell you how to match the cards, but I will tell you each time whether your match is 'right' or 'wrong.' There is no time limit for this test, so you do not need to rush.",
             startTest: "Start Test",
             educationLevels: { ilkokul: "Primary School", ortaokul: "Middle School", lise: "High School", universite: "University" },
-            trailMakingDev: "Trail Making Test is currently under development. Please check back later."
+            trailMakingDev: "Trail Making Test is currently under development. Please check back later.",
+            // NEW: Result Report Texts
+            resultsTitle: "Test Results",
+            totalResponses: "Total Responses",
+            categoriesCompleted: "Categories Completed",
+            correctResponses: "Correct Responses",
+            totalErrors: "Total Errors",
+            perseverativeResponses: "Perseverative Responses",
+            perseverativeErrors: "Perseverative Errors",
+            nonPerseverativeErrors: "Non-perseverative Errors",
+            backToTests: "Back to Tests Page"
         }
     };
     const currentLang = window.location.pathname.startsWith('/en') ? 'en' : 'tr';
@@ -164,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="wcst-info-panel">
                     <div>Kategoriler: <span id="wcst-categories">0</span></div>
                     <div>Toplam Hata: <span id="wcst-total-errors">0</span></div>
+                    <div>Perseveratif Hata: <span id="wcst-perse-errors">0</span></div>
                     <div>Kalan Kart: <span id="wcst-cards-left">128</span></div>
                 </div>
                 <div id="stimulus-cards-container" class="card-area"></div>
@@ -186,8 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeWCSTGame() {
-        console.log("WCST Testi başlıyor...");
-        
         gameContent.querySelector('#wcst-start-screen').classList.add('hidden');
         gameContent.querySelector('#wcst-game-screen').classList.remove('hidden');
 
@@ -210,10 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wcstState = {
             rule: WCST_RULE_ORDER[0],
+            previousRule: null,
             consecutiveCorrect: 0,
             categoriesCompleted: 0,
             totalErrors: 0,
+            perseverativeResponses: 0,
             perseverativeErrors: 0,
+            nonPerseverativeErrors: 0,
             cardsUsed: 0,
             isTestOver: false
         };
@@ -264,10 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const chosenStimulusCard = stimulusCards[chosenStimulusIndex];
         const currentRule = wcstState.rule;
         
+        // DÜZELTME: Kuralı 'number' değil, 'count' olarak kontrol etmeliyiz.
         const isMatch = chosenStimulusCard[currentRule] === currentResponseCard[currentRule];
 
         const feedbackEl = gameContent.querySelector('#wcst-feedback');
         feedbackEl.classList.remove('correct', 'wrong');
+        wcstState.cardsUsed++;
 
         if (isMatch) {
             feedbackEl.innerText = langTexts[currentLang].correct;
@@ -277,6 +303,14 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackEl.innerText = langTexts[currentLang].wrong;
             feedbackEl.classList.add('wrong');
             wcstState.totalErrors++;
+            
+            // Perseveratif Hata Hesaplaması
+            if (wcstState.previousRule) {
+                const isPerseverative = chosenStimulusCard[wcstState.previousRule] === currentResponseCard[wcstState.previousRule];
+                if (isPerseverative) {
+                    wcstState.perseverativeErrors++;
+                }
+            }
             wcstState.consecutiveCorrect = 0;
         }
 
@@ -284,6 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
             wcstState.categoriesCompleted++;
             wcstState.consecutiveCorrect = 0;
             const nextRuleIndex = wcstState.categoriesCompleted;
+            
+            wcstState.previousRule = wcstState.rule; // Eski kuralı kaydet
+
             if (nextRuleIndex < WCST_RULE_ORDER.length) {
                 wcstState.rule = WCST_RULE_ORDER[nextRuleIndex];
                 console.log("KURAL DEĞİŞTİ! Yeni kural:", wcstState.rule);
@@ -294,23 +331,46 @@ document.addEventListener('DOMContentLoaded', () => {
         
         updateWcstUi();
         
-        // Geri bildirim gösterildikten sonra bir sonraki karta geç
         setTimeout(() => {
-            feedbackEl.innerText = '';
-            drawNextResponseCard();
+            if (!wcstState.isTestOver) {
+                feedbackEl.innerText = '';
+                drawNextResponseCard();
+            }
         }, 1000);
     }
 
     function updateWcstUi() {
         gameContent.querySelector('#wcst-categories').innerText = wcstState.categoriesCompleted;
         gameContent.querySelector('#wcst-total-errors').innerText = wcstState.totalErrors;
+        gameContent.querySelector('#wcst-perse-errors').innerText = wcstState.perseverativeErrors;
         gameContent.querySelector('#wcst-cards-left').innerText = responseDeck.length;
     }
 
     function endWCST() {
+        if (wcstState.isTestOver) return;
         wcstState.isTestOver = true;
         console.log("TEST BİTTİ!", wcstState);
-        // Sonuç ekranını gösterme mantığı buraya gelecek
+
+        // Diğer puanları hesapla
+        wcstState.correctResponses = wcstState.cardsUsed - wcstState.totalErrors;
+        wcstState.nonPerseverativeErrors = wcstState.totalErrors - wcstState.perseverativeErrors;
+        // Perseveratif Tepki (Perseverative Response) daha karmaşık bir kural gerektirir, şimdilik hata ile aynı tutuyoruz.
+        wcstState.perseverativeResponses = wcstState.perseverativeErrors;
+
+        const T = langTexts[currentLang];
+        
+        // Oyun alanını temizle ve sonuçları göster
+        gameContent.innerHTML = `
+            <div class="wcst-results page-container">
+                <h3>${T.resultsTitle}</h3>
+                <p><span>${T.totalResponses}:</span> <strong>${wcstState.cardsUsed}</strong></p>
+                <p><span>${T.categoriesCompleted}:</span> <strong>${wcstState.categoriesCompleted}</strong></p>
+                <p><span>${T.correctResponses}:</span> <strong>${wcstState.correctResponses}</strong></p>
+                <p><span>${T.totalErrors}:</span> <strong>${wcstState.totalErrors}</strong></p>
+                <p><span>${T.perseverativeErrors}:</span> <strong>${wcstState.perseverativeErrors}</strong></p>
+                <p><span>${T.nonPerseverativeErrors}:</span> <strong>${wcstState.nonPerseverativeErrors}</strong></p>
+            </div>
+        `;
     }
 
     // ==================================================================
