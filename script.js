@@ -1,50 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Script is running.");
 
-    // ---- HTML ELEMANLARI ----
+    // ---- HTML ELEMANLARI (Bu elementler sadece games.html ve tests.html'de bulunacak) ----
     const gameContainer = document.getElementById('game-container');
     const gameContent = document.getElementById('game-content');
     const gameChoiceButtons = document.querySelectorAll('.game-choice');
     const backToMenuButton = document.getElementById('back-to-menu');
     
-    // Orijinal yapınızdaki seçim ekranlarını bulalım (bu elementler games.html ve tests.html'de olacak)
-    const selectionScreenGames = document.getElementById('selection-screen'); // games.html için
-    const selectionScreenTests = document.getElementById('cognitive-tests-screen'); // tests.html için
-
-    // Global oyun timer ve SKOR değişkenleri (Tüm oyun fonksiyonları bunlara erişmeli)
+    // Global oyun timer değişkenleri (yalnızca timer'lar, oyun değişkenleri yerel olacak)
     let currentGameTimer = null;
     let stroopTimer = null;
     let nbackGameLoop = null;
-
-    // Adam Asmaca değişkenleri (global)
-    let hangmanSecretWord;
-    let hangmanCorrectLetters;
-    let hangmanWrongGuessCount;
-    const hangmanMaxWrongGuesses = 6;
-
-    // Sıralı Hatırlama değişkenleri (global)
-    let sequence;
-    let playerSequence;
-    let sequenceLevel;
-    let canPlayerClick;
-
-    // Stroop Testi değişkenleri (global)
-    let stroopScore;
-    let stroopTimeLeft;
-    let currentCorrectColorName; // stroopColors globalde langTexts içinden alındığı için ayrıca gerek yok
-
-    // N-Back Testi değişkenleri (global)
-    let nbackLevel;
-    let nbackSequence;
-    let nbackCurrentStep;
-    let nbackScore;
-    let nbackErrors;
-    let canPressButton;
-    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ';
-    const NBACK_TRIAL_COUNT = 25;
-    const NBACK_PREPARE_TIME = 1000;
-    const NBACK_STIMULUS_TIME = 2000;
-
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -124,21 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
     // Sadece oyun veya test sayfalarında bu kod çalışacak
-    if (gameContainer && gameContent) { 
+    // HomepageMainContent gibi elementler sadece kendi sayfalarında var olacak
+    if (gameContainer && gameContent) { // gameContainer ve gameContent varsa devam et
         gameChoiceButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const game = button.dataset.game;
                 
                 // Oyun başlangıcında tüm ana seçim ekranlarını gizle
-                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
-                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
+                // selectionScreenGames ve selectionScreenTests sadece games.html ve tests.html'de var, kontrol et
+                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
+                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
+                
+                // WCST başlangıç ekranını da gizle
+                if (document.getElementById('wcst-start-screen')) document.getElementById('wcst-start-screen').classList.add('hidden');
+                
                 gameContainer.classList.remove('hidden'); // Oyun konteynerini göster
 
                 // Timer'ları temizle ve modal'ı kaldır
                 if (currentGameTimer) clearTimeout(currentGameTimer);
                 if (stroopTimer !== null) clearInterval(stroopTimer);
                 if (nbackGameLoop !== null) clearTimeout(nbackGameLoop);
-                gameContent.innerHTML = '';
+                gameContent.innerHTML = ''; // Önceki oyun içeriğini temizle
                 const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove();
                 
                 // Oyunları başlat
@@ -156,17 +128,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // "Geri Dön" butonu olay dinleyicisi
         if (backToMenuButton) {
             backToMenuButton.addEventListener('click', () => {
-                gameContainer.classList.add('hidden');
+                gameContainer.classList.add('hidden'); // Oyun konteynerini gizle
                 
                 // Hangi sayfadan geldiğimize göre ilgili seçim ekranını tekrar göster
-                if (selectionScreenGames) selectionScreenGames.classList.remove('hidden');
-                if (selectionScreenTests) selectionScreenTests.classList.remove('hidden');
+                if (selectionScreenGames) selectionScreenGames.classList.remove('hidden'); // games.html'deki seçim ekranını göster
+                if (selectionScreenTests) selectionScreenTests.classList.remove('hidden'); // tests.html'deki seçim ekranını göster
                 
                 // Oyun içi timer'ları temizle
                 if (currentGameTimer) clearTimeout(currentGameTimer);
                 if (stroopTimer !== null) clearInterval(stroopTimer);
                 if (nbackGameLoop !== null) clearTimeout(nbackGameLoop);
-                gameContent.innerHTML = '';
+                gameContent.innerHTML = ''; // İçeriği temizle
                 const modal = document.querySelector('.game-over-modal'); if (modal) modal.remove();
             });
         }
@@ -180,8 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
     mainNavLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
-        // Kök dizin '/' ile index.html arasındaki uyumu kontrol et
-        if (linkPath === currentPath || (linkPath.endsWith('index.html') && currentPath === linkPath.replace('index.html', '')) || (linkPath === `/${currentLang}/` && currentPath === `/${currentLang}/index.html`)) {
+        if (linkPath === currentPath || 
+           (linkPath.endsWith('index.html') && currentPath === linkPath.replace('index.html', '')) || 
+           (linkPath === `/${currentLang}/` && currentPath === `/${currentLang}/index.html`)) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
@@ -214,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // WCST için sonuç gösterimi showGameOverModal yerine kendi endWCST() fonksiyonunda yapıldığı için buraya eklemiyoruz
         // Eğer WCST de modal kullanacaksa buraya eklenmeliydi.
         
-        if (content === '') return;
+        if (content === '') return; // İçerik yoksa modalı gösterme
         
         modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
         document.body.appendChild(modal);
@@ -230,23 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================================================================
-    // ---- YENİ: WISCONSIN KART EŞLEME TESTİ FONKSİYONLARI ----
+    // ---- WISCONSIN KART EŞLEME TESTİ FONKSİYONLARI ----
     // ==================================================================
     
-    // WCST Kart Özellikleri ve Kuralları
+    // WCST Kart Özellikleri ve Kuralları (Const olarak globalde kalabilir)
     const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
     const WCST_SHAPES = ['triangle', 'star', 'plus', 'circle'];
     const WCST_COUNTS = [1, 2, 3, 4];
     const WCST_RULE_ORDER = ['color', 'shape', 'number', 'color', 'shape', 'number']; // 6 kategori kuralı sırası
 
-    const SHAPE_SVGS = { // SVG ikonları
+    const SHAPE_SVGS = { // SVG ikonları (Const olarak globalde kalabilir)
         triangle: '<svg viewbox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
         star: '<svg viewbox="0 0 100 100"><polygon points="50,10 61,40 95,40 67,60 78,90 50,70 22,90 33,60 5,40 39,40"/></svg>',
-        plus: '<svg viewbox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>',
-        circle: '<svg viewbox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>'
+        plus: '<svg viewbox="00 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>',
+        circle: '<svg viewbox="00 0 100 100"><circle cx="50" cy="50" r="40"/></svg>'
     };
 
-    // WCST oyun değişkenleri (global olarak tanımlandı)
+    // WCST oyun değişkenleri (Her WCST başlatıldığında sıfırlanmalı, bu yüzden let ile tanımlanıp init fonksiyonunda resetlenmeli)
     let wcstResponseDeck = [];
     let wcstStimulusCards = [];
     let wcstCurrentResponseCard = null;
@@ -254,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startWCST() {
         const T = langTexts[currentLang];
-        // WCST'nin başlangıç ekranını ve oyun alanını gameContent'in içine render ediyoruz
         gameContent.innerHTML = `
             <div id="wcst-start-screen">
                 <h2>${T.wcstTitle}</h2>
@@ -287,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>`;
         
-        // Eğitim seviyesi butonlarına ve testi başlat butonuna olay dinleyicileri ekleyelim
         const educationButtons = gameContent.querySelectorAll('.education-btn');
         const startTestButton = gameContent.querySelector('#wcst-start-btn');
         
@@ -328,16 +299,16 @@ document.addEventListener('DOMContentLoaded', () => {
             consecutiveCorrect: 0,
             categoriesCompleted: 0,
             totalErrors: 0,
-            perseverativeResponses: 0, // Toplam perseveratif yanıt sayısı (Berry'ye göre)
-            perseverativeErrors: 0, // Hata anında perseveratifse
+            perseverativeResponses: 0, 
+            perseverativeErrors: 0, 
             nonPerseverativeErrors: 0,
             cardsUsed: 0,
             isTestOver: false
         };
 
-        drawWCSTStimulusCards(); // WCST stimulus kartlarını çiz
-        drawNextWCSTResponseCard(); // İlk tepki kartını çek
-        updateWCSTUi(); // WCST arayüzünü güncelle
+        drawWCSTStimulusCards();
+        drawNextWCSTResponseCard();
+        updateWCSTUi();
     }
 
     function createWCSTCardElement(cardData) {
@@ -356,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = '';
         wcstStimulusCards.forEach((card, index) => {
             const cardElement = createWCSTCardElement(card);
-            cardElement.dataset.index = index; // Hangi uyaran kartı olduğunu bilmek için
+            cardElement.dataset.index = index; 
             cardElement.addEventListener('click', handleWCSTStimulusClick);
             container.appendChild(cardElement);
         });
@@ -370,105 +341,96 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardElement = createWCSTCardElement(wcstCurrentResponseCard);
             container.appendChild(cardElement);
         } else {
-            endWCST(); // Kartlar bittiğinde testi sonlandır
+            endWCST();
         }
     }
 
     function handleWCSTStimulusClick(event) {
-        if (!wcstCurrentResponseCard || wcstState.isTestOver) return; // Geçerli bir tepki kartı yoksa veya test bittiyse işlem yapma
+        if (!wcstCurrentResponseCard || wcstState.isTestOver) return; 
 
         const chosenStimulusIndex = parseInt(event.currentTarget.dataset.index);
         const chosenStimulusCard = wcstStimulusCards[chosenStimulusIndex];
         
         let ruleProperty = wcstState.rule;
-        if (ruleProperty === 'number') { // Kural 'number' ise, cardData'da 'count'a denk gelir
+        if (ruleProperty === 'number') { 
             ruleProperty = 'count';
         }
         
         const isMatch = chosenStimulusCard[ruleProperty] === wcstCurrentResponseCard[ruleProperty];
 
         const feedbackEl = gameContent.querySelector('#wcst-feedback');
-        feedbackEl.classList.remove('correct', 'wrong'); // Önceki geri bildirimi temizle
-        wcstState.cardsUsed++; // Kullanılan kart sayısını artır
+        feedbackEl.classList.remove('correct', 'wrong'); 
+        wcstState.cardsUsed++; 
 
         if (isMatch) {
             feedbackEl.innerText = langTexts[currentLang].correct;
             feedbackEl.classList.add('correct');
-            wcstState.consecutiveCorrect++; // Ardışık doğru sayısını artır
+            wcstState.consecutiveCorrect++; 
         } else {
             feedbackEl.innerText = langTexts[currentLang].wrong;
             feedbackEl.classList.add('wrong');
-            wcstState.totalErrors++; // Toplam hata sayısını artır
+            wcstState.totalErrors++; 
             
-            // Perseveratif hata kontrolü
-            // Eğer önceki kural varsa ve bu kurala göre doğru eşleştirme yapılmışsa
             if (wcstState.previousRule) {
                 let prevRuleProperty = wcstState.previousRule;
                 if (prevRuleProperty === 'number') {
                     prevRuleProperty = 'count';
                 }
                 const isPerseverative = chosenStimulusCard[prevRuleProperty] === wcstCurrentResponseCard[prevRuleProperty];
-                // Seçilen stimulus kartı ile tepki kartı arasındaki önceki kurala göre eşleşme varsa
                 if (isPerseverative) {
                     wcstState.perseverativeErrors++;
-                    wcstState.perseverativeResponses++; // Perseveratif tepki sayısı da artar
+                    wcstState.perseverativeResponses++; 
                 } else {
-                    wcstState.nonPerseverativeErrors++; // Perseveratif olmayan hata
+                    wcstState.nonPerseverativeErrors++; 
                 }
-            } else { // İlk kuralda yapılan yanlışlar da non-perseveratif sayılır
+            } else { 
                 wcstState.nonPerseverativeErrors++;
             }
-            wcstState.consecutiveCorrect = 0; // Yanlışta ardışık doğru sıfırlanır
+            wcstState.consecutiveCorrect = 0; 
         }
 
-        // Kategori tamamlama ve kural değiştirme kontrolü
         if (wcstState.consecutiveCorrect >= 10) {
             wcstState.categoriesCompleted++;
-            wcstState.consecutiveCorrect = 0; // Yeni kategori için sıfırla
+            wcstState.consecutiveCorrect = 0; 
             
-            // Kural değişimi
-            wcstState.previousRule = wcstState.rule; // Mevcut kuralı önceki kural olarak kaydet
-            const nextRuleIndex = wcstState.categoriesCompleted; // Yeni kural için indeks
+            wcstState.previousRule = wcstState.rule; 
+            const nextRuleIndex = wcstState.categoriesCompleted; 
             
             if (nextRuleIndex < WCST_RULE_ORDER.length) {
-                wcstState.rule = WCST_RULE_ORDER[nextRuleIndex]; // Bir sonraki kurala geç
-                console.log("KURAL DEĞİŞTİ! Yeni kural:", wcstState.rule); // Konsola yazdır (geliştirme için)
+                wcstState.rule = WCST_RULE_ORDER[nextRuleIndex]; 
+                console.log("KURAL DEĞİŞTİ! Yeni kural:", wcstState.rule); 
             } else {
-                endWCST(); // Tüm kategoriler tamamlandıysa testi bitir
+                endWCST(); 
             }
         }
         
-        updateWCSTUi(); // UI'ı güncel istatistiklerle yenile
+        updateWCSTUi(); 
         
-        // Kısa bir geri bildirim gösterimi süresi, sonra yeni kart
         setTimeout(() => {
             if (!wcstState.isTestOver) {
-                feedbackEl.innerText = ''; // Geri bildirim mesajını temizle
-                feedbackEl.classList.remove('correct', 'wrong'); // Geri bildirim stilini kaldır
-                drawNextWCSTResponseCard(); // Bir sonraki kartı çek
+                feedbackEl.innerText = ''; 
+                feedbackEl.classList.remove('correct', 'wrong'); 
+                drawNextWCSTResponseCard(); 
             }
-        }, 1000); // 1 saniye sonra yeni kart
+        }, 1000); 
     }
 
     function updateWCSTUi() {
         gameContent.querySelector('#wcst-categories').innerText = wcstState.categoriesCompleted;
         gameContent.querySelector('#wcst-total-errors').innerText = wcstState.totalErrors;
         gameContent.querySelector('#wcst-perse-errors').innerText = wcstState.perseverativeErrors;
-        gameContent.querySelector('#wcst-cards-left').innerText = wcstResponseDeck.length; // Kalan kart sayısı
+        gameContent.querySelector('#wcst-cards-left').innerText = wcstResponseDeck.length; 
     }
 
     function endWCST() {
-        if (wcstState.isTestOver) return; // Zaten bittiyse tekrar bitirme
+        if (wcstState.isTestOver) return; 
         wcstState.isTestOver = true;
         console.log("WCST TESTİ BİTTİ!", wcstState);
 
-        // Nihai skorları hesapla
-        wcstState.correctResponses = wcstState.cardsUsed - wcstState.totalErrors; // Toplam Doğru = Kullanılan Kart - Toplam Hata
-        // wcstState.nonPerseverativeErrors zaten handleStimulusClick içinde hesaplanıyor
-
+        wcstState.correctResponses = wcstState.cardsUsed - wcstState.totalErrors;
+        
         const T = langTexts[currentLang];
         
-        // Sonuçları gameContent'in içine render et
         gameContent.innerHTML = `
             <div class="wcst-results page-container">
                 <h3>${T.resultsTitle}</h3>
@@ -485,69 +447,88 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ==================================================================
     // ---- DİĞER OYUN FONKSİYONLARI ----
-    // Bu fonksiyonlar showGameOverModal'ı çağırıyor olmalı.
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
-    function startHangman() { showHangmanLevelSelection(); }
-    function showHangmanLevelSelection() { gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; document.querySelectorAll('.level-choice').forEach(button => { button.addEventListener('click', (event) => { initializeHangmanGame(event.target.dataset.level); }); }); }
-    function initializeHangmanGame(level) { 
-        hangmanCorrectLetters = []; 
-        hangmanWrongGuessCount = 0; 
-        const wordList = langTexts[currentLang].hangmanWords[level]; 
-        hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)]; 
-        gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanMaxWrongGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; 
-        updateHangmanFigure(); 
-        displayHangmanWord(); 
-        createHangmanKeyboard(); 
-    }
-    function displayHangmanWord() { 
-        const wordDisplay = document.querySelector('.word-display'); 
-        if (!wordDisplay) return; 
-        wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
-        if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { 
-            showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); 
-        } 
-    }
-    function createHangmanKeyboard() { 
-        const keyboard = document.querySelector('.keyboard'); 
-        if (!keyboard) return; 
-        keyboard.innerHTML = ''; 
-        (currentLang === 'tr' ? "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ").split('').forEach(letter => { 
-            const keyButton = document.createElement('button'); 
-            keyButton.innerText = letter; 
-            keyButton.classList.add('key'); 
-            keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton)); 
-            keyboard.appendChild(keyButton); 
-        }); 
-    }
-    function handleHangmanGuess(letter, button) { 
-        button.disabled = true; 
-        if (hangmanSecretWord.includes(letter)) { 
-            hangmanCorrectLetters.push(letter); 
-            button.classList.add('correct'); 
-        } else { 
-            hangmanWrongGuessCount++; 
+    function startHangman() { 
+        let hangmanSecretWord; // Yerel olarak tanımlandı
+        let hangmanCorrectLetters; // Yerel olarak tanımlandı
+        let hangmanWrongGuessCount; // Yerel olarak tanımlandı
+        const hangmanMaxWrongGuesses = 6; // Sabit olarak yerel tanımlandı
+
+        showHangmanLevelSelection(); 
+
+        function showHangmanLevelSelection() { 
+            gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
+            document.querySelectorAll('.level-choice').forEach(button => { 
+                button.addEventListener('click', (event) => { 
+                    initializeHangmanGame(event.target.dataset.level); 
+                }); 
+            }); 
+        }
+        function initializeHangmanGame(level) { 
+            hangmanCorrectLetters = []; 
+            hangmanWrongGuessCount = 0; 
+            const wordList = langTexts[currentLang].hangmanWords[level]; 
+            hangmanSecretWord = wordList[Math.floor(Math.random() * wordList.length)]; 
+            gameContent.innerHTML = `<p class="guesses-text">${langTexts[currentLang].remainingGuess} <span>${hangmanMaxWrongGuesses}</span></p><div class="hangman-figure"><svg viewBox="0 0 200 250" class="figure-container"><line x1="20" y1="230" x2="120" y2="230" /><line x1="70" y1="230" x2="70" y2="20" /><line x1="70" y1="20" x2="150" y2="20" /><line x1="150" y1="20" x2="150" y2="50" /><circle cx="150" cy="70" r="20" class="figure-part" /><line x1="150" y1="90" x2="150" y2="150" class="figure-part" /><line x1="150" y1="110" x2="120" y2="130" class="figure-part" /><line x1="150" y1="110" x2="180" y2="130" class="figure-part" /><line x1="150" y1="150" x2="125" y2="190" class="figure-part" /><line x1="150" y1="150" x2="175" y2="190" class="figure-part" /></svg></div><div class="word-display"></div><div class="keyboard"></div>`; 
             updateHangmanFigure(); 
-            button.classList.add('wrong');
-        } 
-        displayHangmanWord(); 
-        if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { 
-            showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); 
-        } 
-    }
-    function updateHangmanFigure() { 
-        const guessesText = document.querySelector('.guesses-text span'); 
-        if (guessesText) { 
-            guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; 
-        } 
-        document.querySelectorAll('.figure-part').forEach((part, index) => { 
-            part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none'; 
-        }); 
+            displayHangmanWord(); 
+            createHangmanKeyboard(); 
+        }
+        function displayHangmanWord() { 
+            const wordDisplay = document.querySelector('.word-display'); 
+            if (!wordDisplay) return; 
+            wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
+            if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { 
+                showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); 
+            } 
+        }
+        function createHangmanKeyboard() { 
+            const keyboard = document.querySelector('.keyboard'); 
+            if (!keyboard) return; 
+            keyboard.innerHTML = ''; 
+            (currentLang === 'tr' ? "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ").split('').forEach(letter => { 
+                const keyButton = document.createElement('button'); 
+                keyButton.innerText = letter; 
+                keyButton.classList.add('key'); 
+                keyButton.addEventListener('click', () => handleHangmanGuess(letter, keyButton)); 
+                keyboard.appendChild(keyButton); 
+            }); 
+        }
+        function handleHangmanGuess(letter, button) { 
+            button.disabled = true; 
+            if (hangmanSecretWord.includes(letter)) { 
+                hangmanCorrectLetters.push(letter); 
+                button.classList.add('correct'); 
+            } else { 
+                hangmanWrongGuessCount++; 
+                updateHangmanFigure(); 
+                button.classList.add('wrong');
+            } 
+            displayHangmanWord(); 
+            if (hangmanWrongGuessCount === hangmanMaxWrongGuesses) { 
+                showGameOverModal('hangman', false, { secretWord: hangmanSecretWord }); 
+            } 
+        }
+        function updateHangmanFigure() { 
+            const guessesText = document.querySelector('.guesses-text span'); 
+            if (guessesText) { 
+                guessesText.innerText = hangmanMaxWrongGuesses - hangmanWrongGuessCount; 
+            } 
+            document.querySelectorAll('.figure-part').forEach((part, index) => { 
+                part.style.display = index < hangmanWrongGuessCount ? 'block' : 'none'; 
+            }); 
+        }
     }
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     function startSequenceMemory() { 
+        let sequence; // Yerel olarak tanımlandı
+        let playerSequence; // Yerel olarak tanımlandı
+        let sequenceLevel; // Yerel olarak tanımlandı
+        let canPlayerClick; // Yerel olarak tanımlandı
+
         if (currentGameTimer) clearTimeout(currentGameTimer); 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
         const board = document.getElementById('sequence-game-board'); 
@@ -562,50 +543,52 @@ document.addEventListener('DOMContentLoaded', () => {
         sequence = []; 
         sequenceLevel = 0; 
         currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
-    }
-    async function nextSequenceLevel() { 
-        sequenceLevel++; 
-        playerSequence = []; 
-        canPlayerClick = false; 
-        const status = document.getElementById('sequence-status'); 
-        status.innerText = `${langTexts[currentLang].level} ${sequenceLevel}`; 
-        await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 1000); }); 
-        sequence.push(Math.floor(Math.random() * 9)); 
-        await showSequence(); 
-    }
-    async function showSequence() { 
-        const tiles = document.querySelectorAll('.sequence-tile'); 
-        document.getElementById('sequence-status').innerText = langTexts[currentLang].watchSequence; 
-        for (const tileIndex of sequence) { 
-            await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 300); }); 
-            if (tiles[tileIndex]) tiles[tileIndex].classList.add('active'); 
-            await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 600); }); 
-            if (tiles[tileIndex]) tiles[tileIndex].classList.remove('active'); 
-        } 
-        canPlayerClick = true; 
-        document.getElementById('sequence-status').innerText = langTexts[currentLang].yourTurn; 
-    }
-    function handleTileClick(tileId) { 
-        if (!canPlayerClick) return; 
-        playerSequence.push(tileId); 
-        const tile = document.querySelector(`[data-tile-id='${tileId}']`); 
-        tile.classList.add('active'); 
-        setTimeout(() => tile.classList.remove('active'), 200); 
-        const lastIndex = playerSequence.length - 1; 
-        if (playerSequence[lastIndex] !== sequence[lastIndex]) { 
-            showGameOverModal('sequence', false, { level: sequenceLevel }); 
-            return; 
-        } 
-        if (playerSequence.length === sequence.length) { 
+    
+        // İç fonksiyonlar, dış kapsamdaki yerel değişkenlere erişir
+        async function nextSequenceLevel() { 
+            sequenceLevel++; 
+            playerSequence = []; 
             canPlayerClick = false; 
-            currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
-        } 
+            const status = document.getElementById('sequence-status'); 
+            status.innerText = `${langTexts[currentLang].level} ${sequenceLevel}`; 
+            await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 1000); }); 
+            sequence.push(Math.floor(Math.random() * 9)); 
+            await showSequence(); 
+        }
+        async function showSequence() { 
+            const tiles = document.querySelectorAll('.sequence-tile'); 
+            document.getElementById('sequence-status').innerText = langTexts[currentLang].watchSequence; 
+            for (const tileIndex of sequence) { 
+                await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 300); }); 
+                if (tiles[tileIndex]) tiles[tileIndex].classList.add('active'); 
+                await new Promise(resolve => { currentGameTimer = setTimeout(resolve, 600); }); 
+                if (tiles[tileIndex]) tiles[tileIndex].classList.remove('active'); 
+            } 
+            canPlayerClick = true; 
+            document.getElementById('sequence-status').innerText = langTexts[currentLang].yourTurn; 
+        }
+        function handleTileClick(tileId) { 
+            if (!canPlayerClick) return; 
+            playerSequence.push(tileId); 
+            const tile = document.querySelector(`[data-tile-id='${tileId}']`); 
+            tile.classList.add('active'); 
+            setTimeout(() => tile.classList.remove('active'), 200); 
+            const lastIndex = playerSequence.length - 1; 
+            if (playerSequence[lastIndex] !== sequence[lastIndex]) { 
+                showGameOverModal('sequence', false, { level: sequenceLevel }); 
+                return; 
+            } 
+            if (playerSequence.length === sequence.length) { 
+                canPlayerClick = false; 
+                currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
+            } 
+        }
     }
     
     // ==================================================================
     // ---- STROOP TESTİ OYUNU (DÜZELTİLMİŞ) ----
     // ==================================================================
-    // stroopTimer globalde tanımlı, stroopScore, stroopTimeLeft, currentCorrectColorName yerel
+    // stroopTimer globalde tanımlı
     
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); 
@@ -616,15 +599,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function runStroopGame() {
         document.getElementById('stroop-start-screen').classList.add('hidden');
-        stroopScore = 0; // Global değişkeni sıfırla
-        stroopTimeLeft = 60; // Global değişkeni ayarla
-        currentCorrectColorName = null; // Global değişkeni sıfırla
+        let stroopScore = 0; // Yerel tanımlama
+        let stroopTimeLeft = 60; // Yerel tanımlama
+        let currentCorrectColorName; // Yerel tanımlama
 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
         stroopTimer = setInterval(updateStroopTimer, 1000); 
         nextStroopRound();
 
-        // İç fonksiyonlar, dış kapsamdaki global değişkenlere erişir
+        // İç fonksiyonlar, dış fonksiyonların değişkenlerine erişmeli
         function nextStroopRound() {
             const colorNames = Object.keys(langTexts[currentLang].stroopColors); 
             const colorValues = Object.values(langTexts[currentLang].stroopColors);
@@ -679,8 +662,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // ---- N-BACK TESTİ (DÜZELTİLMİŞ) ----
     // ==================================================================
-    // nbackGameLoop globalde tanımlı
-    // nbackLevel, nbackSequence, nbackCurrentStep, nbackScore, nbackErrors, canPressButton globalde tanımlı
     const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
     
     function startNBack() {
@@ -702,18 +683,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                nbackLevel = parseInt(event.target.dataset.level); // Global değişkeni ayarla
+                nbackLevel = parseInt(event.target.dataset.level); // nbackLevel globalde tanımlı
                 initializeNBackGame();
             });
         });
     }
     
     function initializeNBackGame() {
-        nbackSequence = []; // Global değişkeni sıfırla
-        nbackCurrentStep = 0; // Global değişkeni sıfırla
-        nbackScore = 0; // Global değişkeni sıfırla
-        nbackErrors = 0; // Global değişkeni sıfırla
-        canPressButton = false; // Global değişkeni ayarla
+        nbackSequence = []; // Yerel olarak tanımlandı
+        nbackCurrentStep = 0; // Yerel olarak tanımlandı
+        nbackScore = 0; // Yerel olarak tanımlandı
+        nbackErrors = 0; // Yerel olarak tanımlandı
+        canPressButton = false; // Yerel olarak tanımlandı
 
         gameContent.innerHTML = `
             <h2>${nbackLevel}-Back Test</h2>
@@ -734,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
         nbackGameLoop = setTimeout(runNBackStep, 1000); 
 
-        // İç fonksiyonlar, dış kapsamdaki global değişkenlere erişir
+        // İç fonksiyonlar, dış kapsamdaki yerel değişkenlere erişir
         function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
         function runNBackStep() { 
             if (nbackCurrentStep > 0) { checkMissedMatch(); } 
