@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToMenuButton = document.getElementById('back-to-menu');
     
     // Orijinal yapınızdaki seçim ekranlarını bulalım.
-    const selectionScreenGames = document.getElementById('selection-screen');
-    const selectionScreenTests = document.getElementById('cognitive-tests-screen');
+    const selectionScreenGames = document.getElementById('selection-screen'); // games.html için
+    const selectionScreenTests = document.getElementById('cognitive-tests-screen'); // tests.html için
 
     // Global oyun timer değişkenleri
     let currentGameTimer = null;
@@ -120,8 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Navigasyon aktif sınıfını yöneten kod
+    const navLinks = document.querySelectorAll('.main-nav a');
     const currentPath = window.location.pathname;
-    mainNavLinks.forEach(link => {
+    navLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
         if (linkPath === currentPath || (linkPath.endsWith('index.html') && currentPath.endsWith(linkPath.replace('index.html', '')))) {
             link.classList.add('active');
@@ -131,16 +132,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function showGameOverModal(game, isWin, data) {
-        // ... (Bu fonksiyon sizin orijinal kodunuzdaki gibi, değişiklik yok)
+        if (currentGameTimer) clearTimeout(currentGameTimer);
+        if (stroopTimer !== null) clearInterval(stroopTimer);
+        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop);
+
+        const existingModal = document.querySelector('.game-over-modal');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.classList.add('game-over-modal');
+        let content = '';
+
+        if (game === 'hangman') {
+            content = `<h3>${isWin ? langTexts[currentLang].winMessage : langTexts[currentLang].loseMessage}</h3><p>${langTexts[currentLang].secretWord} <strong>${data.secretWord}</strong></p>`;
+        } else if (game === 'sequence') {
+            content = `<h3>${langTexts[currentLang].gameover}</h3><p>${langTexts[currentLang].highestLevel} <strong>${data.level}</strong></p>`;
+        } else if (game === 'stroop') {
+            content = `<h3>${langTexts[currentLang].timeUp}</h3><p>${langTexts[currentLang].yourScore} <strong>${data.score}</strong></p>`;
+        } else if (game === 'n-back') {
+            content = `<h3>${langTexts[currentLang].exerciseOver}</h3><p>${langTexts[currentLang].level}: <strong>${data.level}-Back</strong></p><p>${langTexts[currentLang].correctDetection} <strong>${data.score}</strong></p><p>${langTexts[currentLang].error}: <strong>${data.errors}</strong></p>`;
+        }
+
+        if (content === '') return;
+
+        modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
+        document.body.appendChild(modal);
+
+        setTimeout(() => modal.classList.add('visible'), 10);
+
+        document.getElementById('play-again-button').addEventListener('click', () => {
+            modal.remove();
+            if (game === 'hangman') startHangman();
+            else if (game === 'sequence') startSequenceMemory();
+            else if (game === 'stroop') startStroopTest();
+            else if (game === 'n-back') startNBack();
+        });
     }
     
     // ==================================================================
     // ---- YENİ: WISCONSIN KART EŞLEME TESTİ FONKSİYONLARI ----
     // ==================================================================
     function startWCST() {
-        // Bu fonksiyon, WCST'nin başlangıç ekranını (eğitim seçimi vb.) #game-content içine yükleyecek.
-        // Şimdilik sadece bir yer tutucu ekliyoruz.
-        const T = langTexts[currentLang]; // Metinleri kolayca kullanmak için kısaltma
+        const T = langTexts[currentLang];
         
         gameContent.innerHTML = `
             <div id="wcst-start-screen">
@@ -162,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         
-        // Bu yeni eklenen HTML elementleri için olay dinleyicilerini (event listener) şimdi ekliyoruz.
         const educationButtons = gameContent.querySelectorAll('.education-btn');
         const startTestButton = gameContent.querySelector('#wcst-start-btn');
 
