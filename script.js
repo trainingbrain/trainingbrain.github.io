@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="wcst-game-screen" class="hidden">
                 <div class="wcst-info-panel">
                     <div>Kategoriler: <span id="wcst-categories">0</span></div>
-                    <div>Hatalar: <span id="wcst-total-errors">0</span></div>
+                    <div>Toplam Hata: <span id="wcst-total-errors">0</span></div>
                     <div>Kalan Kart: <span id="wcst-cards-left">128</span></div>
                 </div>
                 <div id="stimulus-cards-container" class="card-area"></div>
@@ -268,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawStimulusCards();
         drawNextResponseCard();
+        updateWcstUi();
     }
 
     function createCardElement(cardData) {
@@ -301,13 +302,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardElement = createCardElement(currentResponseCard);
             container.appendChild(cardElement);
         } else {
+            // Test bitti
             container.innerHTML = '<p>Test Tamamlandı!</p>';
         }
     }
 
+    function updateWcstUi() {
+        gameContent.querySelector('#wcst-categories').innerText = wcstState.categoriesCompleted;
+        gameContent.querySelector('#wcst-total-errors').innerText = wcstState.totalErrors;
+        gameContent.querySelector('#wcst-cards-left').innerText = responseDeck.length;
+    }
+
 
     // ==================================================================
-    // ---- ESKİ OYUN FONKSİYONLARINIZ (DEĞİŞİKLİK YOK) ----
+    // ---- ESKİ OYUN FONKSİYONLARINIZ (EKSİKSİZ) ----
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
