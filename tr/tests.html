@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bilişsel Testler - DEEP BRAİN</title>
     <link rel="stylesheet" href="/style.css">
-    <!-- Diğer head etiketleriniz (favicon, fonts, vb.) -->
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/tests.html" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/tests.html" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -14,10 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
-<body id="page-tests">
+<body>
     <header>
         <h1>DEEP BRAİN</h1>
-        <p>Bir Nöroloji Doktoru Rehberliğinde Zihin Egzersizleri</p>
+        <p>Nöroloji Doktoru Rehberliğinde Zihin Egzersizleri</p>
         <nav class="main-nav">
             <a href="/tr/index.html">Ana Sayfa</a>
             <a href="/tr/games.html">Zihinsel Egzersiz & Oyunlar</a>
@@ -29,44 +30,21 @@
     <main>
         <div id="cognitive-tests-screen">
             <h2>Bilişsel Testler</h2>
-            <p class="page-intro">Yürütücü işlevlerinizi, dikkatinizi ve bilişsel esnekliğinizi değerlendirmek için tasarlanmış standart nöropsikolojik testler.</p>
             <div class="game-selection-container">
                 <button class="game-choice" data-game="wcst">Wisconsin Kart Eşleştirme Testi</button>
-                <button class="game-choice" data-game="trail-making" disabled>İz Sürme Testi (Yakında!)</button>
+                <button class="game-choice" data-game="trail-making">İz Sürme Testi (Yakında!)</button>
             </div>
         </div>
-        <div id="wcst-main-container" class="hidden page-container">
-            <div id="wcst-start-screen">
-                <h2>Wisconsin Kart Eşleme Testi</h2>
-                <div class="wcst-education-level">
-                    <h3>Lütfen eğitim düzeyinizi seçin:</h3>
-                    <div class="education-options">
-                        <button class="education-btn" data-level="ilkokul">İlkokul</button>
-                        <button class="education-btn" data-level="ortaokul">Ortaokul</button>
-                        <button class="education-btn" data-level="lise">Lise</button>
-                        <button class="education-btn" data-level="universite">Üniversite</button>
-                    </div>
-                </div>
-                <div class="wcst-instructions">
-                    <h3>Yönergeler</h3>
-                    <p>Bu biraz değişik bir oyun çünkü testi nasıl yapacağınız konusunda size verilen herbir kartı dört anahtar karttan biriyle eşleştirmeniz gerekiyor. Kartı neye göre eşleştireceğinizi size söyleyemem ama yaptığınız eşleşmenin doğru mu yanlış mı olduğunu her seferinde size söyleyeceğim. Bu testte zaman sınırlaması olmadığından acele etmeniz gerekmemektedir.</p>
-                </div>
-                <button id="wcst-start-btn" disabled>Teste Başla</button>
-            </div>
-            <div id="wcst-game-screen" class="hidden">
-                <div class="wcst-info-panel">
-                    <div>Kategoriler: <span id="wcst-categories">0</span></div>
-                    <div>Hatalar: <span id="wcst-total-errors">0</span></div>
-                    <div>Kalan Kart: <span id="wcst-cards-left">128</span></div>
-                </div>
-                <div id="stimulus-cards-container" class="card-area"></div>
-                <div id="wcst-feedback"></div>
-                <div id="response-card-container" class="card-area"><div id="current-response-card"></div></div>
+        <div id="game-container" class="hidden">
+            <div id="game-content">
+                <!-- Test içeriği buraya dinamik olarak yüklenecek -->
             </div>
             <button id="back-to-menu">Geri Dön</button>
         </div>
     </main>
-    <footer><p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p></footer>
+    <footer>
+        <p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p>
+    </footer>
     <script src="/script.js"></script>
 </body>
 </html>
