@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameContent = document.getElementById('game-content');
     const gameChoiceButtons = document.querySelectorAll('.game-choice');
     const backToMenuButton = document.getElementById('back-to-menu');
-    const selectionScreenGames = document.getElementById('selection-screen');
-    const selectionScreenTests = document.getElementById('cognitive-tests-screen');
+    
+    // Orijinal yapınızdaki seçim ekranlarını bulalım.
+    const selectionScreenGames = document.getElementById('selection-screen'); // games.html için
+    const selectionScreenTests = document.getElementById('cognitive-tests-screen'); // tests.html için
 
     // Global oyun timer değişkenleri
     let currentGameTimer = null;
@@ -42,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             startTest: "Teste Başla",
             educationLevels: { ilkokul: "İlkokul", ortaokul: "Ortaokul", lise: "Lise", universite: "Üniversite" },
             trailMakingDev: "İz Sürme Testi şu anda geliştirme aşamasındadır. Lütfen daha sonra tekrar deneyin.",
-            // YENİ: Sonuç Raporu Metinleri
             resultsTitle: "Test Sonuçları",
             totalResponses: "Toplam Tepki Sayısı",
             categoriesCompleted: "Tamamlanan Kategori",
@@ -77,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
             startTest: "Start Test",
             educationLevels: { ilkokul: "Primary School", ortaokul: "Middle School", lise: "High School", universite: "University" },
             trailMakingDev: "Trail Making Test is currently under development. Please check back later.",
-            // NEW: Result Report Texts
             resultsTitle: "Test Results",
             totalResponses: "Total Responses",
             categoriesCompleted: "Categories Completed",
@@ -285,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const chosenStimulusIndex = parseInt(event.currentTarget.dataset.index);
         const chosenStimulusCard = stimulusCards[chosenStimulusIndex];
         
-        // DÜZELTME: Kural 'number' ise, karşılaştırılacak özelliğin 'count' olduğunu belirtiyoruz.
         let ruleProperty = wcstState.rule;
         if (ruleProperty === 'number') {
             ruleProperty = 'count';
@@ -358,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wcstState.correctResponses = wcstState.cardsUsed - wcstState.totalErrors;
         wcstState.nonPerseverativeErrors = wcstState.totalErrors - wcstState.perseverativeErrors;
-        wcstState.perseverativeResponses = wcstState.perseverativeErrors; // Basitleştirilmiş kural
+        wcstState.perseverativeResponses = wcstState.perseverativeErrors;
 
         const T = langTexts[currentLang];
         
