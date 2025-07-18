@@ -1,72 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Script is running.");
 
-    // ---- HTML ELEMANLARI (Bu elementler sadece games.html ve tests.html'de bulunacak) ----
+    // ---- HTML ELEMANLARI (Bu elementler games.html ve tests.html sayfalarında bulunur) ----
     const gameContainer = document.getElementById('game-container');
     const gameContent = document.getElementById('game-content');
     const gameChoiceButtons = document.querySelectorAll('.game-choice');
     const backToMenuButton = document.getElementById('back-to-menu');
     
-    // Orijinal yapınızdaki seçim ekranlarını bulalım (games.html ve tests.html'de bulunurlar)
+    // games.html ve tests.html'deki ana seçim ekranları
     const selectionScreenGames = document.getElementById('selection-screen'); 
     const selectionScreenTests = document.getElementById('cognitive-tests-screen'); 
 
     // ==================================================================
-    // ---- GLOBAL OYUN DEĞİŞKENLERİ VE SABİTLERİ (SADECE BİR KEZ VE GLOBAL TANIMLANIR) ----
+    // ---- GLOBAL TIMER DEĞİŞKENLERİ (Oyunlar arasında paylaşılan timer'lar) ----
     // ==================================================================
     let currentGameTimer = null;
     let stroopTimer = null; 
     let nbackGameLoop = null; 
-
-    // Adam Asmaca değişkenleri
-    let hangmanSecretWord;
-    let hangmanCorrectLetters; 
-    let hangmanWrongGuessCount; 
-    const hangmanMaxWrongGuesses = 6; 
-    let hangmanDisplayedWord; // Eklendi
-
-    // Sıralı Hatırlama değişkenleri
-    let sequence; 
-    let playerSequence; 
-    let sequenceLevel; 
-    let canPlayerClick;
-
-    // Stroop Testi değişkenleri
-    let stroopScore; 
-    let stroopTimeLeft; 
-    let currentCorrectColorName; 
-
-    // N-Back Testi değişkenleri
-    let nbackLevel; 
-    let nbackSequence; 
-    let nbackCurrentStep; 
-    let nbackScore; 
-    let nbackErrors; 
-    let canPressButton;
-    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; 
-    const NBACK_TRIAL_COUNT = 25; 
-    const NBACK_PREPARE_TIME = 1000; 
-    const NBACK_STIMULUS_TIME = 2000; 
-
-    // WCST Kart Özellikleri ve Kuralları (Const olarak globalde kalabilir)
-    const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
-    const WCST_SHAPES = ['triangle', 'star', 'plus', 'circle'];
-    const WCST_COUNTS = [1, 2, 3, 4];
-    const WCST_RULE_ORDER = ['color', 'shape', 'number', 'color', 'shape', 'number']; 
-
-    const SHAPE_SVGS = { 
-        triangle: '<svg viewbox="0 0 100 100"><polygon points="50,10 90,90 10,90"/></svg>',
-        star: '<svg viewbox="0 0 100 100"><polygon points="50,10 61,40 95,40 67,60 78,90 50,70 22,90 33,60 5,40 39,40"/></svg>',
-        plus: '<svg viewbox="0 0 100 100"><polygon points="40,10 60,10 60,40 90,40 90,60 60,60 60,90 40,90 40,60 10,60 10,40 40,40"/></svg>',
-        circle: '<svg viewbox="00 0 100 100"><circle cx="50" cy="50" r="40"/></svg>'
-    };
-
-    // WCST oyun değişkenleri (Her WCST başlatıldığında sıfırlanmalı)
-    let wcstResponseDeck = [];
-    let wcstStimulusCards = [];
-    let wcstCurrentResponseCard = null;
-    let wcstState = {};
-
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -143,20 +93,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const currentLang = window.location.pathname.startsWith('/en') ? 'en' : 'tr';
     
-    function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
+    function shuffleArray(array) { 
+        for (let i = array.length - 1; i > 0; i--) { 
+            const j = Math.floor(Math.random() * (i + 1)); 
+            [array[i], array[j]] = [array[j], array[i]]; 
+        } 
+        return array; 
+    }
 
-    // Sadece oyun veya test sayfalarında bu kod çalışacak
-    if (gameContainer && gameContent) { 
+    // Bu if bloğu sadece games.html ve tests.html'de bulunan elementleri hedefleyecek
+    if (gameContainer && gameContent && (selectionScreenGames || selectionScreenTests)) { 
         gameChoiceButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const game = button.dataset.game;
                 
-                // Oyun başlangıcında ilgili ana seçim ekranını gizle (eğer varlarsa)
-                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
-                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
+                // Oyun başlangıcında ilgili ana seçim ekranlarını gizle (eğer varlarsa)
+                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
+                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
                 
                 // WCST başlangıç ekranını da gizle (tests.html içinde olabilir)
-                if (document.getElementById('wcst-start-screen')) document.getElementById('wcst-start-screen').classList.add('hidden');
+                const wcstStartScreen = document.getElementById('wcst-start-screen');
+                if (wcstStartScreen) wcstStartScreen.classList.add('hidden');
                 
                 gameContainer.classList.remove('hidden'); // Oyun konteynerini göster
 
@@ -185,11 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gameContainer.classList.add('hidden'); // Oyun konteynerini gizle
                 
                 // Hangi sayfadan geldiğimize göre ilgili seçim ekranını tekrar göster
-                if (window.location.pathname.includes('/games.html')) {
-                    if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.remove('hidden');
-                } else if (window.location.pathname.includes('/tests.html')) {
-                    if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.remove('hidden');
-                }
+                if (selectionScreenGames) selectionScreenGames.classList.remove('hidden'); // games.html'deki seçim ekranını göster
+                if (selectionScreenTests) selectionScreenTests.classList.remove('hidden'); // tests.html'deki seçim ekranını göster
                 
                 // Oyun içi timer'ları temizle
                 if (currentGameTimer) clearTimeout(currentGameTimer);
@@ -205,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Navigasyon aktif sınıfını yöneten kod (tüm sayfalarda çalışacak)
+    // Bu kısım games.html, tests.html, blog.html, hakkimda.html gibi her sayfada HTML'in main-nav a elementlerine
+    // class="active" ekleyip kaldırmak için kullanılır.
     const mainNavLinks = document.querySelectorAll('.main-nav a'); 
     const currentPath = window.location.pathname;
     mainNavLinks.forEach(link => {
@@ -276,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         circle: '<svg viewbox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>'
     };
 
-    // WCST oyun değişkenleri (Her WCST başlatıldığında sıfırlanmalı, globalde tanımlı olduğu için 'let' kullanmayın)
+    // WCST oyun değişkenleri (Her WCST başlatıldığında sıfırlanmalı, globalde tanımlı)
     let wcstResponseDeck = [];
     let wcstStimulusCards = [];
     let wcstCurrentResponseCard = null;
@@ -504,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ==================================================================
     // ---- DİĞER OYUN FONKSİYONLARI ----
+    // Adam Asmaca, Sıralı Hatırlama, Stroop Testi, N-Back Testi
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
@@ -765,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div id="nback-stimulus-box">...</div>
                 <p>${currentLang === 'tr' ? 'Eşleşme gördüğünüzde butona basın.' : 'Press the button when you see a match.'}</p>
                 <div id="nback-controls">
-                    <button id="nback-match-button">${currentLang === 'tr' ? 'Eşleşme' : 'Match'}</button>
+                    <button id="nback-match-button">${langTexts[currentLang].matchButton}</button>
                 </div>
                 <div id="nback-feedback"></div>
             </div>
