@@ -11,10 +11,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectionScreenGames = document.getElementById('selection-screen'); 
     const selectionScreenTests = document.getElementById('cognitive-tests-screen'); 
 
-    // Global oyun timer değişkenleri (yalnızca timer'lar, oyun değişkenleri her oyun fonksiyonunun içinde olacak)
+    // ==================================================================
+    // ---- GLOBAL OYUN DEĞİŞKENLERİ ----
+    // Tüm oyunların skor, sayaç ve durum değişkenleri burada tanımlanmalı.
+    // Fonksiyonlar içinde 'let' ile tekrar tanımlanmamalıdır.
+    // ==================================================================
     let currentGameTimer = null;
     let stroopTimer = null; 
     let nbackGameLoop = null; 
+
+    // Adam Asmaca değişkenleri
+    let hangmanSecretWord;
+    let hangmanCorrectLetters = [];
+    let hangmanWrongGuessCount = 0;
+    const hangmanMaxWrongGuesses = 6; // Bu sabit kalabilir
+
+    // Sıralı Hatırlama değişkenleri
+    let sequence = [];
+    let playerSequence = [];
+    let sequenceLevel = 0;
+    let canPlayerClick = false;
+
+    // Stroop Testi değişkenleri
+    let stroopScore = 0;
+    let stroopTimeLeft = 0;
+    let currentCorrectColorName; // Bu globalde kalsın
+
+    // N-Back Testi değişkenleri
+    let nbackLevel;
+    let nbackSequence = [];
+    let nbackCurrentStep = 0;
+    let nbackScore = 0;
+    let nbackErrors = 0;
+    let canPressButton = false;
+    const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; // Bu sabit kalabilir
+    const NBACK_TRIAL_COUNT = 25; // Bu sabit kalabilir
+    const NBACK_PREPARE_TIME = 1000; // Bu sabit kalabilir
+    const NBACK_STIMULUS_TIME = 2000; // Bu sabit kalabilir
+
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
@@ -99,9 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 const game = button.dataset.game;
                 
-                // Oyun başlangıcında tüm ana seçim ekranlarını gizle
-                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
-                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
+                // Oyun başlangıcında ilgili ana seçim ekranını gizle (eğer varlarsa)
+                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
+                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
                 
                 // WCST başlangıç ekranını da gizle (tests.html içinde olabilir)
                 if (document.getElementById('wcst-start-screen')) document.getElementById('wcst-start-screen').classList.add('hidden');
@@ -453,13 +487,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ---- ADAM ASMACA OYUNU ----
     function startHangman() { 
-        let hangmanSecretWord; 
-        let hangmanCorrectLetters; 
-        let hangmanWrongGuessCount; 
-        const hangmanMaxWrongGuesses = 6; 
-
-        showHangmanLevelSelection(); 
-
+        hangmanCorrectLetters = []; 
+        hangmanWrongGuessCount = 0; 
+        
         function showHangmanLevelSelection() { 
             gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
             document.querySelectorAll('.level-choice').forEach(button => { 
@@ -482,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const wordDisplay = document.querySelector('.word-display'); 
             if (!wordDisplay) return; 
             wordDisplay.innerHTML = hangmanSecretWord.split('').map(letter => `<span class="letter-box">${hangmanCorrectLetters.includes(letter) ? letter : ''}</span>`).join(''); 
-            if (wordDisplay.innerText.replace(/\n/g, '') === hangmanSecretWord) { 
+            if (wordDisplay.innerText.replace(/\s+/g, '') === hangmanSecretWord) { // Boşlukları dikkate almadan kontrol et
                 showGameOverModal('hangman', true, { secretWord: hangmanSecretWord }); 
             } 
         }
@@ -526,10 +556,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     function startSequenceMemory() { 
-        let sequence; 
-        let playerSequence; 
-        let sequenceLevel; 
-        let canPlayerClick; 
+        sequence = []; 
+        playerSequence = []; 
+        sequenceLevel = 0; 
+        canPlayerClick = false; 
 
         if (currentGameTimer) clearTimeout(currentGameTimer); 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
@@ -542,11 +572,10 @@ document.addEventListener('DOMContentLoaded', () => {
             tile.addEventListener('click', () => handleTileClick(i)); 
             board.appendChild(tile); 
         } 
-        sequence = []; 
-        sequenceLevel = 0; 
+        
         currentGameTimer = setTimeout(nextSequenceLevel, 1000); 
     
-        // İç fonksiyonlar, dış kapsamdaki yerel değişkenlere erişir
+        // İç fonksiyonlar, dış kapsamdaki global değişkenlere erişir
         async function nextSequenceLevel() { 
             sequenceLevel++; 
             playerSequence = []; 
@@ -590,26 +619,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // ---- STROOP TESTİ OYUNU (DÜZELTİLMİŞ) ----
     // ==================================================================
-    // stroopTimer globalde tanımlı
-    
     function startStroopTest() {
         if (stroopTimer) clearInterval(stroopTimer); 
-        // stroopColors artık her çağrıda langTexts içinden alınıyor, yerel değişken stroopColors kaldırıldı
+        
         gameContent.innerHTML = `<div id="stroop-start-screen"><h2>${langTexts[currentLang].stroopTitle}</h2><h3>${langTexts[currentLang].ready}</h3><p class="game-description">${langTexts[currentLang].stroopDesc}</p><p>${langTexts[currentLang].stroopInstruction}</p><button id="stroop-start-button">${langTexts[currentLang].start}</button></div><div id="stroop-game-area" class="hidden"><div id="stroop-stats"><div>Time: <span>60</span></div><div id="stroop-score">Score: <span>0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div></div>`;
         document.getElementById('stroop-start-button').addEventListener('click', runStroopGame);
     }
     
     function runStroopGame() {
         document.getElementById('stroop-start-screen').classList.add('hidden');
-        let stroopScore = 0; // Yerel tanımlama
-        let stroopTimeLeft = 60; // Yerel tanımlama
-        let currentCorrectColorName; // Yerel tanımlama
+        stroopScore = 0; // Global değişkeni sıfırla
+        stroopTimeLeft = 60; // Global değişkeni ayarla
+        currentCorrectColorName = null; // Global değişkeni sıfırla
 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
         stroopTimer = setInterval(updateStroopTimer, 1000); 
         nextStroopRound();
 
-        // İç fonksiyonlar, dış fonksiyonların değişkenlerine erişmeli
+        // İç fonksiyonlar, dış kapsamdaki global değişkenlere erişir
         function nextStroopRound() {
             const colorNames = Object.keys(langTexts[currentLang].stroopColors); 
             const colorValues = Object.values(langTexts[currentLang].stroopColors);
@@ -617,6 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
             let randomColorName = Object.keys(langTexts[currentLang].stroopColors).find(key => langTexts[currentLang].stroopColors[key] === randomColorValue);
             
+            // Kelime ve renk aynı olmasın
             while (randomWordName === randomColorName) {
                 randomColorValue = colorValues[Math.floor(Math.random() * colorNames.length)];
                 randomColorName = Object.keys(langTexts[currentLang].stroopColors).find(key => langTexts[currentLang].stroopColors[key] === randomColorValue);
@@ -664,6 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================================================================
     // ---- N-BACK TESTİ (DÜZELTİLMİŞ) ----
     // ==================================================================
+    // nbackGameLoop globalde tanımlı
     const NBACK_ALPHABET = 'BCDFGHKLMNPQRSTVWXYZ'; const NBACK_TRIAL_COUNT = 25; const NBACK_PREPARE_TIME = 1000; const NBACK_STIMULUS_TIME = 2000;
     
     function startNBack() {
@@ -685,18 +714,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                let nbackLevel = parseInt(event.target.dataset.level); 
-                initializeNBackGame(nbackLevel);
+                nbackLevel = parseInt(event.target.dataset.level); // nbackLevel globalde tanımlı
+                initializeNBackGame();
             });
         });
     }
     
-    function initializeNBackGame(nbackLevel) {
-        let nbackSequence = []; 
-        let nbackCurrentStep = 0; 
-        let nbackScore = 0; 
-        let nbackErrors = 0; 
-        let canPressButton = false; 
+    function initializeNBackGame() {
+        nbackSequence = []; // Global değişkeni sıfırla
+        nbackCurrentStep = 0; // Global değişkeni sıfırla
+        nbackScore = 0; // Global değişkeni sıfırla
+        nbackErrors = 0; // Global değişkeni sıfırla
+        canPressButton = false; // Global değişkeni ayarla
 
         gameContent.innerHTML = `
             <h2>${nbackLevel}-Back Test</h2>
@@ -717,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nback-match-button').addEventListener('click', handleNBackMatchPress);
         nbackGameLoop = setTimeout(runNBackStep, 1000); 
 
-        // İç fonksiyonlar, dış kapsamdaki yerel değişkenlere erişir
+        // İç fonksiyonlar, dış kapsamdaki global değişkenlere erişir
         function generateNBackSequence() { for (let i = 0; i < NBACK_TRIAL_COUNT; i++) { if (i >= nbackLevel && Math.random() < 0.3) { nbackSequence.push(nbackSequence[i - nbackLevel]); } else { const randomChar = NBACK_ALPHABET.charAt(Math.floor(Math.random() * NBACK_ALPHABET.length)); nbackSequence.push(randomChar); } } }
         function runNBackStep() { 
             if (nbackCurrentStep > 0) { checkMissedMatch(); } 
