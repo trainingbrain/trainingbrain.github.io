@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zihinsel Egzersizler ve Oyunlar - DEEP BRAİN</title>
-    <link rel="stylesheet" href="/style.css">
     <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/games.html" />
     <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/games.html" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/style.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- HEADER BÖLÜMÜ BU SAYFADAN KALDIRILDI -->
     <main>
-        <div id="selection-screen">
+        <div id="selection-screen" class="page-content-wrapper">
             <h2>Hangi Becerinizi Geliştirmek İstersiniz?</h2>
             <div class="game-selection-container">
                 <button class="game-choice" data-game="adam-asmaca">Adam Asmaca (Dil Becerisi)</button>
@@ -26,16 +26,20 @@
                 <button class="game-choice" data-game="stroop-testi">Stroop Testi (Dikkat)</button>
                 <button class="game-choice" data-game="n-back">N-Back Testi (Çalışma Belleği)</button>
             </div>
-        </div>
-        <div id="game-container" class="hidden">
-            <div id="game-content">
-                <!-- Oyun içeriği buraya dinamik olarak yüklenecek -->
+            <div class="back-button-container"> 
+                <a href="/tr/index.html" class="back-to-selection-button">Ana Sayfaya Dön</a>
             </div>
+        </div>
+
+        <div id="game-container" class="hidden page-content-wrapper"> 
+            <div id="game-content">
+                </div>
             <button id="back-to-menu">Geri Dön</button>
         </div>
     </main>
+
     <footer>
-        <p>© 2025 - Deep Brain. Tüm hakları saklıdır. <a href="/tr/index.html" style="color: white; text-decoration: underline;">Ana Sayfa'ya Dön</a></p>
+        <p>© 2025 - Deep Brain. Tüm hakları saklıdır.</p>
     </footer>
     <script src="/script.js"></script>
 </body>
