@@ -33,7 +33,7 @@ body {
     line-height: 1.7; 
 }
 
-/* Header Alanı */
+/* Header Alanı - Sadece index.html'de olacak */
 header {
     background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)), url('/background.jpg'); 
     background-size: cover;
@@ -43,7 +43,7 @@ header {
     
     padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-    position: sticky; 
+    position: sticky; /* Kullanıcı aşağı kaydırdıkça yukarı kayacak */
     top: 0;
     z-index: 50; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
@@ -64,7 +64,7 @@ header p {
     margin-bottom: 15px;
 }
 
-/* Ana Navigasyon Menüsü */
+/* Ana Navigasyon Menüsü - Sadece index.html'deki header içinde olacak */
 .main-nav {
     margin-top: 20px;
     display: flex;
@@ -98,7 +98,7 @@ main {
     padding: 40px 20px;
 }
 
-/* Tüm ana içerik sarmalayıcıları için stil */
+/* Tüm ana içerik sarmalayıcıları için stil (games, tests, blog, hakkimda sayfalarında main içindeki ilk div) */
 .page-content-wrapper {
     background-color: var(--white);
     padding: 30px;
@@ -137,7 +137,7 @@ p {
     margin-right: auto;
 }
 
-/* Oyun Seçim Butonları */
+/* Oyun Seçim Butonları (games.html, tests.html'deki seçimler) */
 .game-selection-container {
     display: flex;
     justify-content: center;
@@ -166,7 +166,7 @@ p {
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-/* Oyun Alanı ve Geri Butonu (Oyun içinde) */
+/* Oyun Alanı ve Geri Butonu (Tek bir oyun çalışırken görünen) */
 #game-container {
     background-color: var(--white);
     padding: 30px;
@@ -211,6 +211,35 @@ footer {
 .hidden {
     display: none;
 }
+
+/* --- Yeni "Ana Sayfaya Dön" Buton Stilleri --- */
+.back-button-container {
+    margin-top: 30px; 
+    text-align: center; 
+    width: 100%; 
+}
+
+.back-to-selection-button {
+    background-color: var(--secondary-color); /* Koyu gri/mavi */
+    color: var(--white);
+    border: 2px solid var(--secondary-color);
+    padding: 12px 30px;
+    border-radius: 50px; /* Tamamen yuvarlak */
+    font-size: 1.0em;
+    font-weight: bold;
+    text-decoration: none; /* Alt çizgiyi kaldır */
+    transition: all 0.3s ease;
+    display: inline-block; /* Buton gibi davranması için */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.back-to-selection-button:hover {
+    background-color: var(--primary-color); 
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
 
 /* --- Genel Oyun Sonu Modalı --- */
 .game-over-modal {
@@ -572,8 +601,9 @@ footer {
 }
 
 /* NOT: back-to-home-link eski header'lı sayfalardaki footer içindeki link için. Yeni back-to-selection-button daha güncel. */
+/* Eski stil, genel back-to-selection-button stilini kullanacak */
 .back-to-home-link {
-    display: block;
+    display: block; /* Bu stil artık çok kullanılmayacak, back-to-selection-button tercih edilecek */
     text-align: center;
     margin-top: 40px;
     padding: 12px 25px;
@@ -1031,7 +1061,7 @@ footer {
     }
 
     /* DÜZELTME: Sadece genel konteynerler dikey olsun, oyun içleri değil */
-    .game-selection-container, .level-selection-container, .main-nav {flex-direction:column;gap:15px;padding:0 10px}
+    .game-selection-container, .level-selection-container, .main-nav{flex-direction:column;gap:15px;padding:0 10px}
     .game-choice, .level-choice, .main-nav a{width:calc(100% - 20px);margin:0 auto}
     .game-choice{padding:12px 20px;font-size:.95em}#game-container,.page-container,.modal-content{padding:20px;margin:15px auto;width:auto}.homepage-content{padding:25px}.homepage-content h2{font-size:1.8em}.homepage-content p{font-size:1em}.homepage-content .hero-image{width:90%;max-width:300px}.homepage-content .cta-button{padding:15px 30px;font-size:1.1em}#sequence-game-board{grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:15px}.sequence-tile{font-size:2.5em}#stroop-word{font-size:4em}#stroop-stats{font-size:1.3em}#nback-stimulus-box{width:180px;height:180px;font-size:6em}#nback-match-button{padding:18px 45px;font-size:1.3em}}
 @media (max-width: 480px){h1{font-size:1.8em}h2{font-size:1.5em}p{font-size:.9em}
