@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('play-again-button').addEventListener('click', () => {
             modal.remove();
-            if (game === 'hangman') startHangman();
+            if (game === 'adam-asmaca') startHangman();
             else if (game === 'sequence') startSequenceMemory();
             else if (game === 'stroop') startStroopTest();
             else if (game === 'n-back') startNBack();
