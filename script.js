@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const game = button.dataset.game;
                 
                 // Oyun başlangıcında ilgili ana seçim ekranlarını gizle (eğer varlarsa)
-                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
-                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
+                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
+                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
                 
                 // WCST başlangıç ekranını da gizle (tests.html içinde olabilir)
                 const wcstStartScreen = document.getElementById('wcst-start-screen');
@@ -513,14 +513,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ==================================================================
     // ---- DİĞER OYUN FONKSİYONLARI ----
-    // Adam Asmaca, Sıralı Hatırlama, Stroop Testi, N-Back Testi
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
     function startHangman() { 
-        hangmanCorrectLetters = []; 
-        hangmanWrongGuessCount = 0; 
-        hangmanDisplayedWord = []; // Reset here
+        let hangmanSecretWord; 
+        let hangmanCorrectLetters; 
+        let hangmanWrongGuessCount; 
+        const hangmanMaxWrongGuesses = 6; 
+        let hangmanDisplayedWord; 
         
         function showHangmanLevelSelection() { 
             gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
