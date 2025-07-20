@@ -847,42 +847,42 @@ footer {
 
 /* Ana Sayfa İçeriği Stilleri */
 .homepage-content {
-    background-color: var(--white); 
-    background-image: url('/neuronbackground.webp'); 
+    background-color: var(--white);
+    background-image: url('/neuronbackground.webp');
     background-size: cover;
     background-position: center center;
-    background-attachment: scroll; 
+    background-attachment: scroll;
     background-repeat: no-repeat;
     background-blend-mode: multiply;
-    background-color: rgba(44, 62, 80, 0.7); 
+    background-color: rgba(44, 62, 80, 0.7);
 
     padding: 40px;
     border-radius: 15px;
     box-shadow: var(--box-shadow-medium);
-    max-width: 1000px; 
+    max-width: 1000px;
     margin: 30px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
     text-align: center;
-    color: white; 
+    color: white;
 }
 
 .homepage-content h2 {
-    color: var(--white); 
+    color: var(--white);
 }
 .homepage-content p {
-    color: rgba(255, 255, 255, 0.9); 
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .homepage-content .hero-image {
-    width: 60%; 
-    max-width: 400px; 
+    width: 60%;
+    max-width: 400px;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    animation: fadeIn 1.5s ease-out; 
+    animation: fadeIn 1.5s ease-out;
 }
 
 .homepage-content .call-to-action-buttons {
@@ -896,19 +896,19 @@ footer {
 .homepage-content .cta-button {
     text-decoration: none;
     padding: 18px 40px;
-    border-radius: 50px; 
+    border-radius: 50px;
     font-size: 1.2em;
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border: 2px solid var(--white); 
-    color: var(--white); 
-    background-color: transparent; 
+    border: 2px solid var(--white);
+    color: var(--white);
+    background-color: transparent;
 }
 
 .homepage-content .cta-button:hover {
-    background-color: var(--white); 
-    color: var(--secondary-color); 
+    background-color: var(--white);
+    color: var(--secondary-color);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
@@ -947,21 +947,16 @@ footer {
     }
 
     /* Oyun Seçim Konteynerleri ve Navigasyon Mobil Düzeni */
-    /* Bu kısımdaki flex-direction: column yerine row/wrap deneyeceğiz */
     .game-selection-container, .level-selection-container, .main-nav {
-        flex-direction: row; /* Mobil cihazlarda da yan yana durmaya çalışsın */
-        flex-wrap: wrap; /* Sığmazsa alt satıra geçsin */
-        gap: 10px; /* Boşluğu azalt */
-        justify-content: center;
-        padding: 0 5px;
+        flex-direction: column; /* Tekrar dikey yaptık, kullanıcının 'uzun ekran' şikayetini anlamak için */
+        gap: 15px;
+        padding: 0 10px;
     }
     .game-choice, .level-choice, .main-nav a {
-        width: auto; /* Otomatik genişlik, içeriğe göre */
-        flex-shrink: 1; /* Küçülebilme */
-        min-width: 120px; /* Minimum genişlik */
-        margin: 5px; /* Butonlar arası boşluk */
-        padding: 10px 15px; /* Padding ayarla */
-        font-size: 0.9em;
+        width: calc(100% - 20px);
+        margin: 0 auto;
+        padding: 12px 20px;
+        font-size: 0.95em;
     }
     /* main-nav a için özel, çünkü onlar yazı gibi daha ince olabilir */
     .main-nav a {
@@ -979,7 +974,7 @@ footer {
     /* Adam Asmaca klavyesi için daha küçük tuşlar - DÜZELTİLDİ */
     .key{
         width: calc(20% - 10px); /* Her satırda 5 buton sığdırmak için */
-        height: 35px; 
+        height: 35px;
         font-size: 0.85em; /* Daha küçük font */
         margin: 5px; /* Boşluk */
     }
