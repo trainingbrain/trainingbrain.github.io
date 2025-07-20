@@ -203,11 +203,11 @@ footer {
     color: #ecf0f1;
     font-size: 0.9em;
     margin-top: auto;
-    display: flex; /* İçeriği ortalamak için flexbox kullan */
-    flex-direction: column; /* İçeriği dikey sırala */
-    align-items: center; /* Yatayda ortala */
-    justify-content: center; /* Dikeyde ortala */
-    gap: 10px; /* Elemanlar arası boşluk */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
 }
 
 /* Yardımcı Class */
@@ -356,19 +356,20 @@ footer {
     padding-bottom: 5px;
 }
 
+/* Mobil Adam Asmaca Klavyesi Düzenlemesi */
 .keyboard {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px; /* Daha küçük boşluk */
     justify-content: center;
-    max-width: 650px; 
+    max-width: 700px; /* Daha geniş alan, satırda daha fazla sığar */
     margin-top: 20px;
 }
 
 .key {
-    font-size: 1.3em;
-    width: 45px;
-    height: 45px;
+    font-size: 1.2em; /* Biraz küçültülebilir */
+    width: 40px; /* Sabit genişlik */
+    height: 40px; /* Sabit yükseklik */
     border: 1px solid var(--border-color);
     background-color: #fdfdfd;
     border-radius: 8px;
@@ -459,12 +460,16 @@ footer {
     justify-content: center;
 }
 
+/* Mobil Stroop Testi Seçenekleri Düzenlemesi */
 #stroop-choices {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
+    gap: 10px; /* Daha küçük boşluk */
+    flex-wrap: wrap; /* Yan yana sığmazsa alt satıra geç */
     margin-top: 30px;
+    max-width: 700px; /* Genişliği kısıtlayabiliriz */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .stroop-button {
@@ -537,7 +542,7 @@ footer {
     transform: translateY(-2px);
 }
 
-.page-container { /* Blog ve Hakkımda sayfaları için genel konteyner */
+.page-container {
     background-color: var(--white);
     padding: 30px 40px;
     border-radius: 12px;
@@ -610,8 +615,8 @@ footer {
     color: #2980b9;
 }
 
-/* NOT: back-to-home-link eski header'lı sayfalardaki footer içindeki link için. Yeni back-to-selection-button daha güncel. */
-.back-to-home-link { /* Bu stil artık çok kullanılmayacak, back-to-selection-button tercih edilecek */
+/* Eski .back-to-home-link stili - artık kullanılmayacak, back-to-selection-button tercih edilecek */
+.back-to-home-link {
     display: block; 
     text-align: center;
     margin-top: 40px;
@@ -720,244 +725,115 @@ footer {
     box-shadow: 0 5px 10px rgba(231, 76, 60, 0.2);
 }
 
-.wcst-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
+/* --- WCST'ye Özel Stiller --- */
+.wcst-education-level, .wcst-instructions {
+    width:100%;max-width:700px;background:#fdfdfd;padding:25px;border-radius:12px;border:1px solid var(--border-color);box-shadow:var(--box-shadow-light);text-align:center;margin-bottom:20px;
+}
+.education-options{
+    display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-top:15px;
+}
+.education-btn{
+    padding:12px 28px;font-size:1.1em;cursor:pointer;border-radius:8px;border:2px solid var(--primary-color);background-color:transparent;color:var(--primary-color);font-weight:700;transition:all .3s;
+}
+.education-btn:hover{
+    background-color:var(--primary-color);color:#fff;
+}
+.education-btn.selected{
+    background-color:var(--secondary-color);border-color:var(--secondary-color);color:#fff;transform:scale(1.05);
+}
+#wcst-start-btn{
+    padding:15px 40px;font-size:1.3em;font-weight:700;cursor:pointer;border:none;border-radius:10px;background-color:var(--accent-green);color:#fff;transition:all .3s;
+}
+#wcst-start-btn:disabled{
+    background-color:#bdc3c7;cursor:not-allowed;opacity:.7;
 }
 
-.wcst-info {
+/* WCST kart alanı düzenlemesi */
+#wcst-game-screen .card-area {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.3em; 
-    font-weight: bold;
-    color: var(--secondary-color);
-}
-
-#wcst-feedback {
-    min-height: 40px; 
-    font-size: 2em; 
-    font-weight: bold;
-}
-
-#wcst-feedback.correct {
-    color: var(--accent-green);
-}
-
-#wcst-feedback.wrong {
-    color: var(--accent-red);
-}
-
-.card-area {
-    width: 100%;
+    max-width: 600px; /* Uyaran kartları için maks genişlik */
     display: flex;
     justify-content: space-around;
-    padding: 25px; 
+    flex-wrap: wrap; /* Kartlar sığmazsa alt satıra geçsin */
+    align-items: flex-start; /* Kartlar üstten hizalansın */
+    padding: 15px;
     background-color: #ecf0f1;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+    box-shadow: inset 0 2px 5px rgba(0,0,0,.1);
+    margin: 20px auto; /* Ortalamak için */
 }
 
-.card {
-    width: 110px; 
-    height: 150px;
-    border: 2px solid #aebac1; 
-    background-color: white;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 8px; 
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    transition: all 0.2s; 
+#response-card-container {
+    background-color:transparent;
+    box-shadow:none;
+    min-height:180px;
+    margin-top: 20px; /* Uyaran kartlardan boşluk */
 }
 
-#target-cards-container .card {
-    cursor: pointer;
+.wcst-card {
+    width:110px;
+    height:150px;
+    background-color:#fff;
+    border:3px solid #b0bec5;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0,0,0,.1);
+    display:flex;
+    flex-wrap:nowrap; /* Kartın içindeki şekiller sarmalanmasın */
+    flex-direction: column; /* Şekiller alt alta */
+    justify-content:center;
+    align-content:center;
+    gap:5px;
+    padding:5px;
+    box-sizing:border-box;
+    flex-shrink: 0; /* Kartlar küçülmesin */
+    margin: 5px; /* Kartlar arası küçük boşluk */
 }
 
-#target-cards-container .card:hover {
-    transform: translateY(-8px); 
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    border-color: var(--primary-color); 
+#stimulus-cards-container .wcst-card {
+    cursor:pointer;
+    transition:transform .2s,box-shadow .2s;
+}
+#stimulus-cards-container .wcst-card:hover {
+    transform:translateY(-5px);
+    box-shadow:0 8px 16px rgba(0,0,0,.15);
 }
 
-.card-shape {
-    fill: currentColor;
-    width: 60px; 
-    height: 60px;
+.wcst-card .card-shape{
+    width:40%;height:40%;
 }
+.wcst-card .card-shape svg{
+    width:100%;height:100%;fill:currentColor;
+}
+.color-red{color:var(--accent-red)}
+.color-green{color:var(--accent-green)}
+.color-blue{color:var(--primary-color)}
+.color-yellow{color:var(--stroop-yellow)}
 
-.color-red { color: var(--accent-red); }
-.color-green { color: var(--accent-green); }
-.color-blue { color: var(--primary-color); } 
-.color-yellow { color: var(--stroop-yellow); }
+/* Geri bildirim yazısı stilleri */
+#wcst-feedback{min-height:40px;font-size:2.2em;font-weight:800;text-transform:uppercase;letter-spacing:2px;transition:transform .2s ease}
+#wcst-feedback.correct{color:var(--accent-green);transform:scale(1.1)}
+#wcst-feedback.wrong{color:var(--accent-red);transform:scale(1.1)}
 
-.wcst-start-screen {
-    text-align: left;
-    max-width: 650px; 
-    margin: 0 auto;
+.wcst-results{
+    text-align:left;width:100%;margin-top:20px;font-size:1.1em;
 }
+.wcst-results p{
+    display:flex;justify-content:space-between;padding:10px 5px;border-bottom:1px solid #eee;margin-bottom:0;
+}
+.wcst-results p:last-of-type{border-bottom:none}
+.wcst-results strong{color:var(--primary-color)}
 
-.wcst-start-screen h3 {
-    text-align: center;
-    font-size: 1.8em;
-    color: var(--secondary-color);
-    margin-bottom: 25px;
-}
-
-.wcst-start-screen p {
-    font-size: 1.15em;
-    line-height: 1.7;
-}
-
-.wcst-education-level, .wcst-instructions {
-    margin-bottom: 30px;
-    background: #fdfdfd;
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--box-shadow-light);
-}
-
-.education-options {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-top: 15px;
-}
-
-.education-btn, #wcst-start-btn {
-    padding: 12px 28px; 
-    font-size: 1.15em;
-    cursor: pointer;
-    border-radius: 8px;
-    border: 2px solid var(--primary-color); 
-    background-color: transparent;
-    color: var(--primary-color);
-    font-weight: bold;
-    transition: all 0.3s;
-}
-
-.education-btn:hover, #wcst-start-btn:hover {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
-}
-
-.education-btn.selected {
-    background-color: #2980b9;
-    color: white;
-    border-color: #2980b9;
-    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-}
-
-#wcst-start-btn {
-    display: block;
-    margin: 30px auto; 
-    background-color: var(--accent-green);
-    border-color: var(--accent-green);
-    color: white;
-}
-
-#wcst-start-btn:disabled {
-    background-color: #bdc3c7;
-    border-color: #bdc3c7;
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: none;
-    transform: none;
-}
-
-.wcst-results p {
-    font-size: 1.1em;
-    line-height: 1.8;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-}
-.wcst-results p:last-of-type {
-    border-bottom: none;
-}
-.wcst-results strong {
-    float: right;
-    color: var(--primary-color);
-}
-
-.nback-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px; 
-}
-
-#nback-stimulus-box {
-    width: 220px; 
-    height: 220px;
-    border: 4px solid var(--secondary-color); 
-    border-radius: 15px; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 8.5em; 
-    font-weight: bold;
-    color: var(--secondary-color);
-    background-color: #fcfcfc; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-#nback-controls {
-    margin-top: 20px;
-}
-
-#nback-match-button {
-    padding: 22px 55px; 
-    font-size: 1.6em; 
-    font-weight: bold;
-    cursor: pointer;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-#nback-match-button:hover {
-    background-color: #2980b9;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-#nback-feedback {
-    min-height: 40px;
-    font-size: 1.7em;
-    font-weight: bold;
-    margin-top: 15px;
-}
-#nback-feedback.correct {
-    color: var(--accent-green);
-}
-#nback-feedback.wrong {
-    color: var(--accent-red);
-}
-
-#nback-stats {
-    display: flex;
-    gap: 40px; 
-    font-size: 1.3em;
-    color: var(--secondary-color);
-    font-weight: 600;
-}
-#nback-stats span {
-    color: var(--primary-color);
-    font-weight: bold;
-}
-
+/* --- N-Back Testi Stilleri --- */
+.nback-container{display:flex;flex-direction:column;align-items:center;gap:30px}
+#nback-stimulus-box{width:220px;height:220px;border:4px solid var(--secondary-color);border-radius:15px;display:flex;justify-content:center;align-items:center;font-size:8.5em;font-weight:700;color:var(--secondary-color);background-color:#fcfcfc;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+#nback-controls{margin-top:20px}
+#nback-match-button{padding:22px 55px;font-size:1.6em;font-weight:700;cursor:pointer;background-color:var(--primary-color);color:#fff;border:none;border-radius:10px;transition:background-color .2s,transform .2s,box-shadow .2s;box-shadow:0 4px 10px rgba(0,0,0,.1)}
+#nback-match-button:hover{background-color:#2980b9;transform:translateY(-3px);box-shadow:0 6px 15px rgba(0,0,0,.15)}
+#nback-feedback{min-height:40px;font-size:1.7em;font-weight:700;margin-top:15px}
+#nback-feedback.correct{color:var(--accent-green)}
+#nback-feedback.wrong{color:var(--accent-red)}
+#nback-stats{display:flex;gap:40px;font-size:1.3em;color:var(--secondary-color);font-weight:600}
+#nback-stats span{color:var(--primary-color);font-weight:700}
 
 .game-description {
     font-size: 1.1em;
@@ -1069,8 +945,54 @@ footer {
         font-size: 1.8em;
     }
 
-    /* DÜZELTME: Sadece genel konteynerler dikey olsun, oyun içleri değil */
-    .game-selection-container, .level-selection-container, .main-nav{flex-direction:column;gap:15px;padding:0 10px}
-    .game-choice, .level-choice, .main-nav a{width:calc(100% - 20px);margin:0 auto}
-    .game-choice{padding:12px 20px;font-size:.95em}#game-container,.page-container,.modal-content{padding:20px;margin:15px auto;width:auto}.homepage-content{padding:25px}.homepage-content h2{font-size:1.8em}.homepage-content p{font-size:1em}.homepage-content .hero-image{width:90%;max-width:300px}.homepage-content .cta-button{padding:15px 30px;font-size:1.1em}#sequence-game-board{grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:15px}.sequence-tile{font-size:2.5em}#stroop-word{font-size:4em}#stroop-stats{font-size:1.3em}#nback-stimulus-box{width:180px;height:180px;font-size:6em}#nback-match-button{padding:18px 45px;font-size:1.3em}}
-@media (max-width: 480px){h1{font-size:1.8em}h2{font-size:1.5em}p{font-size:.9em}.key{width:35px;height:35px;font-size:1em}.modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}.homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}#sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}#stroop-word{font-size:3em}#stroop-choices{gap:10px}.stroop-button{min-width:100px;padding:10px 20px;font-size:1em}#nback-stimulus-box{width:150px;height:150px;font-size:5em}}
+    /* Oyun Seçim Konteynerleri ve Navigasyon Mobil Düzeni */
+    .game-selection-container, .level-selection-container, .main-nav {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 10px;
+    }
+    .game-choice, .level-choice, .main-nav a {
+        width: calc(100% - 20px);
+        margin: 0 auto;
+    }
+    .game-choice{padding:12px 20px;font-size:.95em}
+
+    /* Adam Asmaca Klavyesi Mobil Düzenlemesi */
+    .keyboard {
+        flex-direction: row; /* Butonlar yan yana kalsın */
+        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
+        gap: 5px; /* Boşlukları azalt */
+        justify-content: center;
+        max-width: 100%; /* Tam genişlik kullan */
+        padding: 0 5px;
+    }
+    .key {
+        width: calc(14% - 10px); /* Yaklaşık 6-7 buton sığdır */
+        height: 40px;
+        font-size: 0.9em;
+        margin: 2px; /* Küçük dış boşluk */
+    }
+
+    /* Stroop Seçenekleri Mobil Düzenlemesi */
+    #stroop-choices {
+        flex-direction: row; /* Butonlar yan yana kalsın */
+        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
+        gap: 10px; /* Boşlukları azalt */
+        justify-content: center;
+        max-width: 100%; /* Tam genişlik kullan */
+        padding: 0 10px;
+    }
+    .stroop-button {
+        min-width: 100px; /* Minimum genişlik korunsun */
+        padding: 12px 20px;
+        font-size: 1.1em;
+    }
+
+    #game-container,.page-container,.modal-content{padding:20px;margin:15px auto;width:auto}
+    .homepage-content{padding:25px}.homepage-content h2{font-size:1.8em}.homepage-content p{font-size:1em}.homepage-content .hero-image{width:90%;max-width:300px}.homepage-content .cta-button{padding:15px 30px;font-size:1.1em}
+    #sequence-game-board{grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:15px}.sequence-tile{font-size:2.5em}#stroop-word{font-size:4em}#stroop-stats{font-size:1.3em}#nback-stimulus-box{width:180px;height:180px;font-size:6em}#nback-match-button{padding:18px 45px;font-size:1.3em}}
+
+@media (max-width: 480px){
+    h1{font-size:1.8em}h2{font-size:1.5em}p{font-size:.9em}
+    .key{width: calc(16% - 8px); height: 35px; font-size: 0.8em; padding: 0;} /* Daha küçük ekranlar için daha fazla sığdır */
+    .modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}.homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}#sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}#stroop-word{font-size:3em}#stroop-choices{gap:10px}.stroop-button{min-width:80px;padding:10px 15px;font-size:0.9em}#nback-stimulus-box{width:150px;height:150px;font-size:5em}}
