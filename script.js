@@ -32,6 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGameTimer = null;
     let stroopTimer = null;
     let nbackGameLoop = null;
+    
+    // Bu kodu script.js dosyanızda DOMContentLoaded içine ekleyin
+    // ==================================================================
+    // ---- YENİ: HEADER KAYDIRMA DAVRANIŞI ----
+    // ==================================================================
+    const header = document.querySelector('header');
+    if (header) {
+        let lastScrollY = window.scrollY; // Son kaydırma pozisyonunu sakla
+    
+        window.addEventListener('scroll', () => {
+            // Eğer aşağı kaydırılıyorsa ve sayfanın biraz aşağısındaysak
+            if (lastScrollY < window.scrollY && window.scrollY > 150) {
+                header.classList.add('header--hidden');
+            } 
+            // Eğer yukarı kaydırılıyorsa
+            else {
+                header.classList.remove('header--hidden');
+            }
+            // Son kaydırma pozisyonunu güncelle
+            lastScrollY = window.scrollY;
+        });
+    }
+
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
