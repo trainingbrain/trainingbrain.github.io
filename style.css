@@ -203,11 +203,11 @@ footer {
     color: #ecf0f1;
     font-size: 0.9em;
     margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
 }
 
 /* Yardımcı Class */
@@ -250,7 +250,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.7); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -270,7 +270,7 @@ footer {
     padding: 40px;
     border-radius: 12px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
     max-width: 450px;
     width: 90%;
 }
@@ -299,7 +299,7 @@ footer {
 }
 
 /* --- Adam Asmaca Oyun Stilleri --- */
-#game-content {
+#game-content { 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -356,20 +356,20 @@ footer {
     padding-bottom: 5px;
 }
 
-/* Adam Asmaca Klavyesi DÜZELTİLDİ - Mobil Uyumlu */
+/* Mobil Adam Asmaca Klavyesi Düzenlemesi */
 .keyboard {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* Butonlar arası boşluk */
+    gap: 8px; /* Daha küçük boşluk */
     justify-content: center;
-    max-width: 650px; /* Genişliği kısıtla */
+    max-width: 700px; /* Daha geniş alan, satırda daha fazla sığar */
     margin-top: 20px;
 }
 
 .key {
-    font-size: 1.2em;
-    width: 45px; /* Standart genişlik */
-    height: 45px; /* Standart yükseklik */
+    font-size: 1.2em; /* Biraz küçültülebilir */
+    width: 40px; /* Sabit genişlik */
+    height: 40px; /* Sabit yükseklik */
     border: 1px solid var(--border-color);
     background-color: #fdfdfd;
     border-radius: 8px;
@@ -412,13 +412,13 @@ footer {
 
 #sequence-game-board {
     display: grid;
-    grid-template-columns: repeat(3, 120px);
+    grid-template-columns: repeat(3, 120px); 
     grid-template-rows: repeat(3, 120px);
-    gap: 20px;
-    background-color: #dbe3e7;
+    gap: 20px; 
+    background-color: #dbe3e7; 
     padding: 20px;
     border-radius: 15px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); 
 }
 
 .sequence-tile {
@@ -427,10 +427,10 @@ footer {
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
     border: 2px solid #95a5a6;
-    display: flex;
+    display: flex; 
     justify-content: center;
     align-items: center;
-    font-size: 3em;
+    font-size: 3em; 
     font-weight: bold;
     color: var(--secondary-color);
 }
@@ -443,29 +443,29 @@ footer {
 
 .sequence-tile.active {
     background-color: var(--primary-color);
-    transform: scale(1.08);
+    transform: scale(1.08); 
     border-color: #2980b9;
     color: var(--white);
-    box-shadow: 0 0 15px var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color); 
 }
 
 #stroop-word {
-    font-size: 5.5em;
+    font-size: 5.5em; 
     font-weight: bold;
     text-transform: uppercase;
     margin: 40px 0;
-    min-height: 100px;
+    min-height: 100px; 
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Stroop Testi Seçenekleri DÜZELTİLDİ - Mobil Uyumlu */
+/* Mobil Stroop Testi Seçenekleri Düzenlemesi */
 #stroop-choices {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Boşlukları koru */
-    flex-wrap: wrap; /* Yan yana sığmazsa alt satıra geçsin */
+    gap: 10px; /* Daha küçük boşluk */
+    flex-wrap: wrap; /* Yan yana sığmazsa alt satıra geç */
     margin-top: 30px;
     max-width: 700px; /* Genişliği kısıtlayabiliriz */
     margin-left: auto;
@@ -476,13 +476,13 @@ footer {
     background-color: #f0f0f0;
     color: var(--text-color-dark);
     border: 2px solid #ccc;
-    padding: 15px 35px;
-    border-radius: 10px;
-    font-size: 1.3em;
+    padding: 15px 35px; 
+    border-radius: 10px; 
+    font-size: 1.3em; 
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 140px; /* Minimum genişliği koru */
+    min-width: 140px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -495,9 +495,9 @@ footer {
     display: flex;
     justify-content: space-around;
     width: 100%;
-    max-width: 500px;
+    max-width: 500px; 
     margin: 20px auto;
-    font-size: 1.6em;
+    font-size: 1.6em; 
     font-weight: 600;
     color: var(--secondary-color);
 }
@@ -579,7 +579,7 @@ footer {
 .article-preview h3 a {
     text-decoration: none;
     color: var(--secondary-color);
-    font-size: 1.7em;
+    font-size: 1.7em; 
     transition: color 0.3s;
     font-weight: 700;
 }
@@ -589,7 +589,7 @@ footer {
 }
 
 .article-meta {
-    font-size: 0.95em;
+    font-size: 0.95em; 
     color: var(--text-color-light);
     margin-top: 8px;
     margin-bottom: 18px;
@@ -615,9 +615,9 @@ footer {
     color: #2980b9;
 }
 
-/* Eski .back-to-home-link stili - artık kullanılmayacak, .back-to-selection-button tercih edilecek */
+/* Eski .back-to-home-link stili - artık kullanılmayacak, back-to-selection-button tercih edilecek */
 .back-to-home-link {
-    display: block;
+    display: block; 
     text-align: center;
     margin-top: 40px;
     padding: 12px 25px;
@@ -681,7 +681,7 @@ footer {
     justify-content: center;
     gap: 20px;
     margin-top: 30px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
 }
 
 .level-choice {
@@ -706,7 +706,7 @@ footer {
 }
 
 .level-choice[data-level="orta"] {
-    border-color: #f39c12;
+    border-color: #f39c12; 
     color: #f39c12;
 }
 .level-choice[data-level="orta"]:hover {
@@ -748,7 +748,7 @@ footer {
     background-color:#bdc3c7;cursor:not-allowed;opacity:.7;
 }
 
-/* WCST kart alanı düzenlemesi DÜZELTİLDİ */
+/* WCST kart alanı düzenlemesi */
 #wcst-game-screen .card-area {
     width: 100%;
     max-width: 600px; /* Uyaran kartları için maks genişlik */
@@ -770,23 +770,30 @@ footer {
     margin-top: 20px; /* Uyaran kartlardan boşluk */
 }
 
+/* ====================================================== */
+/* DÜZELTME 2: WCST KART GÖRÜNÜMÜ ÇÖZÜMÜ                 */
+/* Flexbox yerine CSS Grid kullanarak daha stabil bir     */
+/* yerleşim sağlıyoruz. Bu, 1-4 arası şeklin            */
+/* karttan taşmasını engelleyecektir.                     */
+/* ====================================================== */
 .wcst-card {
-    width:110px;
-    height:150px;
-    background-color:#fff;
-    border:3px solid #b0bec5;
-    border-radius:10px;
-    box-shadow:0 4px 8px rgba(0,0,0,.1);
-    display:flex;
-    flex-direction: column; /* Şekiller alt alta durmalı */
-    flex-wrap: nowrap; /* Şekiller sarmalanmasın */
-    justify-content:center;
-    align-items:center; /* Şekilleri yatayda ortala */
-    gap:5px;
-    padding:5px;
-    box-sizing:border-box;
-    flex-shrink: 0; /* Kartlar küçülmesin */
-    margin: 5px; /* Kartlar arası küçük boşluk */
+    width: 110px;
+    height: 150px;
+    background-color: #fff;
+    border: 3px solid #b0bec5;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    
+    /* Flexbox yerine Grid kullanıyoruz */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 sütun */
+    grid-template-rows: 1fr 1fr;    /* 2 satır */
+    place-items: center; /* Öğeleri hücre içinde ortala */
+    
+    padding: 5px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    margin: 5px;
 }
 
 #stimulus-cards-container .wcst-card {
@@ -798,10 +805,19 @@ footer {
     box-shadow:0 8px 16px rgba(0,0,0,.15);
 }
 
-.wcst-card .card-shape{
-    width:50%; /* Şekilleri biraz büyüttük, kart içine sığacak kadar */
-    height:auto; /* Oranı koru */
+/* Şekil boyutunu Grid hücresine sığacak şekilde ayarlıyoruz */
+.wcst-card .card-shape {
+    width: 80%; /* Hücre genişliğinin %80'i */
+    height: 80%; /* Hücre yüksekliğinin %80'i */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+/* ====================================================== */
+/* DÜZELTME 2 SONU                                        */
+/* ====================================================== */
+
+
 .wcst-card .card-shape svg{
     width:100%;height:100%;fill:currentColor;
 }
@@ -847,42 +863,42 @@ footer {
 
 /* Ana Sayfa İçeriği Stilleri */
 .homepage-content {
-    background-color: var(--white);
-    background-image: url('/neuronbackground.webp');
+    background-color: var(--white); 
+    background-image: url('/neuronbackground.webp'); 
     background-size: cover;
     background-position: center center;
-    background-attachment: scroll;
+    background-attachment: scroll; 
     background-repeat: no-repeat;
     background-blend-mode: multiply;
-    background-color: rgba(44, 62, 80, 0.7);
+    background-color: rgba(44, 62, 80, 0.7); 
 
     padding: 40px;
     border-radius: 15px;
     box-shadow: var(--box-shadow-medium);
-    max-width: 1000px;
+    max-width: 1000px; 
     margin: 30px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
     text-align: center;
-    color: white;
+    color: white; 
 }
 
 .homepage-content h2 {
-    color: var(--white);
+    color: var(--white); 
 }
 .homepage-content p {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.9); 
 }
 
 .homepage-content .hero-image {
-    width: 60%;
-    max-width: 400px;
+    width: 60%; 
+    max-width: 400px; 
     height: auto;
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    animation: fadeIn 1.5s ease-out;
+    animation: fadeIn 1.5s ease-out; 
 }
 
 .homepage-content .call-to-action-buttons {
@@ -896,19 +912,19 @@ footer {
 .homepage-content .cta-button {
     text-decoration: none;
     padding: 18px 40px;
-    border-radius: 50px;
+    border-radius: 50px; 
     font-size: 1.2em;
     font-weight: bold;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border: 2px solid var(--white);
-    color: var(--white);
-    background-color: transparent;
+    border: 2px solid var(--white); 
+    color: var(--white); 
+    background-color: transparent; 
 }
 
 .homepage-content .cta-button:hover {
-    background-color: var(--white);
-    color: var(--secondary-color);
+    background-color: var(--white); 
+    color: var(--secondary-color); 
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
@@ -947,28 +963,47 @@ footer {
     }
 
     /* Oyun Seçim Konteynerleri ve Navigasyon Mobil Düzeni */
-    /* Bu kısımdaki flex-direction: column yerine row/wrap deneyeceğiz */
     .game-selection-container, .level-selection-container, .main-nav {
-        flex-direction: row; /* Mobil cihazlarda da yan yana durmaya çalışsın */
-        flex-wrap: wrap; /* Sığmazsa alt satıra geçsin */
-        gap: 10px; /* Boşluğu azalt */
-        justify-content: center;
-        padding: 0 5px;
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 10px;
     }
     .game-choice, .level-choice, .main-nav a {
-        width: auto; /* Otomatik genişlik, içeriğe göre */
-        flex-shrink: 1; /* Küçülebilme */
-        min-width: 120px; /* Minimum genişlik */
-        margin: 5px; /* Butonlar arası boşluk */
-        padding: 10px 15px; /* Padding ayarla */
-        font-size: 0.9em;
+        width: calc(100% - 20px);
+        margin: 0 auto;
     }
-    /* main-nav a için özel, çünkü onlar yazı gibi daha ince olabilir */
-    .main-nav a {
-        padding: 5px 8px;
-        font-size: 0.85em;
+    .game-choice{padding:12px 20px;font-size:.95em}
+
+    /* Adam Asmaca Klavyesi Mobil Düzenlemesi */
+    .keyboard {
+        flex-direction: row; /* Butonlar yan yana kalsın */
+        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
+        gap: 5px; /* Boşlukları azalt */
+        justify-content: center;
+        max-width: 100%; /* Tam genişlik kullan */
+        padding: 0 5px;
+    }
+    .key {
+        width: calc(14% - 10px); /* Yaklaşık 6-7 buton sığdır */
+        height: 40px;
+        font-size: 0.9em;
+        margin: 2px; /* Küçük dış boşluk */
     }
 
+    /* Stroop Seçenekleri Mobil Düzenlemesi */
+    #stroop-choices {
+        flex-direction: row; /* Butonlar yan yana kalsın */
+        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
+        gap: 10px; /* Boşlukları azalt */
+        justify-content: center;
+        max-width: 100%; /* Tam genişlik kullan */
+        padding: 0 10px;
+    }
+    .stroop-button {
+        min-width: 100px; /* Minimum genişlik korunsun */
+        padding: 12px 20px;
+        font-size: 1.1em;
+    }
 
     #game-container,.page-container,.modal-content{padding:20px;margin:15px auto;width:auto}
     .homepage-content{padding:25px}.homepage-content h2{font-size:1.8em}.homepage-content p{font-size:1em}.homepage-content .hero-image{width:90%;max-width:300px}.homepage-content .cta-button{padding:15px 30px;font-size:1.1em}
@@ -976,22 +1011,5 @@ footer {
 
 @media (max-width: 480px){
     h1{font-size:1.8em}h2{font-size:1.5em}p{font-size:.9em}
-    /* Adam Asmaca klavyesi için daha küçük tuşlar - DÜZELTİLDİ */
-    .key{
-        width: calc(20% - 10px); /* Her satırda 5 buton sığdırmak için */
-        height: 35px;
-        font-size: 0.85em; /* Daha küçük font */
-        margin: 5px; /* Boşluk */
-    }
-    .modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}.homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}#sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}#stroop-word{font-size:3em}
-    /* Stroop seçenekleri için mobil düzenleme - DÜZELTİLDİ */
-    #stroop-choices {
-        gap: 8px; /* Daha küçük boşluk */
-    }
-    .stroop-button{
-        min-width: 80px; /* Minimum genişliği koru */
-        padding: 10px 15px;
-        font-size: 0.9em;
-    }
-    #nback-stimulus-box{width:150px;height:150px;font-size:5em}
-}
+    .key{width: calc(16% - 8px); height: 35px; font-size: 0.8em; padding: 0;} /* Daha küçük ekranlar için daha fazla sığdır */
+    .modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}.homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}#sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}#stroop-word{font-size:3em}#stroop-choices{gap:10px}.stroop-button{min-width:80px;padding:10px 15px;font-size:0.9em}#nback-stimulus-box{width:150px;height:150px;font-size:5em}}
