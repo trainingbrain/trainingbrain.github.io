@@ -2,6 +2,7 @@
 // Bu sabitler, script dosyası yüklendiğinde sadece bir kez tanımlanmalıdır.
 // Bu yüzden DOMContentLoaded olayının DIŞINA taşındılar.
 // ==================================================================
+// Sabitler, script dosyası yüklendiğinde sadece bir kez tanımlanmalıdır.
 const WCST_COLORS = ['red', 'green', 'blue', 'yellow'];
 const WCST_SHAPES = ['triangle', 'star', 'plus', 'circle'];
 const WCST_COUNTS = [1, 2, 3, 4];
@@ -18,29 +19,13 @@ const SHAPE_SVGS = {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Script is running.");
 
-    // ---- HTML ELEMANLARI ----
-    const gameContainer = document.getElementById('game-container');
-    const gameContent = document.getElementById('game-content');
-    const gameChoiceButtons = document.querySelectorAll('.game-choice');
-    const backToMenuButton = document.getElementById('back-to-menu');
-    
-    // Orijinal yapınızdaki seçim ekranlarını bulalım.
-    const selectionScreenGames = document.getElementById('selection-screen'); // games.html için
-    const selectionScreenTests = document.getElementById('cognitive-tests-screen'); // tests.html için
-
-    // Global oyun timer değişkenleri
-    let currentGameTimer = null;
-    let stroopTimer = null;
-    let nbackGameLoop = null;
-    
-    // Bu kodu script.js dosyanızda DOMContentLoaded içine ekleyin
     // ==================================================================
     // ---- YENİ: HEADER KAYDIRMA DAVRANIŞI ----
     // ==================================================================
     const header = document.querySelector('header');
     if (header) {
         let lastScrollY = window.scrollY; // Son kaydırma pozisyonunu sakla
-    
+
         window.addEventListener('scroll', () => {
             // Eğer aşağı kaydırılıyorsa ve sayfanın biraz aşağısındaysak
             if (lastScrollY < window.scrollY && window.scrollY > 150) {
@@ -55,6 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ---- HTML ELEMANLARI ----
+    const gameContainer = document.getElementById('game-container');
+    const gameContent = document.getElementById('game-content');
+    const gameChoiceButtons = document.querySelectorAll('.game-choice');
+    const backToMenuButton = document.getElementById('back-to-menu');
+    
+    const selectionScreenGames = document.getElementById('selection-screen');
+    const selectionScreenTests = document.getElementById('cognitive-tests-screen');
+
+    // Global oyun timer değişkenleri
+    let currentGameTimer = null;
+    let stroopTimer = null;
+    let nbackGameLoop = null;
 
     // ==================================================================
     // ---- ÇOK DİLLİ YAPI (MULTILANGUAGE) ----
