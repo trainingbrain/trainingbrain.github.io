@@ -33,8 +33,9 @@ body {
     line-height: 1.7;
 }
 
-/* Header Alanı - Sadece index.html'de olacak */
+/* Header Alanı - Kaydırma Efekti İçin Güncelleme */
 header {
+    /* Mevcut stilleriniz kalacak */
     background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)), url('/background.jpg');
     background-size: cover;
     background-position: center center;
@@ -42,10 +43,18 @@ header {
     color: white;
     padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    position: sticky; /* Kullanıcı aşağı kaydırdıkça yukarı kayacak */
+    position: sticky;
     top: 0;
     z-index: 50;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+    /* EKLENEN YENİ STİL: Geçişin yumuşak olmasını sağlar */
+    transition: top 0.4s ease-in-out;
+}
+
+/* YENİ EKlenen Sınıf: Header'ı ekranın dışına iter */
+.header--hidden {
+    top: -250px; /* Header'ın yüksekliğinden daha büyük bir değer olmalı */
 }
 
 header h1 {
