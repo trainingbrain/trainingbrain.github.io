@@ -1,5 +1,4 @@
 // ==================================================================
-// DÜZELTME 1: JAVASCRIPT HATASI ÇÖZÜMÜ
 // Bu sabitler, script dosyası yüklendiğinde sadece bir kez tanımlanmalıdır.
 // Bu yüzden DOMContentLoaded olayının DIŞINA taşındılar.
 // ==================================================================
@@ -192,11 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ==================================================================
-    // ---- YENİ: WISCONSIN KART EŞLEME TESTİ FONKSİYONLARI ----
+    // ---- WISCONSIN KART EŞLEME TESTİ FONKSİYONLARI ----
     // ==================================================================
     
-    // Sabitler yukarıya, DOMContentLoaded dışına taşındı.
-
     let responseDeck = [];
     let stimulusCards = [];
     let currentResponseCard = null;
@@ -204,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startWCST() {
         const T = langTexts[currentLang];
+        // DÜZENLEME: Kullanıcının görmemesi için .wcst-info-panel div'i kaldırıldı.
         gameContent.innerHTML = `
             <div id="wcst-start-screen">
                 <h2>${T.wcstTitle}</h2>
@@ -223,12 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button id="wcst-start-btn" disabled>${T.startTest}</button>
             </div>
             <div id="wcst-game-screen" class="hidden">
-                <div class="wcst-info-panel">
-                    <div>Kategoriler: <span id="wcst-categories">0</span></div>
-                    <div>Toplam Hata: <span id="wcst-total-errors">0</span></div>
-                    <div>Perseveratif Hata: <span id="wcst-perse-errors">0</span></div>
-                    <div>Kalan Kart: <span id="wcst-cards-left">128</span></div>
-                </div>
                 <div id="stimulus-cards-container" class="card-area"></div>
                 <div id="wcst-feedback"></div>
                 <div id="response-card-container" class="card-area">
@@ -284,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawStimulusCards();
         drawNextResponseCard();
-        updateWcstUi();
     }
 
     function createCardElement(cardData) {
@@ -375,8 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        updateWcstUi();
-        
         setTimeout(() => {
             if (!wcstState.isTestOver) {
                 feedbackEl.innerText = '';
@@ -385,12 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    function updateWcstUi() {
-        gameContent.querySelector('#wcst-categories').innerText = wcstState.categoriesCompleted;
-        gameContent.querySelector('#wcst-total-errors').innerText = wcstState.totalErrors;
-        gameContent.querySelector('#wcst-perse-errors').innerText = wcstState.perseverativeErrors;
-        gameContent.querySelector('#wcst-cards-left').innerText = responseDeck.length;
-    }
+    // DÜZENLEME: Bilgi paneli kaldırıldığı için bu fonksiyon artık UI güncellemesi yapmıyor
+    // ve çağrılmasına gerek kalmadı. Çağrıldığı yerlerden de kaldırıldı.
+    // function updateWcstUi() { ... }
 
     function endWCST() {
         if (wcstState.isTestOver) return;
