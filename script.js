@@ -1,4 +1,4 @@
-// ===================================================================
+// ==================================================================
 // DÜZELTME 1: JAVASCRIPT HATASI ÇÖZÜMÜ
 // Bu sabitler, script dosyası yüklendiğinde sadece bir kez tanımlanmalıdır.
 // Bu yüzden DOMContentLoaded olayının DIŞINA taşındılar.
