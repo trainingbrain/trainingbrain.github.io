@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const game = button.dataset.game;
                 
                 // Oyun başlangıcında ilgili ana seçim ekranlarını gizle (eğer varlarsa)
-                if (document.getElementById('selection-screen')) document.getElementById('selection-screen').classList.add('hidden');
-                if (document.getElementById('cognitive-tests-screen')) document.getElementById('cognitive-tests-screen').classList.add('hidden');
+                if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
+                if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
                 
                 // WCST başlangıç ekranını da gizle (tests.html içinde olabilir)
                 const wcstStartScreen = document.getElementById('wcst-start-screen');
@@ -513,15 +513,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ==================================================================
     // ---- DİĞER OYUN FONKSİYONLARI ----
+    // Adam Asmaca, Sıralı Hatırlama, Stroop Testi, N-Back Testi
     // ==================================================================
     
     // ---- ADAM ASMACA OYUNU ----
     function startHangman() { 
-        let hangmanSecretWord; 
-        let hangmanCorrectLetters; 
-        let hangmanWrongGuessCount; 
-        const hangmanMaxWrongGuesses = 6; 
-        let hangmanDisplayedWord; 
+        // Global değişkenler burada sıfırlanıyor/başlatılıyor
+        hangmanCorrectLetters = []; 
+        hangmanWrongGuessCount = 0; 
+        hangmanDisplayedWord = []; // Reset here
         
         function showHangmanLevelSelection() { 
             gameContent.innerHTML = `<h2>${langTexts[currentLang].hangmanTitle}</h2><h3>${langTexts[currentLang].levelSelect}</h3><p class="game-description">${langTexts[currentLang].hangmanDesc}</p><div class="level-selection-container"><button class="level-choice" data-level="basit">${langTexts[currentLang].levelEasy}</button><button class="level-choice" data-level="orta">${langTexts[currentLang].levelMedium}</button><button class="level-choice" data-level="zor">${langTexts[currentLang].levelHard}</button></div>`; 
@@ -600,10 +600,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- SIRALI HATIRLAMA OYUNU ----
     function startSequenceMemory() { 
-        let sequence = []; 
-        let playerSequence = []; 
-        let sequenceLevel = 0; 
-        let canPlayerClick = false; 
+        sequence = []; 
+        playerSequence = []; 
+        sequenceLevel = 0; 
+        canPlayerClick = false; 
 
         if (currentGameTimer) clearTimeout(currentGameTimer); 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].sequenceTitle}</h2><p class="game-description">${langTexts[currentLang].sequenceDesc}</p><div id="sequence-status"></div><div id="sequence-game-board"></div><p>${langTexts[currentLang].sequenceInstruction}</p>`; 
@@ -672,9 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function runStroopGame() {
         document.getElementById('stroop-start-screen').classList.add('hidden');
-        let stroopScore = 0; 
-        let stroopTimeLeft = 60; 
-        let currentCorrectColorName; 
+        stroopScore = 0; 
+        stroopTimeLeft = 60; 
+        currentCorrectColorName = null; 
 
         gameContent.innerHTML = `<h2>${langTexts[currentLang].stroopTitle}</h2><div id="stroop-stats"><div>Time: <span id="stroop-timer-val">60</span></div><div>Score: <span id="stroop-score-val">0</span></div></div><div id="stroop-word"></div><div id="stroop-choices"></div>`;
         stroopTimer = setInterval(updateStroopTimer, 1000); 
@@ -755,18 +755,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.querySelectorAll('.level-choice').forEach(button => {
             button.addEventListener('click', (event) => {
-                let nbackLevel = parseInt(event.target.dataset.level); 
-                initializeNBackGame(nbackLevel);
+                nbackLevel = parseInt(event.target.dataset.level); 
+                initializeNBackGame();
             });
         });
     }
     
     function initializeNBackGame() {
-        let nbackSequence = []; 
-        let nbackCurrentStep = 0; 
-        let nbackScore = 0; 
-        let nbackErrors = 0; 
-        let canPressButton = false; 
+        nbackSequence = []; 
+        nbackCurrentStep = 0; 
+        nbackScore = 0; 
+        nbackErrors = 0; 
+        canPressButton = false; 
 
         gameContent.innerHTML = `
             <h2>${nbackLevel}-Back Test</h2>
