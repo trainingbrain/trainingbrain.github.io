@@ -980,40 +980,71 @@ footer {
 
     /* Adam Asmaca Klavyesi Mobil Düzenlemesi */
     .keyboard {
-        flex-direction: row; /* Butonlar yan yana kalsın */
-        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
-        gap: 5px; /* Boşlukları azalt */
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
         justify-content: center;
-        max-width: 100%; /* Tam genişlik kullan */
+        max-width: 100%;
         padding: 0 5px;
     }
     .key {
-        width: calc(14% - 10px); /* Yaklaşık 6-7 buton sığdır */
+        width: calc(14% - 10px);
         height: 40px;
         font-size: 0.9em;
-        margin: 2px; /* Küçük dış boşluk */
+        margin: 2px;
     }
 
     /* Stroop Seçenekleri Mobil Düzenlemesi */
     #stroop-choices {
-        flex-direction: row; /* Butonlar yan yana kalsın */
-        flex-wrap: wrap; /* Yeterli yer yoksa alt satıra geçsin */
-        gap: 10px; /* Boşlukları azalt */
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
         justify-content: center;
-        max-width: 100%; /* Tam genişlik kullan */
+        max-width: 100%;
         padding: 0 10px;
     }
+    /* DÜZENLENDİ: Stroop buton boyutu artırıldı */
     .stroop-button {
-        min-width: 100px; /* Minimum genişlik korunsun */
-        padding: 12px 20px;
-        font-size: 1.1em;
+        min-width: 100px;
+        padding: 14px 25px;
+        font-size: 1.2em;
     }
 
     #game-container,.page-container,.modal-content{padding:20px;margin:15px auto;width:auto}
     .homepage-content{padding:25px}.homepage-content h2{font-size:1.8em}.homepage-content p{font-size:1em}.homepage-content .hero-image{width:90%;max-width:300px}.homepage-content .cta-button{padding:15px 30px;font-size:1.1em}
-    #sequence-game-board{grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:15px}.sequence-tile{font-size:2.5em}#stroop-word{font-size:4em}#stroop-stats{font-size:1.3em}#nback-stimulus-box{width:180px;height:180px;font-size:6em}#nback-match-button{padding:18px 45px;font-size:1.3em}}
+    #sequence-game-board{grid-template-columns:repeat(3,90px);grid-template-rows:repeat(3,90px);gap:15px}.sequence-tile{font-size:2.5em}
+    
+    /* DÜZENLENDİ: Stroop yazı boyutu artırıldı */
+    #stroop-word{font-size: 5em;}
+    
+    #stroop-stats{font-size:1.3em}
+    #nback-stimulus-box{width:180px;height:180px;font-size:6em}
+    #nback-match-button{padding:18px 45px;font-size:1.3em}
+}
 
 @media (max-width: 480px){
-    h1{font-size:1.8em}h2{font-size:1.5em}p{font-size:.9em}
-    .key{width: calc(16% - 8px); height: 35px; font-size: 0.8em; padding: 0;} /* Daha küçük ekranlar için daha fazla sığdır */
-    .modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}.homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}#sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}#stroop-word{font-size:3em}#stroop-choices{gap:10px}.stroop-button{min-width:80px;padding:10px 15px;font-size:0.9em}#nback-stimulus-box{width:150px;height:150px;font-size:5em}}
+    h1{font-size:1.8em}
+    h2{font-size:1.5em}
+    p{font-size:.9em}
+    
+    .key{width: calc(16% - 8px); height: 35px; font-size: 0.8em; padding: 0;}
+    
+    .modal-content{padding:15px}.modal-content h3{font-size:1.8em}#play-again-button{padding:10px 20px;font-size:.9em}
+    
+    .homepage-content h2{font-size:1.6em}.homepage-content p{font-size:.9em}.homepage-content .cta-button{padding:12px 25px;font-size:1em}
+    
+    #sequence-game-board{grid-template-columns:repeat(3,70px);grid-template-rows:repeat(3,70px);gap:10px}.sequence-tile{font-size:2em}
+    
+    /* DÜZENLENDİ: Stroop yazı boyutu artırıldı */
+    #stroop-word{font-size: 4em;}
+    
+    #stroop-choices{gap:10px}
+    /* DÜZENLENDİ: Stroop buton boyutu artırıldı */
+    .stroop-button{
+        min-width:100px;
+        padding:12px 20px;
+        font-size:1.1em;
+    }
+    
+    #nback-stimulus-box{width:150px;height:150px;font-size:5em}
+}
