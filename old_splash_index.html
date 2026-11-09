@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to DEEP BRAIN - Neurologist-Guided Brain Training</title>
+    <meta name="description" content="A science-based platform for cognitive and brain exercises, guided by a neurologist. Available in Turkish and English.">
+    <meta name="google-site-verification" content="eCGhtdjzY5Z_Pu4wT-AtiYRSHsRGs5rxQIBwGq5QGKU" />
+    
+    <!-- Favicon ve Ana CSS Dosyası -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- NOT: Bu sayfada style.css'i kullanmıyoruz, tüm stiller aşağıda tanımlandı -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Hreflang etiketleri -->
+    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/" />
+    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://trainingbrain.github.io/" />
+
+    <style>
+        /* Sadece bu giriş sayfasına özel stiller */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden; /* Kaydırma çubuğunu engelle */
+        }
+
+        body.landing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            /* Arka Plan Resmi ve Efektleri */
+            background-image: 
+                linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)), /* Üstüne koyu bir katman */
+                url('/background.jpg');
+            background-size: cover;
+            background-position: center center;
+        }
+
+        .language-selector {
+            background: rgba(0, 0, 0, 0.2); /* Daha şeffaf bir arka plan */
+            padding: 50px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px); /* Arka planı hafifçe bulanıklaştırır (modern tarayıcılarda) */
+            max-width: 700px;
+        }
+
+        .language-selector h1 {
+            font-size: 3.5em;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .language-selector .subtitle {
+            font-size: 1.3em;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-weight: 300; /* Daha ince bir yazı */
+            opacity: 0.9;
+        }
+        
+        .language-selector .welcome-text {
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .lang-buttons a {
+            text-decoration: none;
+            color: white;
+            background-color: transparent;
+            border: 2px solid white;
+            padding: 15px 40px;
+            margin: 10px 15px;
+            border-radius: 50px; /* Tamamen yuvarlak köşeler */
+            font-size: 1.3em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .lang-buttons a:hover {
+            background-color: white;
+            color: #2c3e50;
+            transform: translateY(-3px); /* Hafif yukarı kalkma efekti */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="landing">
+
+    <div class="language-selector">
+        <h1>DEEP BRAIN</h1>
+        <p class="subtitle">Beyin Sağlığınıza Açılan Kapı / Your Gateway to Cognitive Health</p>
+        <p class="welcome-text">
+            Bilimsel temelli zihin egzersizleriyle potansiyelinizi keşfedin.<br>
+            Discover your potential with science-based cognitive exercises.
+        </p>
+        <div class="lang-buttons">
+            <a href="/tr/">Türkçe</a>
+            <a href="/en/">English</a>
+        </div>
+    </div>
+
+</body>
+</html>

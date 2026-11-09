@@ -1,120 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to DEEP BRAİN - Neurologist-Guided Brain Training</title>
-    <meta name="description" content="A science-based platform for cognitive and brain exercises, guided by a neurologist. Available in Turkish and English.">
-    <meta name="google-site-verification" content="eCGhtdjzY5Z_Pu4wT-AtiYRSHsRGs5rxQIBwGq5QGKU" />
-    
-    <!-- Favicon ve Ana CSS Dosyası -->
+    <title>DEEP BRAIN — Free Online Cognitive Tests & Neurological Benchmarks</title>
+    <meta name="description" content="Evidence-based, standardized cognitive tests guided by a neurologist. Benchmark your prefrontal executive function with the Wisconsin Card Sorting Test (WCST), Stroop Effect, Dual N-Back, and Trail Making Test. Free, no sign-up.">
+    <meta name="keywords" content="cognitive tests, brain tests online, Wisconsin card sorting test online, WCST free, stroop test online, n-back test, trail making test, executive function test, neurologist guided">
+    <link rel="canonical" href="https://trainingbrain.github.io/" />
+
+    <!-- Open Graph / Social Meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="DEEP BRAIN — Clinical-Grade Cognitive Tests & Benchmarks" />
+    <meta property="og:description" content="Test your working memory, executive function, and mental speed with neurologist-guided cognitive benchmarks. 100% free with normative score comparisons." />
+    <meta property="og:url" content="https://trainingbrain.github.io/" />
+    <meta property="og:image" content="https://trainingbrain.github.io/brainmri-synapsis.webp" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DEEP BRAIN — Online Cognitive Benchmarks" />
+    <meta name="twitter:description" content="Free, clinical-grade brain tests: WCST, Stroop Effect, N-Back, and Trail Making. Immediate normative percentiles." />
+    <meta name="twitter:image" content="https://trainingbrain.github.io/brainmri-synapsis.webp" />
+
+    <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <!-- NOT: Bu sayfada style.css'i kullanmıyoruz, tüm stiller aşağıda tanımlandı -->
-    
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <!-- Hreflang etiketleri -->
-    <link rel="alternate" hreflang="tr" href="https://trainingbrain.github.io/tr/" />
-    <link rel="alternate" hreflang="en" href="https://trainingbrain.github.io/en/" />
-    <link rel="alternate" hreflang="x-default" href="https://trainingbrain.github.io/" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <style>
-        /* Sadece bu giriş sayfasına özel stiller */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Nunito', sans-serif;
-            overflow: hidden; /* Kaydırma çubuğunu engelle */
-        }
-
-        body.landing {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-            /* Arka Plan Resmi ve Efektleri */
-            background-image: 
-                linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)), /* Üstüne koyu bir katman */
-                url('/background.jpg');
-            background-size: cover;
-            background-position: center center;
-        }
-
-        .language-selector {
-            background: rgba(0, 0, 0, 0.2); /* Daha şeffaf bir arka plan */
-            padding: 50px 60px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px); /* Arka planı hafifçe bulanıklaştırır (modern tarayıcılarda) */
-            max-width: 700px;
-        }
-
-        .language-selector h1 {
-            font-size: 3.5em;
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        .language-selector .subtitle {
-            font-size: 1.3em;
-            margin-top: 10px;
-            margin-bottom: 25px;
-            font-weight: 300; /* Daha ince bir yazı */
-            opacity: 0.9;
-        }
-        
-        .language-selector .welcome-text {
-            font-size: 1.1em;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-
-        .lang-buttons a {
-            text-decoration: none;
-            color: white;
-            background-color: transparent;
-            border: 2px solid white;
-            padding: 15px 40px;
-            margin: 10px 15px;
-            border-radius: 50px; /* Tamamen yuvarlak köşeler */
-            font-size: 1.3em;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .lang-buttons a:hover {
-            background-color: white;
-            color: #2c3e50;
-            transform: translateY(-3px); /* Hafif yukarı kalkma efekti */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-    </style>
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Deep Brain Cognitive Benchmarks",
+      "url": "https://trainingbrain.github.io/",
+      "description": "Evidence-based, free online neuropsychological tests including Wisconsin Card Sorting Test, Stroop Effect, Dual N-Back, and Trail Making Test.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "MedicalOrganization",
+        "name": "Deep Brain Neuroscience Initiative"
+      }
+    }
+    </script>
 </head>
-<body class="landing">
-
-    <div class="language-selector">
-        <h1>DEEP BRAİN</h1>
-        <p class="subtitle">Beyin Sağlığınıza Açılan Kapı / Your Gateway to Cognitive Health</p>
-        <p class="welcome-text">
-            Bilimsel temelli zihin egzersizleriyle potansiyelinizi keşfedin.<br>
-            Discover your potential with science-based cognitive exercises.
-        </p>
-        <div class="lang-buttons">
-            <a href="/tr/">Türkçe</a>
-            <a href="/en/">English</a>
+<body>
+    <header>
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; flex-wrap: wrap;">
+            <div>
+                <h1 style="margin-bottom: 2px; text-align: left;"><a href="/" style="color: white; text-decoration: none;">DEEP BRAIN</a></h1>
+                <p style="margin: 0; text-align: left; font-size: 0.95em; opacity: 0.9;">Clinical-Grade Cognitive Benchmarks • Neurologist-Guided</p>
+            </div>
+            <div class="lang-pill-container">
+                <span class="lang-pill active">🇺🇸 English</span>
+                <a href="/tr/index.html" class="lang-pill">🇹🇷 Türkçe</a>
+            </div>
         </div>
-    </div>
+        <nav class="main-nav" style="margin-top: 15px;">
+            <a href="/" class="active">Home</a>
+            <a href="/wisconsin-card-sorting-test.html">WCST Test</a>
+            <a href="/stroop-test.html">Stroop Test</a>
+            <a href="/n-back-test.html">N-Back</a>
+            <a href="/trail-making-test.html">Trail Making</a>
+            <a href="/en/about.html">About & Science</a>
+        </nav>
+    </header>
 
+    <main>
+        <!-- Hero Section -->
+        <section class="homepage-content" style="max-width: 900px; margin: 30px auto 10px auto; padding: 20px;">
+            <div style="display: inline-block; background: #e8f4fd; color: #1976d2; font-weight: 800; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; padding: 6px 14px; border-radius: 20px; margin-bottom: 15px;">
+                ⚡ Free & Evidence-Based • No Signup Required
+            </div>
+            <h2 style="font-size: 2.4em; color: var(--secondary-color); margin-top: 0; line-height: 1.25;">
+                Benchmark Your Executive Function & Working Memory
+            </h2>
+            <p style="font-size: 1.15em; color: #4a5568; max-width: 760px; margin: 15px auto 25px auto;">
+                Explore the classic neuropsychological paradigms used in clinical neurology and cognitive neuroscience. Measure your prefrontal set-shifting, cortical inhibition, and processing speed with instant normative percentiles.
+            </p>
+        </section>
+
+        <!-- Test Battery Grid -->
+        <section class="test-hub-grid">
+            <!-- 1. WCST -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge">Frontal Lobe & Flexibility</span>
+                    <h3>Wisconsin Card Sorting Test</h3>
+                    <p>The gold standard for evaluating cognitive flexibility, set-shifting, and perseverative errors. Discover sorting rules by trial and adapt dynamically when rules change.</p>
+                </div>
+                <a href="/wisconsin-card-sorting-test.html" class="test-card-btn">Start WCST Test →</a>
+            </div>
+
+            <!-- 2. Stroop Test -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge" style="background: #fef9e7; color: #b7950b;">Selective Attention & ACC</span>
+                    <h3>Stroop Color-Word Test</h3>
+                    <p>Challenge your anterior cingulate cortex. Suppress the automated reflex to read word names and identify the font ink color under 60-second time pressure.</p>
+                </div>
+                <a href="/stroop-test.html" class="test-card-btn">Start Stroop Test →</a>
+            </div>
+
+            <!-- 3. N-Back Test -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge" style="background: #eafaf1; color: #229954;">Working Memory & DLPFC</span>
+                    <h3>Dual N-Back Task</h3>
+                    <p>The premier instrument for testing working memory updating and fluid intelligence. Track letter sequences across 1-Back, 2-Back, and challenging 3-Back levels.</p>
+                </div>
+                <a href="/n-back-test.html" class="test-card-btn">Start N-Back Test →</a>
+            </div>
+
+            <!-- 4. Trail Making Test -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge" style="background: #f4ecf7; color: #8e44ad;">Processing Speed & Shifting</span>
+                    <h3>Trail Making Test (TMT)</h3>
+                    <p>Clinically validated test of visual scanning and task switching. Connect circles in ascending order (Part A) and alternating numbers and letters (Part B: 1-A-2-B...).</p>
+                </div>
+                <a href="/trail-making-test.html" class="test-card-btn">Start Trail Making →</a>
+            </div>
+
+            <!-- 5. Sequence Memory -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge" style="background: #ebf5fb; color: #2980b9;">Visuospatial Recall</span>
+                    <h3>Sequence Memory Test</h3>
+                    <p>Inspired by spatial working memory benchmarks. Memorize and reproduce expanding spatial flash patterns on an interactive 3x3 grid.</p>
+                </div>
+                <a href="/sequence-memory-test.html" class="test-card-btn">Start Sequence Test →</a>
+            </div>
+
+            <!-- 6. Verbal Fluency -->
+            <div class="test-card">
+                <div>
+                    <span class="test-badge" style="background: #fbeee6; color: #ba4a00;">Lexical Retrieval</span>
+                    <h3>Verbal Fluency (Hangman)</h3>
+                    <p>Assess semantic and phonemic lexical search speed. Guess the secret word through strategic letter selection before attempts expire.</p>
+                </div>
+                <a href="/verbal-fluency-hangman.html" class="test-card-btn">Start Verbal Test →</a>
+            </div>
+        </section>
+
+        <!-- Scientific E-E-A-T Section -->
+        <section class="scientific-guide">
+            <h2>Why Standardized Cognitive Benchmarks Matter</h2>
+            <p>
+                Unlike generic mobile brain games that only train you to become better at the game itself, <strong>standardized neuropsychological instruments</strong> are designed to isolate specific neural circuits:
+            </p>
+            <ul>
+                <li><strong>Dorsolateral Prefrontal Cortex (DLPFC - Brodmann Area 9/46):</strong> Engaged during the Wisconsin Card Sorting Test and N-Back memory updating tasks.</li>
+                <li><strong>Anterior Cingulate Cortex (ACC):</strong> Responsible for conflict monitoring and suppressing prepotent responses during the Stroop interference task.</li>
+                <li><strong>Fronto-Parietal Network:</strong> Coordinates visual spatial scanning and motor-visual coordination in the Trail Making Test.</li>
+            </ul>
+
+            <div class="reviewer-badge-box">
+                <div class="reviewer-avatar">MD</div>
+                <div class="reviewer-meta">
+                    <strong>Reviewed by Dr. Abdulkadir Ermis, MD</strong>
+                    Neurology Specialist • Neuroimaging & Cognitive Neuroscience Researcher
+                    <div style="font-size: 0.85em; color: #718096; margin-top: 4px;">
+                        Educational and research benchmark. All scoring algorithms run entirely client-side in your browser for privacy.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div style="max-width: 900px; margin: 0 auto; padding: 20px 10px; font-size: 0.9em; color: rgba(255,255,255,0.8);">
+            <p style="margin: 5px 0;">© 2026 DEEP BRAIN. Evidence-based cognitive benchmarks for education and research.</p>
+            <p style="margin: 5px 0; font-size: 0.85em; opacity: 0.7;">
+                Disclaimer: The tests on this site are designed for self-benchmarking and cognitive research. They do not constitute a clinical neurological or neuropsychological diagnosis. If you have concerns about memory or cognitive health, please consult a licensed medical provider.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
 </body>
 </html>

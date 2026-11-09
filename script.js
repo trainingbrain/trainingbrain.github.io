@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             backToTests: "Back to Tests Page"
         }
     };
-    const currentLang = window.location.pathname.startsWith('/en') ? 'en' : 'tr';
+    const currentLang = (window.location.pathname.startsWith('/tr') || document.documentElement.lang === 'tr') ? 'tr' : 'en';
     
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (game === 'n-back') startNBack();
                 else if (game === 'wcst') startWCST();
                 else if (game === 'trail-making') { 
-                    gameContent.innerHTML = `<h2>İz Sürme Testi</h2><p>${langTexts[currentLang].trailMakingDev}</p>`; 
+                    startTrailMaking(); 
                 }
             });
         });
@@ -197,7 +197,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (content === '') return;
 
-        modal.innerHTML = `<div class="modal-content">${content}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
+        
+        let shareText = '';
+        if (game === 'sequence') {
+            shareText = `🧠 DeepBrain Sequence Memory\nMax Level: ${data.level}\nCan you beat my spatial working memory? https://trainingbrain.github.io/sequence-memory-test.html`;
+        } else if (game === 'stroop') {
+            shareText = `🧠 DeepBrain Stroop Effect Test\n60s Score: ${data.score} points\nCan you beat my selective attention speed? https://trainingbrain.github.io/stroop-test.html`;
+        } else if (game === 'n-back') {
+            shareText = `🧠 DeepBrain ${data.level}-Back Working Memory Test\nCorrect Matches: ${data.score} | Errors: ${data.errors}\nTest your working memory: https://trainingbrain.github.io/n-back-test.html`;
+        }
+        const shareBtnHtml = shareText ? `<div style="margin: 12px 0;"><button class="share-result-btn" onclick="copyScoreToClipboard('${shareText.replace(/'/g, "\\'")}');">📋 ${currentLang === 'tr' ? 'Skoru Kopyala & Paylaş' : 'Copy Score / Share Result'}</button></div>` : '';
+
+        modal.innerHTML = `<div class="modal-content">${content}${shareBtnHtml}<button id="play-again-button">${langTexts[currentLang].playAgain}</button></div>`;
+
         document.body.appendChild(modal);
 
         setTimeout(() => modal.classList.add('visible'), 10);
@@ -410,6 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const T = langTexts[currentLang];
         
+        const wcstShare = `🧠 DeepBrain WCST Assessment\nCategories Completed: ${wcstState.categoriesCompleted}/6\nCards Used: ${wcstState.cardsUsed} | Errors: ${wcstState.totalErrors}\nPerseverative Errors: ${wcstState.perseverativeErrors}\nTest your prefrontal flexibility: https://trainingbrain.github.io/wisconsin-card-sorting-test.html`;
+
         gameContent.innerHTML = `
             <div class="wcst-results page-container">
                 <h3>${T.resultsTitle}</h3>
@@ -419,6 +433,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><span>${T.totalErrors}:</span> <strong>${wcstState.totalErrors}</strong></p>
                 <p><span>${T.perseverativeErrors}:</span> <strong>${wcstState.perseverativeErrors}</strong></p>
                 <p><span>${T.nonPerseverativeErrors}:</span> <strong>${wcstState.nonPerseverativeErrors}</strong></p>
+                <div style="margin-top: 25px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button class="share-result-btn" onclick="copyScoreToClipboard('${wcstShare.replace(/'/g, "\\'")}');">
+                        📋 ${currentLang === 'tr' ? 'Skoru Kopyala & Paylaş' : 'Copy Score / Share Result'}
+                    </button>
+                    <button id="play-again-button" onclick="startWCST();" style="margin-top: 15px;">
+                        🔄 ${T.playAgain}
+                    </button>
+                </div>
             </div>
         `;
     }
@@ -651,4 +673,274 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errorsEl) errorsEl.innerText = nbackErrors;
         }
     }
+
+    // ==================================================================
+    // ---- VIRAL SHARING & TOAST HELPER ----
+    // ==================================================================
+    window.copyScoreToClipboard = function(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(currentLang === 'tr' ? '📋 Skor kopyalandı! WhatsApp / X / Reddit üzerinde paylaşabilirsiniz.' : '📋 Score copied to clipboard! Ready to share on X, Reddit, or WhatsApp.');
+            }).catch(() => {
+                prompt(currentLang === 'tr' ? 'Skorunuzu kopyalayın:' : 'Copy your score:', text);
+            });
+        } else {
+            prompt(currentLang === 'tr' ? 'Skorunuzu kopyalayın:' : 'Copy your score:', text);
+        }
+    };
+
+    function showToast(msg) {
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification show';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 3200);
+    }
+
+    // ==================================================================
+    // ---- TRAIL MAKING TEST (TMT Part A & Part B) ----
+    // ==================================================================
+    let tmtTimerInterval = null;
+    let tmtStartTime = 0;
+    let tmtCurrentIndex = 0;
+    let tmtTargets = [];
+    let tmtErrors = 0;
+    let tmtPrevCenter = null;
+    let tmtMode = 'A';
+
+    function startTrailMaking() {
+        showTmtLevelSelection();
+    }
+
+    function showTmtLevelSelection() {
+        if (currentGameTimer) clearTimeout(currentGameTimer);
+        if (stroopTimer !== null) clearInterval(stroopTimer);
+        if (nbackGameLoop !== null) clearTimeout(nbackGameLoop);
+        if (tmtTimerInterval) clearInterval(tmtTimerInterval);
+
+        const isTr = currentLang === 'tr';
+        gameContent.innerHTML = `
+            <div class="tmt-start-screen" style="max-width: 600px; margin: 0 auto;">
+                <h2>${isTr ? 'İz Sürme Testi (Trail Making Test)' : 'Trail Making Test (TMT)'}</h2>
+                <p class="game-description" style="line-height: 1.7; margin: 15px 0 25px 0;">
+                    ${isTr 
+                      ? 'Görsel arama hızı, mental esneklik ve görev değiştirme (task-switching) yeteneğini ölçen standart nöropsikolojik değerlendirme.' 
+                      : 'The gold-standard neuropsychological assessment measuring visual processing speed, mental flexibility, and executive task switching.'}
+                </p>
+                <div class="level-selection-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="level-choice" data-mode="A" style="min-width: 220px; padding: 18px 24px; text-align: center;">
+                        <strong style="font-size: 1.15em; display: block; margin-bottom: 5px;">${isTr ? 'Bölüm A (Sayılar 1-15)' : 'Part A (Numbers 1-15)'}</strong>
+                        <span style="font-size: 0.85em; opacity: 0.9;">${isTr ? 'Görsel Tarama & Hız' : 'Visual Search & Speed'}</span>
+                    </button>
+                    <button class="level-choice" data-mode="B" style="min-width: 220px; padding: 18px 24px; text-align: center;">
+                        <strong style="font-size: 1.15em; display: block; margin-bottom: 5px;">${isTr ? 'Bölüm B (1-A-2-B...)' : 'Part B (1-A-2-B...)'}</strong>
+                        <span style="font-size: 0.85em; opacity: 0.9;">${isTr ? 'Zihinsel Esneklik & Bilişsel Geçiş' : 'Executive Task Shifting'}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.querySelectorAll('.tmt-start-screen .level-choice').forEach(btn => {
+            btn.addEventListener('click', () => {
+                initTmtGame(btn.dataset.mode);
+            });
+        });
+    }
+
+    function initTmtGame(mode) {
+        tmtMode = mode;
+        tmtCurrentIndex = 0;
+        tmtErrors = 0;
+        tmtPrevCenter = null;
+        if (tmtTimerInterval) clearInterval(tmtTimerInterval);
+
+        if (mode === 'A') {
+            tmtTargets = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'];
+        } else {
+            tmtTargets = ['1', 'A', '2', 'B', '3', 'C', '4', 'D', '5', 'E', '6', 'F', '7', 'G', '8'];
+        }
+
+        const isTr = currentLang === 'tr';
+        gameContent.innerHTML = `
+            <div class="tmt-container">
+                <div class="tmt-status-bar">
+                    <div>${isTr ? 'Hedef:' : 'Target:'} <span id="tmt-next-target" style="color: var(--primary-color); font-size: 1.25em;">${tmtTargets[0]}</span></div>
+                    <div>${isTr ? 'Süre:' : 'Time:'} <span id="tmt-timer-val">0.0</span>s</div>
+                    <div>${isTr ? 'Hatalar:' : 'Errors:'} <span id="tmt-error-val" style="color: var(--accent-red);">0</span></div>
+                </div>
+                <div class="tmt-board" id="tmt-board">
+                    <svg class="tmt-svg-layer" id="tmt-svg"></svg>
+                </div>
+            </div>
+        `;
+
+        const board = document.getElementById('tmt-board');
+        const boardW = board.clientWidth || 640;
+        const boardH = board.clientHeight || 440;
+
+        // Pre-calculated collision-free positions in percentage
+        const positions = [
+            { x: 18, y: 22 }, { x: 38, y: 15 }, { x: 62, y: 20 }, { x: 82, y: 16 },
+            { x: 12, y: 48 }, { x: 32, y: 42 }, { x: 52, y: 48 }, { x: 74, y: 42 }, { x: 88, y: 55 },
+            { x: 18, y: 78 }, { x: 36, y: 84 }, { x: 55, y: 78 }, { x: 72, y: 82 }, { x: 86, y: 85 },
+            { x: 50, y: 28 }
+        ];
+
+        // Shuffle positions so every game has fresh node layout
+        const shuffledPos = shuffleArray([...positions]);
+
+        tmtTargets.forEach((targetLabel, i) => {
+            const circle = document.createElement('div');
+            circle.className = 'tmt-circle' + (i === 0 ? ' current' : '');
+            circle.innerText = targetLabel;
+            circle.style.left = shuffledPos[i].x + '%';
+            circle.style.top = shuffledPos[i].y + '%';
+            circle.dataset.label = targetLabel;
+            circle.dataset.index = i;
+
+            circle.addEventListener('click', (e) => {
+                handleTmtCircleClick(targetLabel, circle, board);
+            });
+
+            board.appendChild(circle);
+        });
+
+        tmtStartTime = performance.now();
+        tmtTimerInterval = setInterval(() => {
+            const elapsed = ((performance.now() - tmtStartTime) / 1000).toFixed(1);
+            const timerEl = document.getElementById('tmt-timer-val');
+            if (timerEl) timerEl.innerText = elapsed;
+        }, 100);
+    }
+
+    function handleTmtCircleClick(label, circleEl, board) {
+        const expected = tmtTargets[tmtCurrentIndex];
+        const isTr = currentLang === 'tr';
+
+        if (label === expected) {
+            // Correct click!
+            circleEl.classList.remove('current');
+            circleEl.classList.add('completed');
+
+            // Draw line from previous circle
+            const rect = circleEl.getBoundingClientRect();
+            const boardRect = board.getBoundingClientRect();
+            const curCenter = {
+                x: rect.left - boardRect.left + rect.width / 2,
+                y: rect.top - boardRect.top + rect.height / 2
+            };
+
+            if (tmtPrevCenter) {
+                const svg = document.getElementById('tmt-svg');
+                if (svg) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', tmtPrevCenter.x);
+                    line.setAttribute('y1', tmtPrevCenter.y);
+                    line.setAttribute('x2', curCenter.x);
+                    line.setAttribute('y2', curCenter.y);
+                    line.setAttribute('stroke', '#2ecc71');
+                    line.setAttribute('stroke-width', '3');
+                    line.setAttribute('stroke-linecap', 'round');
+                    svg.appendChild(line);
+                }
+            }
+            tmtPrevCenter = curCenter;
+
+            tmtCurrentIndex++;
+
+            if (tmtCurrentIndex >= tmtTargets.length) {
+                // Completed test!
+                clearInterval(tmtTimerInterval);
+                const finalSeconds = ((performance.now() - tmtStartTime) / 1000).toFixed(1);
+                finishTmtTest(finalSeconds);
+            } else {
+                // Highlight next target
+                const nextExpected = tmtTargets[tmtCurrentIndex];
+                const targetEl = document.getElementById('tmt-next-target');
+                if (targetEl) targetEl.innerText = nextExpected;
+
+                document.querySelectorAll('.tmt-circle').forEach(c => {
+                    if (c.dataset.label === nextExpected) c.classList.add('current');
+                    else c.classList.remove('current');
+                });
+            }
+        } else {
+            // Error
+            tmtErrors++;
+            const errEl = document.getElementById('tmt-error-val');
+            if (errEl) errEl.innerText = tmtErrors;
+
+            circleEl.classList.add('error');
+            setTimeout(() => circleEl.classList.remove('error'), 400);
+        }
+    }
+
+    function finishTmtTest(seconds) {
+        const isTr = currentLang === 'tr';
+        const secNum = parseFloat(seconds);
+
+        // Normative evaluation
+        let percentile = '50th Percentile (Average)';
+        let tier = 'Normal Cognitive Speed';
+        if (tmtMode === 'A') {
+            if (secNum < 18) { percentile = '95th Percentile (Superior)'; tier = 'Exceptional Visual Scanning'; }
+            else if (secNum < 25) { percentile = '80th Percentile (Above Average)'; tier = 'High Processing Speed'; }
+            else if (secNum < 38) { percentile = '55th Percentile (Average)'; tier = 'Normal Adult Baseline'; }
+            else { percentile = '30th Percentile (Below Average)'; tier = 'Mild Processing Delay'; }
+        } else {
+            if (secNum < 32) { percentile = '95th Percentile (Superior)'; tier = 'Exceptional Task-Switching'; }
+            else if (secNum < 48) { percentile = '80th Percentile (Above Average)'; tier = 'High Cognitive Flexibility'; }
+            else if (secNum < 70) { percentile = '55th Percentile (Average)'; tier = 'Normal Adult Baseline'; }
+            else { percentile = '30th Percentile (Below Average)'; tier = 'Executive Shifting Lag'; }
+        }
+
+        const shareText = `🧠 DeepBrain Neuro-Benchmark\nTest: Trail Making Test Part ${tmtMode}\nCompletion Time: ${seconds}s (Errors: ${tmtErrors})\nPercentile: ${percentile}\nCan you beat my speed? Test here: https://trainingbrain.github.io/trail-making-test.html`;
+
+        gameContent.innerHTML = `
+            <div class="wcst-results page-container" style="max-width: 600px; margin: 20px auto; text-align: center;">
+                <h3 style="color: var(--secondary-color); font-size: 1.8em; margin-bottom: 5px;">
+                    🎉 ${isTr ? 'Test Tamamlandı!' : 'Test Completed!'}
+                </h3>
+                <p style="font-size: 1.1em; color: #4a5568; margin-bottom: 20px;">
+                    ${isTr ? 'TMT Bölüm' : 'Trail Making Test Part'} <strong>${tmtMode}</strong>
+                </p>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: left;">
+                    <p style="margin: 8px 0;">⏱️ <strong>${isTr ? 'Toplam Süre:' : 'Total Time:'}</strong> <span style="font-size: 1.3em; color: var(--primary-color); font-weight: 800;">${seconds}s</span></p>
+                    <p style="margin: 8px 0;">⚠️ <strong>${isTr ? 'Hata Sayısı:' : 'Errors:'}</strong> ${tmtErrors}</p>
+                    <p style="margin: 8px 0;">📊 <strong>${isTr ? 'Yaş Normu Persentili:' : 'Normative Percentile:'}</strong> <span style="color: #27ae60; font-weight: 700;">${percentile}</span></p>
+                    <p style="margin: 8px 0;">🧠 <strong>${isTr ? 'Bilişsel Değerlendirme:' : 'Clinical Profile:'}</strong> ${tier}</p>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button class="share-result-btn" onclick="copyScoreToClipboard('${shareText.replace(/'/g, "\'")}')">
+                        📋 ${isTr ? 'Skoru Kopyala & Paylaş' : 'Copy Score / Share Result'}
+                    </button>
+                    <button id="play-again-button" onclick="showTmtLevelSelection()" style="margin-top: 15px;">
+                        🔄 ${isTr ? 'Tekrar Dene' : 'Play Again'}
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // ==================================================================
+    // ---- AUTO-START LOGIC FOR DEDICATED TEST LANDING PAGES ----
+    // ==================================================================
+    const autoTest = document.body.dataset.test;
+    if (autoTest) {
+        if (selectionScreenGames) selectionScreenGames.classList.add('hidden');
+        if (selectionScreenTests) selectionScreenTests.classList.add('hidden');
+        if (gameContainer) gameContainer.classList.remove('hidden');
+        if (autoTest === 'wcst') startWCST();
+        else if (autoTest === 'stroop') startStroopTest();
+        else if (autoTest === 'n-back') startNBack();
+        else if (autoTest === 'sequence') startSequenceMemory();
+        else if (autoTest === 'hangman') startHangman();
+        else if (autoTest === 'trail-making') startTrailMaking();
+    }
+
 });
